@@ -1,0 +1,33 @@
+# Environment
+.env
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Logs & temp files
+*.log
+tmp/
+temp/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Streamlit
+.streamlit/
+
+# OS files
+.DS_Store
+Thumbs.db
