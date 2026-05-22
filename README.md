@@ -27,7 +27,7 @@ flowchart LR
     scheduler[Scheduler] --> ingest
 ```
 
-Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)
+Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 
 
 ## Andmestik
