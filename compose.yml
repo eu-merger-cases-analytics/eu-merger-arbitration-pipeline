@@ -1,0 +1,46 @@
+services:
+  db:
+    image: pgduckdb/pgduckdb:18-v1.1.1
+    container_name: eu-merger-arbitration-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./data:/data
+      - ./scripts:/scripts
+      - eu-merger-arbitration:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+
+  python:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: eu-merger-arbitration-python
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./data:/data
+      - ./scripts:/scripts
+    working_dir: /scripts
+    tty: true
+
+volumes:
+  eu-merger-arbitration:
+    name: eu-merger-arbitration-pg
