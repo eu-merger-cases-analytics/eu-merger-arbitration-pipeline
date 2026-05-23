@@ -2,7 +2,7 @@
 
 ## Äriküsimus
 
-Alates 2000 a. algusest on Euroopa Komisjon oma tingimuslikes koondumisotsustes kasutanud vahekohtuklausleid. Nende puhul on oht, et koondunud ettevõtte kohustuste jõustamine ei ole tegelikkuses konkurentide jaoks võimalik või viib kuluka protsessini. Statistika vahekohtuklauslite kohta Euroopa Komisjoni koondumisotsustes hetkel puudub.  
+Alates 2000ndate aastate algusest on Euroopa Komisjon oma tingimuslikes koondumisotsustes kasutanud vahekohtuklausleid. Nende puhul on oht, et koondunud ettevõtte kohustuste jõustamine ei ole tegelikkuses konkurentide jaoks võimalik või viib kuluka protsessini. Statistika vahekohtuklauslite kohta Euroopa Komisjoni koondumisotsustes hetkel puudub.  
 Antud projekt ehitab Euroopa Komisjoni avalike koondumisotsuste andmestiku põhjal andmevoo vahekohtuklauslite statistika kuvamiseks dashboardile.  
 Eesmärk on vastata küsimustele, kui paljudes Euroopa Komisjoni tingimuslikes koondumisotsustest viimasel kuul ja kogu ajaloos on kaalutud vahekohtumehhanismi tingimuste jõustamiseks ning milline on nende otsuste sektoraalne jaotuvus.
 
