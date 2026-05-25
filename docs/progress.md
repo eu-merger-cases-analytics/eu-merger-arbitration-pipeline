@@ -2,31 +2,35 @@
 
 ## Mis on valmis
 
-- Loodud projekti esialgne struktuur.
-- [`README.md`](../README.md) failis on ülevaade projektist ja kasutatavatest tehnoloogiatest.
-- [`docs/images/architecture.md`](architecture.md) failis on kirjeldatud äriküsimus, mõõdikud, andmeallikas, andmevoog, andmebaasi kihid, riskid, privaatsus ja turve.
+- [`README.md`](../README.md) - ülevaade projektist ja kasutatavatest tehnoloogiatest, juhised projekti käivitamiseks.
+- [`docs/architecture.md`](architecture.md) - kirjeldatud äriküsimus, mõõdikud, andmeallikas, andmevoog, andmebaasi kihid, riskid, privaatsus ja turve.
 - Loodud [`Dockerfile.python`](../Dockerfile.python).
 - Loodud [`compose.yml`](../compose.yml).
+- Loodud config kaust ja  [`keywords.txt`](../config/keywords.txt) erinevates keeltes otsisõnade haldamiseks ja lugemiseks.
+- Loodud data ja raw kaust allalaetud json faili salvestamiseks.
+- Loodud ingestion kaust:
+    - [`download_json.py`](../scripts/ingestion/download_json.py) - algandmete allalaadimine.
+    - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete inspekteerimine.
+    - [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt) - inspect_json.py tulemuse väljaprint.
+
 
 ## Järgmised sammud
 
-- Projekti struktuuri täiendamine:
-    - config, data, ingestion jms kaustad, hiljem dbt ja airflow.
-    - visuaali loomine lõplikust projekti struktuurist README.md faili.
-- Luua config kaust ja failid:
-    - otsisõnade leidmiseks: täpsustada märksõnu, et vähendada valepositiivseid tulemusi (praegune kokkulepitud valik annab valepositiivseid), iga keele kohta üks kuni mitu märksõna, mida saab eemaldada ja lisada, pdf failide lugemisel võetakse märksõnad automaatselt vastavalt sellele, mis keeles pdf fail on;
-    - andmete uuendamisperioodi määramiseks.
-- Andmete allalaadimine, salvestamine ja ülevaade JSON struktuurist:
-    - allalaetud andmete fail.
-    - tekstifail, mis esitab ülevaate Art. 6(1)(b) või Art. 8(2) otsuste meid huvitavatest väärtustest.
-    - faili uuendamise protsess, uute koondumiste lisandumise jälgimine.
-- Vastavate kriteeriumide alusel välja selekteeritud pdf failide läbilugemine ja otsisõnu sisaldavate otsuste kokku lepitud metaandmete salvestamine:
-    - raw faili loomine, hinnanguliselt võtab aega 1-2 tundi.
+- Art. 6(1)(b) ja art. 8(2) otsuste pdf failide läbilugemine ja otsisõnu sisaldavate otsuste kohta kokku lepitud metaandmete salvestamine:
+    - protsessitud faili loomine, hinnanguliselt võtab aega ~2 tundi.
     - kuidas protsess jätkub katkestuse korral.
     - kuidas toimub andmete uuendamisel valik, millised pdf-d tuleb uuesti lugeda.
-    - uute pdf-de lugemine.
+    - uute pdf-de lugemine andmete uuendamisel.
 - dbt kihtide loomine.
 - Airflow seadistamine.
 - Dashboardi loomine (otsustame hiljem, kas kasutame Superset või Streamlit või midagi muud).
 - requirements.txt faili jooksev täiendamine vastavalt kasutatud teekidele.
-- docker failide muutmine/lisamine vastavalt kasutatud tehnoloogiatele.
+- Dockeri failide muutmine/lisamine vastavalt kasutatud tehnoloogiatele.
+- architecture.png kontroll, et vastaks tegelikule protsessile.
+- Visuaali loomine lõplikust projekti struktuurist README.md faili.
+
+
+## Takistused
+
+- Algandmete korduvlaadimine on aeglane (kogu json fail töödeldakse mälus iga kord uuesti).
+- Otsustada, mis andmeid mis kihis andmebaasi salvestatakse.

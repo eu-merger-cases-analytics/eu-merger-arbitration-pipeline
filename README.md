@@ -58,7 +58,7 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 
 docker compose up -d --build
 
-#Oota ~2–3 minutit, kuni kõik teenused on käivitunud
+# Oota ~2–3 minutit, kuni kõik teenused on käivitunud
 docker compose ps   # kõik peaksid olema "running" või "healthy"
 
 # Andmete laadimine
