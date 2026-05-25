@@ -52,3 +52,22 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 | Näidikulaud | Apache Superset 6.x (või Streamlit) |
 | Orkestreerimine | Apache Airflow 3.x  |
 
+
+## Käivitamine
+```bash
+
+docker compose up -d --build
+
+#Oota ~2–3 minutit, kuni kõik teenused on käivitunud
+docker compose ps   # kõik peaksid olema "running" või "healthy"
+
+# Andmete laadimine
+docker compose exec python python ingestion/download_json.py
+
+# Andmete inspekteerimine
+docker compose exec python python ingestion/inspect_json.py
+
+```
+
+
+
