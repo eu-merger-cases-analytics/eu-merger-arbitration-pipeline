@@ -6,6 +6,9 @@
 -- hiljem staging-tabelist puhtasse tabelisse laadides.
 -- =====================================================================
 
+
+CREATE SCHEMA IF NOT EXISTS staging;
+
 DROP TABLE IF EXISTS staging;
 
 CREATE TABLE staging (
