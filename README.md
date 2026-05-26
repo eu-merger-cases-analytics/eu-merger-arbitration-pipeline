@@ -73,7 +73,7 @@ docker compose exec python python ingestion/download_json.py
 # Andmete inspekteerimine
 docker compose exec python python ingestion/inspect_json.py
 
-# Andmete laadimine API-st ja JSON struktuurist andmete siirdamine SQL tabelisse staging
+# Andmete laadimine algallikast ja JSON struktuurist andmete siirdamine SQL tabelisse staging
 docker compose exec python python //scripts/load_to_staging.py
 
 ```
