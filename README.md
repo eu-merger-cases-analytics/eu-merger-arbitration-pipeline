@@ -61,11 +61,20 @@ docker compose up -d --build
 # Oota ~2–3 minutit, kuni kõik teenused on käivitunud
 docker compose ps   # kõik peaksid olema "running" või "healthy"
 
+# PSQL-i sisse logimine
+docker compose exec db psql -U user -d eu-merger-arbitration
+
+# Staging schema ja tabeli loomine SQL-is
+\i /scripts/create_staging_schema.sql
+
 # Andmete laadimine
 docker compose exec python python ingestion/download_json.py
 
 # Andmete inspekteerimine
 docker compose exec python python ingestion/inspect_json.py
+
+# Andmete laadimine API-st ja JSON struktuurist andmete siirdamine SQL tabelisse staging
+docker compose exec python python //scripts/load_to_staging.py
 
 ```
 
