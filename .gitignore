@@ -23,6 +23,7 @@ temp/
 target/
 dbt_packages/
 logs/
+!log/ingest_summary.json
 .user.yml
 
 # Streamlit

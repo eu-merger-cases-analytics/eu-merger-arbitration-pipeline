@@ -38,6 +38,8 @@ services:
     volumes:
       - ./data:/data
       - ./scripts:/scripts
+      - ./config:/config
+      - ./logs:/logs
     working_dir: /scripts
     tty: true
 

@@ -12,15 +12,12 @@
     - [`download_json.py`](../scripts/ingestion/download_json.py) - algandmete allalaadimine.
     - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete inspekteerimine.
     - [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt) - inspect_json.py tulemuse väljaprint.
+    - [`ingest.py`](../scripts/ingestion/ingest.py) - art. 6(1)(b) ja art. 8(2) otsuste pdf failide läbilugemine ja otsisõnu sisaldavate otsuste kohta kokku lepitud metaandmete salvestamine.
+    - pdf töötlemise tulemus on salvestatud kausta data/processed, kokkuvõte [`ingest_summary.json`](../logs/ingest_summary.json).
 
 
 ## Järgmised sammud
 
-- Art. 6(1)(b) ja art. 8(2) otsuste pdf failide läbilugemine ja otsisõnu sisaldavate otsuste kohta kokku lepitud metaandmete salvestamine:
-    - protsessitud faili loomine, hinnanguliselt võtab aega ~2 tundi.
-    - kuidas protsess jätkub katkestuse korral.
-    - kuidas toimub andmete uuendamisel valik, millised pdf-d tuleb uuesti lugeda.
-    - uute pdf-de lugemine andmete uuendamisel.
 - dbt kihtide loomine.
 - Airflow seadistamine.
 - Dashboardi loomine (otsustame hiljem, kas kasutame Superset või Streamlit või midagi muud).
@@ -33,4 +30,5 @@
 ## Takistused
 
 - Algandmete korduvlaadimine on aeglane (kogu json fail töödeldakse mälus iga kord uuesti).
+- pdf failide esmane töötlemine võtab aega ~3 tundi.
 - Otsustada, mis andmeid mis kihis andmebaasi salvestatakse.
