@@ -1,6 +1,4 @@
 """
-ingest.py
----------
 Searches European Commission merger decision PDFs for arbitration-related
 keywords defined in config/keywords.txt.
  
@@ -13,7 +11,7 @@ Steps:
   6. Write matched records to data/processed/arbitration_hits.jsonl.
  
 Usage:
-    python ingestion/ingest.py
+    python scripts/ingestion/ingest.py
  
 Optional environment variables:
     TEST_LIMIT    - process only the first N relevant cases (default: 0 = all)
@@ -400,11 +398,20 @@ def process_case(
     record = extract_case_record(case, case_number)
  
     # Keep only the decisions where a keyword match was found
+    # Build a mapping from original index to output index before filtering
     matched_dec_indices = {m["dec_idx"] for m in all_matches}
+    orig_to_output = {
+        orig_idx: out_idx
+        for out_idx, orig_idx in enumerate(sorted(matched_dec_indices))
+    }
     record["decisions"] = [
         dec for i, dec in enumerate(record["decisions"])
         if i in matched_dec_indices
     ]
+ 
+    # Remap dec_idx to index in the output decisions list
+    for match in all_matches:
+        match["dec_idx"] = orig_to_output.get(match["dec_idx"], match["dec_idx"])
  
     record["_matches"] = all_matches
     record["_processedAt"] = datetime.now(timezone.utc).isoformat()
@@ -449,7 +456,7 @@ def main() -> None:
     if not RAW_JSON_PATH.exists():
         raise FileNotFoundError(
             f"JSON file not found: {RAW_JSON_PATH}\n"
-            "Run first: python ingestion/download_json.py"
+            "Run first: python scripts/ingestion/download_json.py"
         )
     log.info("Loading JSON from %s", RAW_JSON_PATH)
     with open(RAW_JSON_PATH, encoding="utf-8") as f:

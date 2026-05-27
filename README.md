@@ -56,6 +56,9 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 ## Käivitamine
 ```bash
 
+# Ilma dockerita py failide käivitamine:
+pip install requests pdfplumber
+
 docker compose up -d --build
 
 # Oota ~2–3 minutit, kuni kõik teenused on käivitunud

@@ -47,6 +47,8 @@ Skeem: ELT, kuna avaandmetes sisalduvad Komisjoni otsused on kõik mitte-konfide
   <img src="images/architecture.png" width="800">
 </p>
 
+Detailne andmevoo kirjeldus: [`data_pipeline.md`](data_pipeline.md)
+
 Tööriistad: Python, DBT ja Airflow
 
 
@@ -58,6 +60,7 @@ Tööriistad: Python, DBT ja Airflow
 | `intermediate` | Rakendab äriloogikat. |
 | `mart` | Hoiab transformeeritud ja äriloogikat sisaldavaid tabeleid. |
 Vt ka detaile eelmises punktis viidatud skeemilt.
+
 
 ## Tööjaotus
 

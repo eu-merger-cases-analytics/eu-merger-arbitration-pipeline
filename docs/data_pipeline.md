@@ -1,0 +1,14 @@
+# Detailne andmevoo kirjeldus
+
+  - [`download_json.py`](../scripts/ingestion/download_json.py) - laeb alla eu lehelt algandmed.
+    - Igal käivitamisel laetakse fail uuesti ja asendatakse olemasolev fail. Allalaadimisel kirjutatakse andmed ajutisse faili, kui midagi läheb valesti (võrguviga, puudulik fail või vigane JSON), kustutatakse ajutine fail ja olemasolev fail jääb muutmata. Enne faili asendamist kontrollitakse, et tegemist oleks korrektse JSON-failiga ning et fail sisaldaks vähemalt minimaalset eeldatavat arvu kirjeid. Allalaetud fail slaevstatakse [`data/raw/case-data-M.json`](../data/raw/case-data-M.json)
+
+  - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete faili case-data-M.json inspekteerimine.
+    - Ülevaates ainult kaasused, mille decisionTypes sisaldab artikleid 6(1)(b) või 8(2). Tulemused kuvatakse terminalis ja salvestatakse faili [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt). Igal käivitamisel kirjutatakse olemasolev väljundfail üle.
+
+  - [`ingest.py`](../scripts/ingestion/ingest.py) - salvestab kaasused, kus otsuste PDF-failides esineb vahekohtumehhanismiga seotud märksõnu.
+    - Loeb [`keywords.txt`](../config/keywords.txt) keelepõhised märksõnareeglid, mille alusel PDF-failides otsingut tehakse. case-data-M.json failist filtreeritakse välja need kaasused, mille decisionTypes sisaldab artiklit 6(1)(b) või 8(2), töödeldakse ainult neid otsuseid. Kontrollib PDF-faili keelt (attachmentLanguage) ja otsib ainult selle keele jaoks defineeritud märksõnu.
+    - PDF-id laetakse ajutisse faili, tekst ekstraheeritakse pdfplumber teegi abil ning kogu sisu teisendatakse väiketähtedeks, et otsing oleks tõstutundetu. Kui leitakse vaste, salvestatakse lisaks märksõnale ka lühike tekstikontekst.
+    - Kasutab checkpoint-süsteemi, et vältida juba töödeldud PDF-failide uuesti töötlemist. Iga edukalt töödeldud PDF link salvestatakse faili checkpoint.json. Kui protsess katkeb ja käivitatakse uuesti, jätkatakse poolelijäänud kohast ning juba töödeldud PDF-id jäetakse vahele. Eduka täieliku käivituse järel checkpoint-fail kustutatakse.
+    - Leitud vasted salvestatakse faili [`data/processed/arbitration_hits.jsonl`](../data/processed/arbitration_hits.jsonl), kus iga rida sisaldab ühe kaasuse andmeid koos ainult nende otsuste ja PDF-manustega, milles märksõna vaste leiti. Salvestatud metaandmed on kokkulepitud valik kõigist andmetest. Lisaks luuakse inimloetav [`data/processed/arbitration_hits_readable.json`](../data/processed/arbitration_hits_readable.json), mis sisaldab samu tulemusi vormindatud kujul. Kokkuvõte salvestatakse [`ingest_summary.json`](../logs/ingest_summary.json).
+    - Skripti saab käivitada testrežiimis keskkonnamuutujaga TEST_LIMIT, mis piirab töödeldavate relevantsete juhtumite arvu. Testrežiimis kasutatakse eraldi väljundfaile ning checkpoint-süsteem on välja lülitatud, et testkäivitused ei mõjutaks tootmisandmeid.
