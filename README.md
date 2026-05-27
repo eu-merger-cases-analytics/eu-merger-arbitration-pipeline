@@ -80,23 +80,23 @@ docker compose exec python python ingestion/ingest.py
 #   logs/ingest_summary.json                      — statistika
 
 # dbt käivitamine
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt debug --profiles-dir ."
 
 # dbt testid
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
 
+# Staging schema ja tabeli loomine SQL-is
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_staging_schema.sql
+
+# Andmete laadimine staging tabelisse
+docker compose exec python python ingestion/load_to_staging.py
+
 # Andmebaasi sisselogimine
 docker compose exec db psql -U user -d eu-merger-arbitration
 
-# Enne ilma dockerita py failide käivitamist:
-pip install requests pdfplumber
-
-# Staging schema ja tabeli loomine SQL-is
-\i /scripts/create_staging_schema.sql
-
-# Andmete laadimine algallikast ja JSON struktuurist andmete siirdamine SQL tabelisse staging
-docker compose exec python python //scripts/load_to_staging.py
-
+# Staging andmete kontroll
+docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT COUNT(*) FROM staging.arbitration_hits;"
+docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT * FROM staging.arbitration_hits LIMIT 5;"
 ```
 
 

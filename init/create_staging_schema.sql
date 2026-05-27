@@ -1,32 +1,49 @@
--- =====================================================================
--- Staging-tabeli loomine EC konkurentsijuhtumite CSV andmete jaoks
--- Veerud vastavad json_to_csv.py väljundi CSV päisele.
--- Kõik veerud on tekstitüüpi (toorandmed algkujul, sh kuupäevad ja
--- JSON-stringid caseSectors / decisionTypes). Tüübiteisendus tehakse
--- hiljem staging-tabelist puhtasse tabelisse laadides.
--- =====================================================================
-
-
+-- =============================================================================
+-- create_staging_schema.sql
+-- Creates the raw schema and arbitration_hits table.
+-- Run once before loading data with load_hits_to_db.py.
+--
+-- Usage:
+--   docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_staging_schema.sql
+-- =============================================================================
+ 
 CREATE SCHEMA IF NOT EXISTS staging;
-
-DROP TABLE IF EXISTS staging;
-
-CREATE TABLE staging (
-    "caseInstrument"                                     VARCHAR(255),
-    "caseNumber"                                         VARCHAR(255),
-    "caseRegulation"                                     VARCHAR(255),
-    "caseTitle"                                          VARCHAR(1000),
+ 
+DROP TABLE IF EXISTS staging.arbitration_hits;
+ 
+CREATE TABLE staging.arbitration_hits (
+    -- Case level
+    "caseNumber"                                         VARCHAR(50),
+    "caseTitle"                                          TEXT,
+    "caseCompanies"                                      TEXT,
+    "caseInstrument"                                     VARCHAR(100),
+    "caseRegulation"                                     TEXT,
+    "caseSimplified"                                     VARCHAR(100),
     "caseSectors"                                        TEXT,
-    "case_metadataReference"                             VARCHAR(255),
-    "decisionAdoptionDate"                               VARCHAR(50),
-    "decisionNumber"                                     VARCHAR(255),
-    "decisionTypes"                                      TEXT,
-    "decisionOfficialJournalPublicationsPublishedDates"  VARCHAR(255),
-    "decision_metadataReference"                         VARCHAR(255),
-    "decision_language"                                  VARCHAR(50),
+    "caseInitiationDate"                                 VARCHAR(20),
+    "caseNotificationDate"                               VARCHAR(20),
+    "caseDeadlineDate"                                   VARCHAR(20),
+    "caseLastDecisionDate"                               VARCHAR(20),
+    "caseAttachments"                                    TEXT,
+ 
+    -- Decision level
+    "decisionNumber"                                     VARCHAR(50),
+    "decisionAdoptionDate"                               VARCHAR(20),
+    "decisionOfficialJournalPublicationsPublishedDates"  TEXT,
+    "decisionTypeCode"                                   VARCHAR(100),
+    "decisionTypeLabel"                                  TEXT,
+ 
+    -- Matched attachment
+    "attachmentMetadataReference"                        VARCHAR(100),
+    "attachmentLanguage"                                 VARCHAR(10),
+    "attachmentName"                                     TEXT,
     "attachmentLink"                                     TEXT,
-    "attachment_language"                                VARCHAR(50),
-    "attachment_metadataReference"                       VARCHAR(255),
-    "attachmentLanguage"                                 VARCHAR(50),
-    "attachmentName"                                     VARCHAR(1000)
+ 
+    -- Match
+    "matchKeyword"                                       VARCHAR(100),
+    "matchLanguage"                                      VARCHAR(10),
+    "matchContext"                                       TEXT,
+ 
+    -- Meta
+    "processedAt"                                        VARCHAR(50)
 );
