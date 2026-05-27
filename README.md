@@ -56,25 +56,43 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 ## Käivitamine
 ```bash
 
-# Ilma dockerita py failide käivitamine:
-pip install requests pdfplumber
+# Keskkonna seadistamine
+cp .env.example .env
 
+# onteinerite käivitamine
 docker compose up -d --build
 
-# Oota ~2–3 minutit, kuni kõik teenused on käivitunud
-docker compose ps   # kõik peaksid olema "running" või "healthy"
+# Kontroll, et kõik konteinerid jooksevad
+docker compose ps   # db peaks olema "healthy", python ja dbt "running"
 
-# PSQL-i sisse logimine
+# Andmete allalaadimine
+docker compose exec python python ingestion/download_json.py
+
+# JSON-i struktuuri uurimine
+docker compose exec python python ingestion/inspect_json.py
+
+# PDF-ide töötlemine ja vahekohut kaaluvate otsuste leidmine
+docker compose exec python python ingestion/ingest.py
+
+# Tulemused salvestatakse:
+#   data/processed/arbitration_hits.jsonl        — masinloetav, dbt jaoks
+#   data/processed/arbitration_hits_readable.json — inimloetav, ülevaatamiseks
+#   logs/ingest_summary.json                      — statistika
+
+# dbt käivitamine
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
+
+# dbt testid
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
+
+# Andmebaasi sisselogimine
 docker compose exec db psql -U user -d eu-merger-arbitration
+
+# Enne ilma dockerita py failide käivitamist:
+pip install requests pdfplumber
 
 # Staging schema ja tabeli loomine SQL-is
 \i /scripts/create_staging_schema.sql
-
-# Andmete laadimine
-docker compose exec python python ingestion/download_json.py
-
-# Andmete inspekteerimine
-docker compose exec python python ingestion/inspect_json.py
 
 # Andmete laadimine algallikast ja JSON struktuurist andmete siirdamine SQL tabelisse staging
 docker compose exec python python //scripts/load_to_staging.py

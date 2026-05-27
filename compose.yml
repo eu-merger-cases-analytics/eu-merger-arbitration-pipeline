@@ -43,6 +43,28 @@ services:
     working_dir: /scripts
     tty: true
 
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: eu-merger-arbitration-dbt
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./dbt:/dbt
+      - ./data:/data
+    working_dir: /dbt
+    tty: true
+
 volumes:
   eu-merger-arbitration:
     name: eu-merger-arbitration-pg

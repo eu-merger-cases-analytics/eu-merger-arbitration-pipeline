@@ -1,0 +1,12 @@
+eu_merger_arbitration:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DB_HOST', 'db') }}"
+      port: 5432
+      user: "{{ env_var('DB_USER', 'user') }}"
+      pass: "{{ env_var('DB_PASSWORD', 'user') }}"
+      dbname: "{{ env_var('DB_NAME', 'eu-merger-arbitration') }}"
+      schema: public
+      threads: 1
