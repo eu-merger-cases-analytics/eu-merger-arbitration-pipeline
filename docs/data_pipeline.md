@@ -1,7 +1,7 @@
-# Detailne andmevoo kirjeldus
+# Detailne andmevoo ja protsessi kirjeldus
 
   - [`download_json.py`](../scripts/ingestion/download_json.py) - laeb alla eu lehelt algandmed.
-    - Igal käivitamisel laetakse fail uuesti ja asendatakse olemasolev fail. Allalaadimisel kirjutatakse andmed ajutisse faili, kui midagi läheb valesti (võrguviga, puudulik fail või vigane JSON), kustutatakse ajutine fail ja olemasolev fail jääb muutmata. Enne faili asendamist kontrollitakse, et tegemist oleks korrektse JSON-failiga ning et fail sisaldaks vähemalt minimaalset eeldatavat arvu kirjeid. Allalaetud fail slaevstatakse [`data/raw/case-data-M.json`](../data/raw/case-data-M.json)
+    - Igal käivitamisel laetakse fail uuesti ja asendatakse olemasolev fail. Allalaadimisel kirjutatakse andmed ajutisse faili, kui midagi läheb valesti (võrguviga, puudulik fail või vigane JSON), kustutatakse ajutine fail ja olemasolev fail jääb muutmata. Enne faili asendamist kontrollitakse, et tegemist oleks korrektse JSON-failiga ning et fail sisaldaks vähemalt minimaalset eeldatavat arvu kirjeid. Allalaetud fail salvestatakse /data/raw/case-data-M.json.
 
   - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete faili case-data-M.json inspekteerimine.
     - Ülevaates ainult kaasused, mille decisionTypes sisaldab artikleid 6(1)(b) või 8(2). Tulemused kuvatakse terminalis ja salvestatakse faili [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt). Igal käivitamisel kirjutatakse olemasolev väljundfail üle.
