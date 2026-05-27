@@ -18,7 +18,7 @@ Mitmes vaadeldava perioodi Euroopa Komisjoni tingimuslikus koondumisotsuses on k
 
 | Allikas | Tüüp | Andmete uuendamine | Roll |
 |---------|------|--------------|------|
-| https://compcases-open-data-portal-files-prod.s3.eu-west-1.amazonaws.com/case-data-M.json |JSON | Uueneb otsuste/info lisandumisel (tavaliselt iga kuu) | Algallikas |
+| https://compcases-open-data-portal-files-prod.s3.eu-west-1.amazonaws.com/case-data-M.json |JSON | Uueneb otsuste/info lisandumisel (fail uueneb iga päev, kuna tavaliselt lisandub iga kuu mitukümmend otsust - nt 27. mai 2026 seisuga on viimasel kuul Komisjon teinud koondumistes 37 menetluses uusi otsuseid) | Algallikas |
 Kirjeldus andmestikust ja selle kasutusest: 
 
 Euroopa Komisjoni avaandmed: igal (töö?)päeval uuenev JSON-fail koondumisotsustega al 1990, saadaval ülaloleval lingil. Kasutatakse tingimuslikult heakskiitvate otsuste (st nii 1989 kui 2004 koondumismääruse Art 6(1)(b) või Art 8(2) all tehtud otsuste) pdf-ides sõnaotsingute alusel selliste menetluste tulemustena reastamiseks, milles on kaalutud tingimuste jõustamiseks vahekohtumehhanismi. Salvestame nende menetluste kohta ka metaandmeid, et võimaldada hiljem üksikasjalikumat analüüsi otsustest, nende ajaloost ja trendidest. 
