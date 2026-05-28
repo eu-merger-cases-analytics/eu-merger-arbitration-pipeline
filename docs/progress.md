@@ -1,34 +1,27 @@
 # Edenemisraport
-
+ 
 ## Mis on valmis
-
+ 
 - [`README.md`](../README.md) - ülevaade projektist ja kasutatavatest tehnoloogiatest, juhised projekti käivitamiseks.
 - [`docs/architecture.md`](architecture.md) - kirjeldatud äriküsimus, mõõdikud, andmeallikas, andmevoog, andmebaasi kihid, riskid, privaatsus ja turve.
-- Loodud [`Dockerfile.python`](../Dockerfile.python).
-- Loodud [`compose.yml`](../compose.yml).
-- Loodud config kaust ja  [`keywords.txt`](../config/keywords.txt) erinevates keeltes otsisõnade haldamiseks ja lugemiseks.
-- Loodud data ja raw kaust allalaetud json faili salvestamiseks.
-- Loodud ingestion kaust:
-    - [`download_json.py`](../scripts/ingestion/download_json.py) - algandmete allalaadimine.
-    - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete inspekteerimine.
-    - [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt) - inspect_json.py tulemuse väljaprint.
-    - [`ingest.py`](../scripts/ingestion/ingest.py) - art. 6(1)(b) ja art. 8(2) otsuste pdf failide läbilugemine ja otsisõnu sisaldavate otsuste kohta kokku lepitud metaandmete salvestamine.
-    - pdf töötlemise tulemus on salvestatud kausta data/processed, kokkuvõte [`ingest_summary.json`](../logs/ingest_summary.json).
-
+- [`docs/data_pipeline.md`](data_pipeline.md) - detailne andmevoo kirjeldus koos loogika ja põhjendustega.
+- Loodud [`Dockerfile.python`](../Dockerfile.python) ja [`Dockerfile.dbt`](../Dockerfile.dbt).
+- Loodud [`compose.yml`](../compose.yml) teenustega: `db` (PostgreSQL/DuckDB), `python`, `dbt`.
+- Loodud `config/keywords.txt` — vahekohtu otsisõnad EL keeltes.
+- Loodud `init/create_raw_schema.sql` — `raw.decisions` tabeli loomine.
+- Loodud `ingestion/` kaust:
+  - [`download_json.py`](../scripts/ingestion/download_json.py) — algandmete allalaadimine koos valideerimise ja katkestuskaitsega.
+  - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) — algandmete inspekteerimine, tulemused salvestatakse `inspect_json_output.txt`.
+  - [`load_decisions.py`](../scripts/ingestion/load_decisions.py) — kõigi otsuste PDF metaandmete laadimine `raw.decisions` tabelisse, upsert loogika ja kadunud PDF-ide tuvastamine.
+- dbt projekt loodud (`dbt init`), profiilid seadistatud `env_var()` kaudu.
 
 ## Järgmised sammud
-
-- dbt kihtide loomine.
+ 
+- Kirjutada uus `load_to_staging.py` — loeb `raw.decisions` tabelist töötlemata PDF-id, otsib märksõnu, salvestab `staging.decision_hits` tabelisse.
+- dbt staging, intermediate ja mart mudelite loomine.
 - Airflow seadistamine.
-- Dashboardi loomine (otsustame hiljem, kas kasutame Superset või Streamlit või midagi muud).
-- requirements.txt faili jooksev täiendamine vastavalt kasutatud teekidele.
-- Dockeri failide muutmine/lisamine vastavalt kasutatud tehnoloogiatele.
-- architecture.png kontroll, et vastaks tegelikule protsessile.
-- Visuaali loomine lõplikust projekti struktuurist README.md faili.
-
+- Dashboardi loomine (Superset või Streamlit, otsustame hiljem).
+- `requirements.txt` jooksev täiendamine.
+- `architecture.png` kontroll, et vastaks tegelikule protsessile.
 
 ## Takistused
-
-- Algandmete korduvlaadimine on aeglane (kogu json fail töödeldakse mälus iga kord uuesti).
-- pdf failide esmane töötlemine võtab aega ~3 tundi.
-- Otsustada, mis andmeid mis kihis andmebaasi salvestatakse.

@@ -1,14 +1,104 @@
-# Detailne andmevoo ja protsessi kirjeldus
-
-  - [`download_json.py`](../scripts/ingestion/download_json.py) - laeb alla eu lehelt algandmed.
-    - Igal käivitamisel laetakse fail uuesti ja asendatakse olemasolev fail. Allalaadimisel kirjutatakse andmed ajutisse faili, kui midagi läheb valesti (võrguviga, puudulik fail või vigane JSON), kustutatakse ajutine fail ja olemasolev fail jääb muutmata. Enne faili asendamist kontrollitakse, et tegemist oleks korrektse JSON-failiga ning et fail sisaldaks vähemalt minimaalset eeldatavat arvu kirjeid. Allalaetud fail salvestatakse /data/raw/case-data-M.json.
-
-  - [`inspect_json.py`](../scripts/ingestion/inspect_json.py) - algandmete faili case-data-M.json inspekteerimine.
-    - Ülevaates ainult kaasused, mille decisionTypes sisaldab artikleid 6(1)(b) või 8(2). Tulemused kuvatakse terminalis ja salvestatakse faili [`inspect_json_output.txt`](../scripts/ingestion/inspect_json_output.txt). Igal käivitamisel kirjutatakse olemasolev väljundfail üle.
-
-  - [`ingest.py`](../scripts/ingestion/ingest.py) - salvestab kaasused, kus otsuste PDF-failides esineb vahekohtumehhanismiga seotud märksõnu.
-    - Loeb [`keywords.txt`](../config/keywords.txt) keelepõhised märksõnareeglid, mille alusel PDF-failides otsingut tehakse. case-data-M.json failist filtreeritakse välja need kaasused, mille decisionTypes sisaldab artiklit 6(1)(b) või 8(2), töödeldakse ainult neid otsuseid. Kontrollib PDF-faili keelt (attachmentLanguage) ja otsib ainult selle keele jaoks defineeritud märksõnu.
-    - PDF-id laetakse ajutisse faili, tekst ekstraheeritakse pdfplumber teegi abil ning kogu sisu teisendatakse väiketähtedeks, et otsing oleks tõstutundetu. Kui leitakse vaste, salvestatakse lisaks märksõnale ka lühike tekstikontekst.
-    - Kasutab checkpoint-süsteemi, et vältida juba töödeldud PDF-failide uuesti töötlemist. Iga edukalt töödeldud PDF link salvestatakse faili checkpoint.json. Kui protsess katkeb ja käivitatakse uuesti, jätkatakse poolelijäänud kohast ning juba töödeldud PDF-id jäetakse vahele. Eduka täieliku käivituse järel checkpoint-fail kustutatakse.
-    - Leitud vasted salvestatakse faili [`data/processed/arbitration_hits.jsonl`](../data/processed/arbitration_hits.jsonl), kus iga rida sisaldab ühe kaasuse andmeid koos ainult nende otsuste ja PDF-manustega, milles märksõna vaste leiti. Salvestatud metaandmed on kokkulepitud valik kõigist andmetest. Lisaks luuakse inimloetav [`data/processed/arbitration_hits_readable.json`](../data/processed/arbitration_hits_readable.json), mis sisaldab samu tulemusi vormindatud kujul. Kokkuvõte salvestatakse [`ingest_summary.json`](../logs/ingest_summary.json).
-    - Skripti saab käivitada testrežiimis keskkonnamuutujaga TEST_LIMIT, mis piirab töödeldavate relevantsete juhtumite arvu. Testrežiimis kasutatakse eraldi väljundfaile ning checkpoint-süsteem on välja lülitatud, et testkäivitused ei mõjutaks tootmisandmeid.
+# Andmevoo detailne kirjeldus
+ 
+## Ülevaade
+ 
+```
+download_json.py → load_decisions.py → load_to_staging.py → dbt
+```
+- **raw** — töötlemata algandmed, kõik otsused
+- **staging** — ainult Art. `6(1)(b)` ja Art. `8(2)` otsused, mis sisaldavad märksõna
+- **dbt intermediate + mart** — puhastatud ja agregeeritud andmed dashboardi jaoks
+---
+ 
+## Skriptid
+ 
+### [`download_json.py`](../scripts/ingestion/download_json.py)
+Laeb EU lehelt koondumisotsuste JSON faili kettale (mitte mällu):
+- Kui andmebaasi laadimine katkeb, saab uuesti käivitada ilma uue allalaadimiseta
+- `inspect_json.py` vajab faili
+- Airflow saab allalaadimine ja laadimine olla eraldi sammud  
+**Katkestuskaitse:** andmed kirjutatakse ajutisse `.tmp` faili. Enne asendamist valideeritakse — `json.load()` peab õnnestuma ja failis peab olema vähemalt 1000 kirjet. Kui valideerimine ebaõnnestub, kustutatakse `.tmp` fail ja olemasolev fail jääb puutumata.
+ 
+**Uuendamine:** igal käivitamisel laetakse fail uuesti alla ja asendatakse olemasolev.
+ 
+---
+ 
+### [`inspect_json.py`](../scripts/ingestion/inspect_json.py)
+Algandmete faili `case-data-M.json` inspekteerimine — arendusaegne tööriist, ei kuulu automaatsesse pipeline'i.
+ 
+- Näitab statistikat ainult Art. `6(1)(b)` ja Art. `8(2)` otsuste kohta
+- Näitab NACE sektorite jaotust divisjoni tasemel
+- Kontrollib, millised väljad sisaldavad rohkem kui ühte väärtust
+- Tulemused salvestatakse `inspect_json_output.txt` faili
+---
+ 
+### [`load_decisions.py`](../scripts/ingestion/load_decisions.py)
+Laeb kõigi otsuste metaandmete valiku JSON failist andmebaasi tabelisse `raw.decisions`.
+ 
+- Filtreerimine toimub järgmises sammus
+- Kui hiljem tekib vajadus teiste artiklite järele, andmed on juba olemas  
+**Üks rida = üks unikaalne PDF** (`attachmentLink` on unikaalne võti). Case ja otsuse väljad korduvad igal real — normaliseerimine toimub dbt-s.
+ 
+**Upsert loogika:**
+- Uued PDF URL-id lisatakse
+- Olemasolevad jäetakse puutumata
+- `pdfProcessedAt` jääb uutel ridadel `NULL` — märk, et PDF on töötlemata  
+**Kadunud PDF-ide tuvastamine:**
+- Võrreldakse andmebaasi URL-e uue JSON-i URL-idega
+- Kadunud URL-id märgitakse `isActive=FALSE` ja `removedDetectedAt` täidetakse
+- Kaitse mass-deaktiveerimise vastu: kui JSON parsimine ei leia ühtegi URL-i, katkestab protsess veateatega  
+**Katkestuskaitse:** kogu upsert ja mark_removed toimub ühes transaktsioonis — katkestuse korral andmebaas jääb eelmisesse seisu.  
+ 
+**Võtmete kontroll:** hoiatab, kui JSON struktuur on muutunud (oodatud väljad puuduvad).
+ 
+Salvestatud väljad:
+ 
+| Tasand | Väljad |
+|--------|--------|
+| Case | `caseNumber`, `caseTitle`, `caseCompanies`, `caseInstrument`, `caseRegulation`, `caseSimplified`, `caseSectors`, `caseInitiationDate`, `caseNotificationDate`, `caseDeadlineDate`, `caseLastDecisionDate`, `caseAttachments` |
+| Otsus | `decisionNumber`, `decisionAdoptionDate`, `decisionOfficialJournalPublicationsPublishedDates`, `decisionTypeCode`, `decisionTypeLabel` |
+| Attachment | `attachmentMetadataReference`, `attachmentLanguage`, `attachmentLanguageLower`, `attachmentName`, `attachmentLink` |
+| Jälgimine | `isActive`, `removedDetectedAt`, `loadedAt`, `pdfProcessedAt` |
+ 
+---
+ 
+### [`load_to_staging.py`](../scripts/ingestion/load_to_staging.py) *(kavandamisel)*
+Loeb `raw.decisions` tabelist töötlemata PDF-id, otsib märksõnu ja salvestab otsused, mille pdf-failides esineb märksõna, `staging.decision_hits` tabelisse.
+ 
+**PDF töötlemine iga attachment kohta:**
+1. Laeb PDF alla `attachmentLink` URL-ilt
+2. Otsib teksti `config/keywords.txt` reeglite järgi — keele kaupa (`attachmentLanguage` põhjal)
+3. Kui märksõna leidub, lisatakse rida `staging.decision_hits` tabelisse
+4. Uuendab `raw.decisions` tabelis `pdfProcessedAt = NOW()`
+**Checkpoint loogika:**
+- `pdfProcessedAt IS NULL` = töötlemata
+- `pdfProcessedAt IS NOT NULL` = juba töödeldud, jäetakse vahele
+- Katkestuse korral jätkab järgmine käivitus sealt, kus pooleli jäi
+**Märksõnade otsimine (`config/keywords.txt`):**
+- Iga keel on eraldi reegel: `EN: arbitrat*`, `DE: Schiedsgericht*` jne
+- PDF otsitakse ainult selle keele reeglitega, mis on märgitud `attachmentLanguage` väljal
+- Kui keele jaoks reegleid pole, jäetakse PDF vahele — ei kasutata fallback keelt
+- Metamärk `*` matchi suvalise arvu tähemärkidega
+- AND tingimus: `CZ: rozhodč*:řízen*` — mõlemad peavad tekstis esinema
+**Salvestatud väljad `staging.hits`:**
+- Kõik case ja otsuse metaandmed
+- Matched attachment metaandmed
+- Märksõna, keel ja kontekstilõik (100 tähemärki enne ja pärast osumit)
+---
+ 
+## dbt mudelid *(kavandamisel)*
+ 
+### Staging (view)
+Andmed tulevad `staging.decision_hits` tabelist. Minimaalne transformatsioon.
+ 
+### Intermediate
+- Parsib kuupäevad (`VARCHAR` → `DATE`)
+- Normaliseerib NACE sektorikoodid — eraldab koodi ja nimetuse
+- Kontrollib andmekvaliteeti (not null, unikaalsus, kuupäevavahemik)
+### Mart
+Dashboardi jaoks valmis agregaadid:
+- Vahekohtu mainimiste arv/osakaal kuus/aastas
+- Osakaal kõigist Art. 6(1)(b)/8(2) otsustest (`matchedDecisions / totalRelevantDecisions`)
+- Jaotus NACE sektori järgi
+- Trend ajas sektori kaupa
+ 

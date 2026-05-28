@@ -2,16 +2,16 @@ All statistics below are for cases containing '6(1)(b)' or '8(2)' in
 decisionTypes labels, unless stated otherwise.
 
 ============================================================
-Total cases in file:                        10229
-Cases with 6(1)(b) or 8(2) decision:        9551
+Total cases in file:                        10230
+Cases with 6(1)(b) or 8(2) decision:        9554
 
 ============================================================
-Cases with at least one attachment:          9459
-Total decision attachments:                  10374
+Cases with at least one attachment:          9464
+Total decision attachments:                  10379
 
 ============================================================
 Decisions per case:
-  1 decision(s): 407 cases
+  1 decision(s): 410 cases
   2 decision(s): 8652 cases
   3 decision(s): 334 cases
   4 decision(s): 93 cases
@@ -24,7 +24,7 @@ Decisions per case:
 
 ============================================================
 All label variants containing '6(1)(b)':
-    9019  Art. 6(1)(b)
+    9022  Art. 6(1)(b)
      366  Art. 6(1)(b) with conditions & obligations
        2  Modification of Art. 6(1)(b) with conditions & obligations
 
@@ -35,7 +35,7 @@ All label variants containing '8(2)':
 
 ============================================================
 caseRegulation breakdown:
-  Council Regulation 139/2004                          7294
+  Council Regulation 139/2004                          7297
   Council Regulation 4064/89                           2257
 
 ============================================================
@@ -44,12 +44,12 @@ caseSimplified breakdown:
   Normal procedure                                     3695
   Super simplified procedure                            201
   Normal                                                190
-  Simplified                                            136
+  Simplified                                            139
   Super-simplified                                       50
 
 ============================================================
 Attachment languages (all, sorted by count):
-  EN           8522
+  EN           8527
   DE            728
   FR            591
   IT            143
@@ -90,17 +90,17 @@ Sectors by NACE division:
   C.11  Manufacture of beer                                                                                  96
   C.12  Manufacture of tobacco products                                                                       9
   C.13  Preparation and spinning of textile fibres                                                           29
-  C.14  Manufacture of underwear                                                                             41
-  C.15  Manufacture of luggage, handbags and the like, saddlery and harness                                  19
+  C.14  Manufacture of underwear                                                                             43
+  C.15  Manufacture of luggage, handbags and the like, saddlery and harness                                  21
   C.16  Sawmilling and planing of wood                                                                       47
   C.17  Manufacture of articles of paper and paperboard                                                     185
   C.18  Printing and reproduction of recorded media                                                          44
   C.19  Manufacture of refined petroleum products                                                           133
-  C.20  Manufacture of paints, varnishes and similar coatings, printing ink and mastics                     693
+  C.20  Manufacture of paints, varnishes and similar coatings, printing ink and mastics                     694
   C.21  Manufacture of pharmaceutical preparations                                                          229
   C.22  Manufacture of plastic products                                                                     175
   C.23  Manufacture of cement, lime and plaster                                                             214
-  C.24  Manufacture of tubes, pipes, hollow profiles and related fittings, of steel                         293
+  C.24  Manufacture of tubes, pipes, hollow profiles and related fittings, of steel                         294
   C.25  Manufacture of weapons and ammunition                                                               206
   C.26  Manufacture of electronic components                                                                262
   C.27  Manufacture of other electrical equipment                                                           285
@@ -122,8 +122,8 @@ Sectors by NACE division:
   F.43  Building completion and finishing                                                                   122
   G - Wholesale and retail trade; repair of motor vehicles and motorcycles                                    1
   G.45  Maintenance and repair of motor vehicles                                                            229
-  G.46  Wholesale trade, except of motor vehicles and motorcycles                                           889
-  G.47  Retail sale of bread, cakes, flour confectionery and sugar confectionery in specialised stores      747
+  G.46  Wholesale trade, except of motor vehicles and motorcycles                                           891
+  G.47  Retail sale of bread, cakes, flour confectionery and sugar confectionery in specialised stores      751
   H - Transporting and storage                                                                                2
   H.49  Land transport and transport via pipelines                                                          207
   H.50  Water transport                                                                                     128

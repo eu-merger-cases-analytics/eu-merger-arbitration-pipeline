@@ -54,50 +54,38 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 
 
 ## Käivitamine
+ 
 ```bash
-
 # Keskkonna seadistamine
 cp .env.example .env
-
-# onteinerite käivitamine
+ 
+# Konteinerite käivitamine
 docker compose up -d --build
-
+ 
 # Kontroll, et kõik konteinerid jooksevad
-docker compose ps   # db peaks olema "healthy", python ja dbt "running"
-
+docker compose ps   # "healthy" või "running"
+ 
 # Andmete allalaadimine
 docker compose exec python python ingestion/download_json.py
-
+ 
 # JSON-i struktuuri uurimine
 docker compose exec python python ingestion/inspect_json.py
-
-# PDF-ide töötlemine ja vahekohut kaaluvate otsuste leidmine
-docker compose exec python python ingestion/ingest.py
-
-# Tulemused salvestatakse:
-#   data/processed/arbitration_hits.jsonl        — masinloetav, dbt jaoks
-#   data/processed/arbitration_hits_readable.json — inimloetav, ülevaatamiseks
-#   logs/ingest_summary.json                      — statistika
-
+ 
+# Raw skeema ja tabeli loomine
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
+ 
+# Kõigi otsuste laadimine andmebaasi
+docker compose exec python python ingestion/load_decisions.py
+ 
 # dbt käivitamine
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt debug --profiles-dir ."
-
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
+ 
 # dbt testid
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
-
-# Staging schema ja tabeli loomine SQL-is
-docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_staging_schema.sql
-
-# Andmete laadimine staging tabelisse
-docker compose exec python python ingestion/load_to_staging.py
-
+ 
 # Andmebaasi sisselogimine
 docker compose exec db psql -U user -d eu-merger-arbitration
-
-# Staging andmete kontroll
-docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT COUNT(*) FROM staging.arbitration_hits;"
-docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT * FROM staging.arbitration_hits LIMIT 5;"
+ 
+# Konteinerite peatamine
+docker compose down
 ```
-
-
-
