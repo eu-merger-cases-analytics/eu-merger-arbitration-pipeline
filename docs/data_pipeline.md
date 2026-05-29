@@ -13,7 +13,7 @@ Toorandmete töötlemine (Python, SQL):
   → tabel raw.decisions
   → load_decisions.py
        (laeb JSON-ist andmebaasi kõigi juhtumite kõigi otsuste kõik metaandmed;
-        1 rida = 1 unikaalne otsuse attachmentLink; case/decision väljad korduvad)
+        1 rida = 1 unikaalne otsuse attachmentLink (tuleb liita mõne muu väärtusega, et saaks unikaalse); case/decision väljad korduvad)
   → create_raw_decision_hits.sql
   → tabel raw.decision_hits
   → load_decision_hits.py
@@ -37,7 +37,7 @@ Analüütika (dbt):
 Loob skeemi `raw` ja tabeli `raw.decisions` karkassi (lisab tabelisse decision attachment pdf lingi ja jälgimisveerud, mida json andmetes ei ole, näiteks "pdfProcessedAt").
 
 - Ülejäänud andmeveerud lisab `load_decisions.py` dünaamiliselt JSON-i struktuuri põhjal
-- Unikaalne võti: `att_attachmentLink` - unikaalne igale reale, case ja decision metaandmed korduvad
+- Unikaalne võti: `att_attachmentLink` - unikaalne igale reale, case ja decision metaandmed korduvad (attachment link tuleb liita mõne muu väärtusgea, et oleks unikaalne)
 - `pdfProcessedAt` — kas PDF on `load_decision_hits.py` poolt töödeldud (`NULL` = töötlemata)
 
 ### [`create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) *(kavandamisel)*
@@ -73,7 +73,7 @@ Algandmete faili `case-data-M.json` inspekteerimine — arendusaegne tööriist,
 ### [`load_decisions.py`](../scripts/ingestion/load_decisions.py)
 Laeb **kõigi** juhtumite **kõik metaandmed** failist `data/raw/case-data-M.json` tabelisse `raw.decisions`.
 
-**Üks rida = üks unikaalne PDF** (`att_attachmentLink`). Case ja decision väljad korduvad igal real — täielik normaliseerimine toimub dbt-s.
+**Üks rida = üks unikaalne PDF** (`att_attachmentLink`, attachment link tuleb liita mõne muu väärtusgea, et oleks unikaalne). Case ja decision väljad korduvad igal real — täielik normaliseerimine toimub dbt-s.
 
 **Dünaamiline schema:**
 - Skaneeritakse JSON võtmed tasanditel: case, caseAttachments, decisions, decisionAttachments. Olemasolevate JSON võtmete alusel geneeritakse tabeli veerud.

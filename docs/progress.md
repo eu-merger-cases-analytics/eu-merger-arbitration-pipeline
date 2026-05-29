@@ -30,6 +30,7 @@
 
 ## Täiendamisel
 
+- [`load_decisions.py`](../scripts/ingestion/load_decisions.py) töötleb andmeid pdf url põhjal (attachment link), aga see ei ole unikaalne, ühel otsusel võib olla sama pdf url otsuse erinevate artiklite all, tuleb ümber teha.
 - [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py) — fail loodud, kuid **implementatsioon puudub**.
 - `init/create_raw_decision_hits.sql` — **puudub**; tabel `raw.decision_hits` pole veel loodud.
 - [`README.md`](../README.md) — ei sisalda veel täielikku pipeline'i (`load_decision_hits`, init SQL järjekord).
@@ -39,7 +40,7 @@
 
 ## Järgmised sammud
 
-**Loo `init/create_raw_decision_hits.sql`** — tabel `raw.decision_hits` (unikaalne võti: attachment link).
+**Loo `init/create_raw_decision_hits.sql`** — tabel `raw.decision_hits`.
 **Implementeeri `load_decision_hits.py`**:
    - loe `raw.decisions`-st Art. `6(1)(b)` / `8(2)` töötlemata PDF-id;
    - otsi märksõnu `config/keywords.txt` järgi;
