@@ -69,7 +69,7 @@ docker compose ps   # "healthy" või "running"
 docker compose exec python python ingestion/download_json.py
  
 # JSON-i struktuuri uurimine
-docker compose exec python python ingestion/inspect_json.py
+docker compose exec python python analysis/inspect_json.py
  
 # Raw skeema ja tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql

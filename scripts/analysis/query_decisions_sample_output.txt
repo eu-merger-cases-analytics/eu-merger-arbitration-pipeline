@@ -1,0 +1,169 @@
+All rows from raw.decisions where case_caseNumber = "M.409": 2
+
+--- Row 1 ---
+att_attachmentCategory: None
+att_attachmentDocumentDate: None
+att_attachmentIdSequence: 4
+att_attachmentLanguage: EN
+att_attachmentLink: https://ec.europa.eu/competition/mergers/cases/decisions/m409_en.pdf
+att_attachmentLocationType: DDOC
+att_attachmentName: Art. 6(1)(a) -  - mtf-dec-m-00409-020-1-19940309-0300-pub-en
+att_attachmentPublicationBusinessDate: None
+att_attachmentPublicationDescription: None
+att_attachmentSentDate: 2004-12-07
+att_language: en
+att_metadataReference: M.409-DEC38416-ATT4
+att_metadataType: METADATA_DECISION_ATTACHMENT
+caseAtt_attachmentCategory: None
+caseAtt_attachmentDocumentDate: None
+caseAtt_attachmentIdSequence: None
+caseAtt_attachmentLanguage: None
+caseAtt_attachmentLink: None
+caseAtt_attachmentLocationType: None
+caseAtt_attachmentName: None
+caseAtt_attachmentPublicationBusinessDate: None
+caseAtt_attachmentPublicationDescription: None
+caseAtt_attachmentSentDate: None
+caseAtt_language: None
+caseAtt_metadataReference: None
+caseAtt_metadataType: None
+case_caseAidInstruments: 
+case_caseCartel: Antitrust
+case_caseCompanies: ABB / RENAULT AUTOMATION
+case_caseCourtCases: 
+case_caseDeadlineDate: 1994-03-09
+case_caseDg: None
+case_caseEvents: None
+case_caseEventsDates: None
+case_caseExternalLinks: None
+case_caseInitiationDate: 1994-02-08
+case_caseInstrument: Merger
+case_caseInvestigationPhase: None
+case_caseLastDecisionDate: 1994-03-09
+case_caseLegalBasis: 
+case_caseLinks: 
+case_caseNotificationDate: 1994-02-08
+case_caseNumber: M.409
+case_caseNumberPart: 409
+case_caseOfficialJournalPublications: None
+case_caseOfficialJournalPublicationsPublishedDates: 
+case_casePressReleases: None
+case_casePressReleasesPublicationDates: None
+case_casePrimaryLaws: 
+case_caseRegions: 
+case_caseRegulation: Council Regulation 4064/89
+case_caseRenotificationDate: None
+case_caseSecondaryLaws: 
+case_caseSectors: {"code":"NaceSectorsC_33_2_0","label":"C.33.20 - Installation of industrial machinery and equipment"}
+case_caseSimplified: Normal procedure
+case_caseSimplifiedProcedure: false
+case_caseTimelineEvents: None
+case_caseTimelineEventsDates: None
+case_caseTitle: ABB / RENAULT AUTOMATION
+case_caseType: None
+case_language: en
+case_metadataReference: M.409
+case_metadataType: METADATA_CASE
+dec_decisionAdoptionDate: 1994-03-09
+dec_decisionCelexReference: None
+dec_decisionExternalLinks: None
+dec_decisionNumber: 38416
+dec_decisionOfficialJournalPublications: {"items":[{"reference":"C80","publishedDate":"1994-03-17","priorPublication":"false"}]}
+dec_decisionOfficialJournalPublicationsPublishedDates: 1994-03-17
+dec_decisionOjPriorPublication: false
+dec_decisionPressReleases: None
+dec_decisionPressReleasesPublicationDates: None
+dec_decisionTypes: {"code":"DecisionType300","label":"Art. 6(1)(a)"}
+dec_language: en
+dec_metadataReference: M.409-DEC38416
+dec_metadataType: METADATA_DECISION
+decision_id: 64
+isActive: True
+lastCheckedAt: 2026-05-30 07:55:23.094925
+loadedAt: 2026-05-30 07:54:48.621440
+pdfProcessedAt: None
+removedDetectedAt: None
+
+--- Row 2 ---
+att_attachmentCategory: None
+att_attachmentDocumentDate: None
+att_attachmentIdSequence: 3
+att_attachmentLanguage: EN
+att_attachmentLink: https://ec.europa.eu/competition/mergers/cases/decisions/m409_en.pdf
+att_attachmentLocationType: DDOC
+att_attachmentName: Art. 6(1)(b) -  - mtf-dec-m-00409-020-1-19940309-0310-pub-en
+att_attachmentPublicationBusinessDate: None
+att_attachmentPublicationDescription: None
+att_attachmentSentDate: 2004-12-07
+att_language: en
+att_metadataReference: M.409-DEC38417-ATT3
+att_metadataType: METADATA_DECISION_ATTACHMENT
+caseAtt_attachmentCategory: None
+caseAtt_attachmentDocumentDate: None
+caseAtt_attachmentIdSequence: None
+caseAtt_attachmentLanguage: None
+caseAtt_attachmentLink: None
+caseAtt_attachmentLocationType: None
+caseAtt_attachmentName: None
+caseAtt_attachmentPublicationBusinessDate: None
+caseAtt_attachmentPublicationDescription: None
+caseAtt_attachmentSentDate: None
+caseAtt_language: None
+caseAtt_metadataReference: None
+caseAtt_metadataType: None
+case_caseAidInstruments: 
+case_caseCartel: Antitrust
+case_caseCompanies: ABB / RENAULT AUTOMATION
+case_caseCourtCases: 
+case_caseDeadlineDate: 1994-03-09
+case_caseDg: None
+case_caseEvents: None
+case_caseEventsDates: None
+case_caseExternalLinks: None
+case_caseInitiationDate: 1994-02-08
+case_caseInstrument: Merger
+case_caseInvestigationPhase: None
+case_caseLastDecisionDate: 1994-03-09
+case_caseLegalBasis: 
+case_caseLinks: 
+case_caseNotificationDate: 1994-02-08
+case_caseNumber: M.409
+case_caseNumberPart: 409
+case_caseOfficialJournalPublications: None
+case_caseOfficialJournalPublicationsPublishedDates: 
+case_casePressReleases: None
+case_casePressReleasesPublicationDates: None
+case_casePrimaryLaws: 
+case_caseRegions: 
+case_caseRegulation: Council Regulation 4064/89
+case_caseRenotificationDate: None
+case_caseSecondaryLaws: 
+case_caseSectors: {"code":"NaceSectorsC_33_2_0","label":"C.33.20 - Installation of industrial machinery and equipment"}
+case_caseSimplified: Normal procedure
+case_caseSimplifiedProcedure: false
+case_caseTimelineEvents: None
+case_caseTimelineEventsDates: None
+case_caseTitle: ABB / RENAULT AUTOMATION
+case_caseType: None
+case_language: en
+case_metadataReference: M.409
+case_metadataType: METADATA_CASE
+dec_decisionAdoptionDate: 1994-03-09
+dec_decisionCelexReference: None
+dec_decisionExternalLinks: None
+dec_decisionNumber: 38417
+dec_decisionOfficialJournalPublications: {"items":[{"reference":"C80","publishedDate":"1994-03-17","priorPublication":"false"}]}
+dec_decisionOfficialJournalPublicationsPublishedDates: 1994-03-17
+dec_decisionOjPriorPublication: false
+dec_decisionPressReleases: None
+dec_decisionPressReleasesPublicationDates: None
+dec_decisionTypes: {"code":"DecisionType310","label":"Art. 6(1)(b)"}
+dec_language: en
+dec_metadataReference: M.409-DEC38417
+dec_metadataType: METADATA_DECISION
+decision_id: 65
+isActive: True
+lastCheckedAt: 2026-05-30 07:55:23.097437
+loadedAt: 2026-05-30 07:54:48.623719
+pdfProcessedAt: None
+removedDetectedAt: None

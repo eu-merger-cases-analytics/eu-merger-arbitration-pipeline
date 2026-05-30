@@ -22,7 +22,9 @@ CREATE TABLE raw.decisions (
     "decision_id"       SERIAL      PRIMARY KEY,
  
     -- Unique business key — used for upsert and PDF tracking
-    "att_attachmentLink" TEXT        NOT NULL UNIQUE,
+    "att_attachmentLink"       TEXT        NOT NULL,
+    "att_metadataReference"    TEXT        NOT NULL,
+    UNIQUE ("att_attachmentLink", "att_metadataReference"),
  
     -- PDF processing tracking (NULL = not yet processed by load_to_staging.py)
     "pdfProcessedAt"    TIMESTAMP,
@@ -37,7 +39,7 @@ CREATE TABLE raw.decisions (
 COMMENT ON TABLE raw.decisions IS
     'One row per unique PDF attachment from EC merger decisions JSON. '
     'Data columns are added dynamically by load_decisions.py. '
-    'att_attachmentLink is the unique business key. '
+    '(att_attachmentLink, att_metadataReference) is the unique business key. '
     'isActive=FALSE means the PDF is missing from the current JSON. '
     'pdfProcessedAt=NULL means the PDF has not been processed by load_to_staging.py yet.';
  

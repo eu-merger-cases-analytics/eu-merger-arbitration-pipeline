@@ -13,7 +13,7 @@ Toorandmete töötlemine (Python, SQL):
   → tabel raw.decisions
   → load_decisions.py
        (laeb JSON-ist andmebaasi kõigi juhtumite kõigi otsuste kõik metaandmed;
-        1 rida = 1 unikaalne otsuse attachmentLink (tuleb liita mõne muu väärtusega, et saaks unikaalse); case/decision väljad korduvad)
+        1 rida = 1 unikaalne otsuse attachmentLink + att_metadataReference (võib olla juhtumeid, kus sama otsuse ja artikli all on sama pdf topelt, neid juhtumeid käsitleme veana ja ignoreerime); case/decision väljad korduvad)
   → create_raw_decision_hits.sql
   → tabel raw.decision_hits
   → load_decision_hits.py
@@ -34,10 +34,10 @@ Analüütika (dbt):
 ## Init SQL
 
 ### [`create_raw_schema.sql`](../init/create_raw_schema.sql)
-Loob skeemi `raw` ja tabeli `raw.decisions` karkassi (lisab tabelisse decision attachment pdf lingi ja jälgimisveerud, mida json andmetes ei ole, näiteks "pdfProcessedAt").
+Loob skeemi `raw` ja tabeli `raw.decisions` karkassi (lisab tabelisse attachmentLink + att_metadataReference ja jälgimisveerud, mida json andmetes ei ole, näiteks "pdfProcessedAt").
 
 - Ülejäänud andmeveerud lisab `load_decisions.py` dünaamiliselt JSON-i struktuuri põhjal
-- Unikaalne võti: `att_attachmentLink` - unikaalne igale reale, case ja decision metaandmed korduvad (attachment link tuleb liita mõne muu väärtusgea, et oleks unikaalne)
+- Unikaalne võti: `attachmentLink + att_metadataReference` - unikaalne igale reale (topelt esinemist käsitleme ülearuse kordusena), case ja decision metaandmed korduvad
 - `pdfProcessedAt` — kas PDF on `load_decision_hits.py` poolt töödeldud (`NULL` = töötlemata)
 
 ### [`create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) *(kavandamisel)*
@@ -60,20 +60,19 @@ Laeb EU Komisjoni koondumisotsuste JSON faili kettale: `data/raw/case-data-M.jso
 
 ---
 
-### [`inspect_json.py`](../scripts/ingestion/inspect_json.py)
-Algandmete faili `case-data-M.json` inspekteerimine — arendusaegne tööriist, **ei pea kuuluma automaatsesse pipeline'i**.
+### [`inspect_json.py`](../scripts/analysis/inspect_json.py)
+Uurib allalaetud faili `data/raw/case-data-M.json` struktuuri ja kvaliteeti enne andmebaasi laadimist. Arendusaegne tööriist (`scripts/analysis/`), **ei pea kuuluma automaatsesse pipeline'i**. Käivita pärast `download_json.py`.
 
-- Näitab statistikat ainult Art. `6(1)(b)` ja Art. `8(2)` otsuste kohta
-- Kontrollib `attachmentLanguage` ja `language` väljade kokkulangevust
-- Näitab NACE sektorite jaotust divisjoni tasemel
-- Tulemused: `scripts/ingestion/inspect_json_output.txt`
+**Sisend:** `data/raw/case-data-M.json`  
+**Väljund:** konsool + `scripts/analysis/inspect_json_output.txt` (iga käivitus kirjutab faili üle).  
+Statistikat kaasuste kohta, millel on vähemalt üks otsus, mille `decisionTypes` sisaldab `6(1)(b)` või `8(2)`:
 
 ---
 
 ### [`load_decisions.py`](../scripts/ingestion/load_decisions.py)
-Laeb **kõigi** juhtumite **kõik metaandmed** failist `data/raw/case-data-M.json` tabelisse `raw.decisions`.
+Laeb **kõigi** kaasuste **kõik metaandmed** failist `data/raw/case-data-M.json` tabelisse `raw.decisions`.
 
-**Üks rida = üks unikaalne PDF** (`att_attachmentLink`, attachment link tuleb liita mõne muu väärtusgea, et oleks unikaalne). Case ja decision väljad korduvad igal real — täielik normaliseerimine toimub dbt-s.
+**Üks rida = üks unikaalne PDF** (`attachmentLink + att_metadataReference`). Case ja decision väljad korduvad igal real — täielik normaliseerimine toimub dbt-s.
 
 **Dünaamiline schema:**
 - Skaneeritakse JSON võtmed tasanditel: case, caseAttachments, decisions, decisionAttachments. Olemasolevate JSON võtmete alusel geneeritakse tabeli veerud.
@@ -133,7 +132,7 @@ Näited: `stg_decision_hits`, `stg_relevant_decisions`
 - minimaalne puhastus: veerunimed, filtrid, ettevalmistus tüüpideks
 
 ### dbt intermediate (`models/intermediate/`)
-Näited: `int_decision_hits`, `int_relevant_decisions`
+Näiteks: `int_decision_hits`, `int_relevant_decisions`
 
 - metaandmete valik
 - kuupäevad: `TEXT` → `DATE`
@@ -143,7 +142,7 @@ Näited: `int_decision_hits`, `int_relevant_decisions`
 - andmekvaliteedi testid
 
 ### dbt marts (`models/marts/`)
-Näited: `mart_arbitration_monthly`, `mart_arbitration_by_sector`
+Näiteks: `mart_arbitration_monthly`, `mart_arbitration_by_sector`
 
 Dashboardi mõõdikud (vt `architecture.md`):
 - vahekohtu mainimiste arv kuus/aastas

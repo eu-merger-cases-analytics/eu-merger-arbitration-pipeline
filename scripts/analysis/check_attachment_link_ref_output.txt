@@ -1,0 +1,156 @@
+Source: C:\Users\katri\software_development\eu-merger-arbitration-pipeline\data\raw\case-data-M.json
+Total attachment rows (with attachmentLink): 11109
+Unique attachmentLink values:                11095
+Unique (link, metadataReference) pairs:      11108
+
+============================================================
+Check 1: every attachmentLink has a metadataReference
+PASS - every attachmentLink has a non-empty metadataReference.
+
+============================================================
+Check 2: (attachmentLink, metadataReference) is unique across all rows
+FAIL - 1 (link, metadataReference) pair(s) appear on more than one row.
+
+============================================================
+Check 3: one metadataReference per attachmentLink
+INFO - 13 attachmentLink value(s) map to more than one metadataReference (shared URL across catalogue entries).
+
+============================================================
+Summary
+  Rows with link and metadataReference: 11109
+  Rows missing/empty metadataReference: 0
+  Unique (link, ref) pairs:             11108
+  Duplicate (link, ref) pairs:          1
+  Rows involved in duplicate pairs:     2
+  Links with a single metadataReference: 11082
+  Links with multiple metadataReferences: 13
+
+============================================================
+Duplicate (attachmentLink, metadataReference) pairs:
+
+  [1] pair (2 rows):
+      link: https://ec.europa.eu/competition/mergers/cases1/202130/m10324_76_3.pdf
+      metadataReference: M.10324-DEC52705-ATT76
+    rows:
+      M.10324 | 52705 | name='Decision: Art. 6(1)(b) - public version(1)'
+      M.10324 | 52705 | name='Decision: Art. 6(1)(b) - public version(1)'
+
+============================================================
+attachmentLink values with multiple metadataReference values:
+
+  [1] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m1001_de.pdf
+    distinct metadataReference values (2):
+      - M.1001-DEC39162-ATT6
+      - M.1001-DEC39164-ATT9
+    rows:
+      M.1001 | 39162 | M.1001-DEC39162-ATT6 | name='Art. 6(1)(b) -  - mtf-dec-m-01001-020-1-19971110-0310-pub-de'
+      M.1001 | 39164 | M.1001-DEC39164-ATT9 | name='Art. 9(3) partial referral -  - mtf-dec-m-01001-020-1-19971110-0330-pub-de'
+
+  [2] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m1019_de.pdf
+    distinct metadataReference values (2):
+      - M.1019-DEC39186-ATT6
+      - M.1019-DEC39188-ATT8
+    rows:
+      M.1019 | 39186 | M.1019-DEC39186-ATT6 | name='Art. 6(1)(b) -  - mtf-dec-m-01019-020-1-19971110-0310-pub-de'
+      M.1019 | 39188 | M.1019-DEC39188-ATT8 | name='Art. 9(3) partial referral -  - mtf-dec-m-01019-020-1-19971110-0330-pub-de'
+
+  [3] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m1030_fr.pdf
+    distinct metadataReference values (2):
+      - M.1030-DEC39205-ATT12
+      - M.1030-DEC39206-ATT10
+    rows:
+      M.1030 | 39205 | M.1030-DEC39205-ATT12 | name='Art. 6(1)(b) -  - mtf-dec-m-01030-020-1-19971216-0310-pub-fr'
+      M.1030 | 39206 | M.1030-DEC39206-ATT10 | name='Art. 9(3) partial referral -  - mtf-dec-m-01030-020-1-19971216-0330-pub-fr'
+
+  [4] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m1587_en.pdf
+    distinct metadataReference values (2):
+      - M.1587-DEC39860-ATT8
+      - M.1587-DEC39861-ATT6
+    rows:
+      M.1587 | 39860 | M.1587-DEC39860-ATT8 | name='Art. 6(1)(b) -  - mtf-dec-m-01587-020-1-19991104-0310-pub-en'
+      M.1587 | 39861 | M.1587-DEC39861-ATT6 | name='Art. 6(1)(a) -  - mtf-dec-m-01587-020-1-19991104-0300-pub-en'
+
+  [5] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m2568_de.pdf
+    distinct metadataReference values (2):
+      - M.2568-DEC37885-ATT8
+      - M.2568-DEC37887-ATT9
+    rows:
+      M.2568 | 37885 | M.2568-DEC37885-ATT8 | name='Art. 9(3) partial referral -  - mtf-dec-m-02568-020-1-20011130-0330-pub-de'
+      M.2568 | 37887 | M.2568-DEC37887-ATT9 | name='Art. 8(2) with conditions & obligations -  - mtf-dec-m-02568-020-2-20020409-0600-pub-de'
+
+  [6] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m409_en.pdf
+    distinct metadataReference values (2):
+      - M.409-DEC38416-ATT4
+      - M.409-DEC38417-ATT3
+    rows:
+      M.409 | 38416 | M.409-DEC38416-ATT4 | name='Art. 6(1)(a) -  - mtf-dec-m-00409-020-1-19940309-0300-pub-en'
+      M.409 | 38417 | M.409-DEC38417-ATT3 | name='Art. 6(1)(b) -  - mtf-dec-m-00409-020-1-19940309-0310-pub-en'
+
+  [7] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m479_en.pdf
+    distinct metadataReference values (2):
+      - M.479-DEC38505-ATT4
+      - M.479-DEC38506-ATT6
+    rows:
+      M.479 | 38505 | M.479-DEC38505-ATT4 | name='Art. 6(1)(a) -  - mtf-dec-m-00479-020-1-19940728-0300-pub-en'
+      M.479 | 38506 | M.479-DEC38506-ATT6 | name='Art. 6(1)(b) -  - mtf-dec-m-00479-020-1-19940728-0310-pub-en'
+
+  [8] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m4917_20071130_20310_en.pdf
+    distinct metadataReference values (2):
+      - M.4917-DEC44177-ATT5
+      - M.4917-DEC44177-ATT6
+    rows:
+      M.4917 | 44177 | M.4917-DEC44177-ATT5 | name='Art. 6(1)(b) -  - m4917'
+      M.4917 | 44177 | M.4917-DEC44177-ATT6 | name='Art. 6(1)(b) - Confidential - 4917_Simplified-decision-en_signed'
+
+  [9] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m5483_20090511_20310_en.pdf
+    distinct metadataReference values (2):
+      - M.5483-DEC45063-ATT282
+      - M.5483-DEC45063-ATT283
+    rows:
+      M.5483 | 45063 | M.5483-DEC45063-ATT282 | name='Art. 6(1)(b) - Confidential decision - Decision_final'
+      M.5483 | 45063 | M.5483-DEC45063-ATT283 | name='Art. 6(1)(b) - Non-confidential public version - m5483'
+
+  [10] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m553_en.pdf
+    distinct metadataReference values (2):
+      - M.553-DEC38590-ATT19
+      - M.553-DEC38591-ATT24
+    rows:
+      M.553 | 38590 | M.553-DEC38590-ATT19 | name='Art. 8(2) with conditions & obligations -  - mtf-dec-m-00553-020-2-19960717-0600-pub-en'
+      M.553 | 38591 | M.553-DEC38591-ATT24 | name='Art. 8(3) -  - mtf-dec-m-00553-020-2-19950920-0610-pub-en'
+
+  [11] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m5581_20090819_20310_en.pdf
+    distinct metadataReference values (2):
+      - M.5581-DEC45197-ATT174
+      - M.5581-DEC45197-ATT175
+    rows:
+      M.5581 | 45197 | M.5581-DEC45197-ATT174 | name='Art. 6(1)(b) -  - M_5581_Decision_adopted'
+      M.5581 | 45197 | M.5581-DEC45197-ATT175 | name='Art. 6(1)(b) -  - m5581'
+
+  [12] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m894_de.pdf
+    distinct metadataReference values (2):
+      - M.894-DEC39018-ATT7
+      - M.894-DEC39019-ATT10
+    rows:
+      M.894 | 39018 | M.894-DEC39018-ATT7 | name='Art. 6(1)(b) -  - mtf-dec-m-00894-020-1-19970424-0310-pub-de'
+      M.894 | 39019 | M.894-DEC39019-ATT10 | name='Art. 9(3) partial referral -  - mtf-dec-m-00894-020-1-19970424-0330-pub-de'
+
+  [13] attachmentLink:
+      https://ec.europa.eu/competition/mergers/cases/decisions/m991_fr.pdf
+    distinct metadataReference values (2):
+      - M.991-DEC39143-ATT7
+      - M.991-DEC39145-ATT9
+    rows:
+      M.991 | 39143 | M.991-DEC39143-ATT7 | name='Art. 6(1)(b) -  - mtf-dec-m-00991-020-1-19971030-0310-pub-fr'
+      M.991 | 39145 | M.991-DEC39145-ATT9 | name='Art. 9(3) partial referral -  - mtf-dec-m-00991-020-1-19971030-0330-pub-fr'
