@@ -21,7 +21,12 @@
   - upsert ja väljade muutuste logimine;
   - kadunud PDF-ide tuvastamine (`isActive`, `removedDetectedAt`);
   - kaitse mass-deaktiveerimise vastu.
-
+- [`init/create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) — tabel `raw.decision_hits` (võtme-, tabamus- ja jälgimisveerud).
+- [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py) — PDF-id → märksõnaotsing → `raw.decision_hits`:
+  - loeb `raw.decisions`-st töötlemata PDF-id (`pdfProcessedAt IS NULL`, `isActive = TRUE`);
+  - otsib märksõnu `config/keywords.txt` järgi vastavalt `att_attachmentLanguage`-le;
+  - salvestab tabamused `raw.decision_hits` (metaandmed kopeeritakse `raw.decisions`-st);
+  - uuendab `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).
 ### dbt
 - dbt projekt initsialiseeritud (`dbt/eu_merger_arbitration/`).
 - Tegelikud ärimudelid **puuduvad**.
@@ -30,17 +35,10 @@
 
 ## Järgmised sammud
 
-**Loo `init/create_raw_decision_hits.sql`** — tabel `raw.decision_hits`.  
-**Implementeeri `load_decision_hits.py`**:
-   - loe `raw.decisions`-st Art. `6(1)(b)` / `8(2)` töötlemata PDF-id;
-   - otsi märksõnu `config/keywords.txt` järgi;
-   - salvesta tabamused `raw.decision_hits`;
-   - uuenda `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).  
-
 **dbt mudelid**:
    - `sources` (`raw.decisions`, `raw.decision_hits`);
    - `models/staging/` — `stg_decision_hits`, `stg_relevant_decisions`;
-   - `models/intermediate/` — kuupäevad, NACE, joinid, kvaliteet;
+   - `models/intermediate/` — kuupäevad, NACE, joinid, kvaliteet, selekteeritakse 6(1)(b) ja 8(2) otsused.
    - `models/marts/` — dashboardi mõõdikud.  
 
 **Uuenda README** — täielik käivitamise järjekord vastavalt `data_pipeline.md`.  

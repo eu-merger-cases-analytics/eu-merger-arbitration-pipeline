@@ -4,7 +4,7 @@
 #
 # FORMAT RULES:
 #   - One rule per line: LANG: term
-#   - Language code must match the attachmentLanguage field in the JSON
+#   - Language code must match the attachmentLanguage field
 #     (two-letter uppercase code, e.g. EN, DE, FR)
 #   - Empty lines and lines starting with # are ignored
 #   - Wildcard * matches any number of characters (e.g. arbitrat* matches

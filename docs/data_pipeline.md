@@ -17,12 +17,12 @@ Toorandmete töötlemine (Python, SQL):
   → create_raw_decision_hits.sql
   → tabel raw.decision_hits
   → load_decision_hits.py
-       (töötleb raw.decisions tabelist Art. 6(1)(b) / 8(2) PDF-id;
+       (töötleb raw.decisions tabelist otsuste PDF-id;
         kirjutab raw.decision_hits tabelisse ainult märksõnaga vastete kõik metaandmed)
 
 Analüütika (dbt):
   → dbt staging (view) — minimaalne puhastus allikast
-  → dbt intermediate (view) — äriloogika (kuupäevad, NACE, joinid, kvaliteet)
+  → dbt intermediate (view) — äriloogika (kuupäevad, NACE, joinid, kvaliteet), selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused
   → dbt marts (tabel) — dashboardi mõõdikud
   → dashboard (Superset / Streamlit)
 ```
@@ -40,8 +40,14 @@ Loob skeemi `raw` ja tabeli `raw.decisions` karkassi (lisab tabelisse attachment
 - Unikaalne võti: `attachmentLink + att_metadataReference` - unikaalne igale reale (topelt esinemist käsitleme ülearuse kordusena), case ja decision metaandmed korduvad
 - `pdfProcessedAt` — kas PDF on `load_decision_hits.py` poolt töödeldud (`NULL` = töötlemata)
 
-### [`create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) *(kavandamisel)*
-Loob tabeli `raw.decision_hits` (märksõnale vastanud PDF-id).
+### [`create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql)
+Loob tabeli `raw.decision_hits` (märksõnale vastanud PDF-id). Käivita pärast `create_raw_schema.sql` ja `load_decisions.py`.
+
+- Metaandmeveerud (`case_*`, `dec_*`, `att_*` jne) lisab `load_decision_hits.py` dünaamiliselt, kopeerides `raw.decisions` reast
+- `decision_id` — viide lähte reale `raw.decisions`
+- Unikaalne võti: `(att_attachmentLink, att_metadataReference)` ja `decision_id` (üks tabamus = üks manus)
+- Tabamuse veerud: `matchedKeywords`, `matchedLanguage`, `matchContext`
+- `loadedAt` — millal rida salvestati
 
 ---
 
@@ -93,11 +99,11 @@ Laeb **kõigi** kaasuste **kõik metaandmed** failist `data/raw/case-data-M.json
 
 ---
 
-### [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py) *(kavandamisel)*
+### [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py)
 Loeb `raw.decisions` tabelist töötlemata PDF-id, otsib vahekohtu märksõnu ja salvestab **ainult tabamusega otsuste metaandmed** tabelisse `raw.decision_hits`.
 
 **Töövoog iga PDF kohta:**
-1. Vali read: Art. `6(1)(b)` või `8(2)`, `pdfProcessedAt IS NULL`, `isActive = TRUE`
+1. Vali read: `pdfProcessedAt IS NULL`, `isActive = TRUE`
 2. Lae PDF alla `att_attachmentLink` URL-ilt
 3. Otsi tekstist `config/keywords.txt` reeglitega (`att_attachmentLanguage` / `attachmentLanguage`)
 4. Kui märksõna leitud → lisa rida `raw.decision_hits` tabelisse
@@ -135,6 +141,7 @@ Näited: `stg_decision_hits`, `stg_relevant_decisions`
 Näiteks: `int_decision_hits`, `int_relevant_decisions`
 
 - metaandmete valik
+- selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused
 - kuupäevad: `TEXT` → `DATE`
 - NACE: koodi ja nimetuse eraldamine
 - lisada veerg **numerator:** `raw.decision_hits` (märksõnaga PDF-id)

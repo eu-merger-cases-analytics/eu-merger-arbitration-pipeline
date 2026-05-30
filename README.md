@@ -71,11 +71,17 @@ docker compose exec python python ingestion/download_json.py
 # JSON-i struktuuri uurimine
 docker compose exec python python analysis/inspect_json.py
  
-# Raw skeema ja tabeli loomine
+# Raw skeema ja decisions tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
  
-# Kõigi otsuste laadimine andmebaasi
+# Kõigi otsuste laadimine andmebaasi decisions tabelisse
 docker compose exec python python ingestion/load_decisions.py
+
+# Raw skeema decisions_hits tabeli loomine
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
+
+# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse.
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
  
 # dbt käivitamine
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."

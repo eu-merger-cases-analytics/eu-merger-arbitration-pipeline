@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-05-30T10:26:38.689216+00:00",
+  "testLimit": null,
+  "processing": {
+    "firstProcessedAt": "2026-05-30T10:06:45.819207",
+    "lastProcessedAt": "2026-05-30T10:20:41.011758",
+    "processedAttachments": 706,
+    "pendingAttachments": 10402,
+    "processedRelevantAttachments": 604,
+    "pendingRelevantAttachments": 9346,
+    "processingComplete": false
+  },
+  "totals": {
+    "totalCases": 9896,
+    "totalAttachments": 11108,
+    "activeAttachments": 11108,
+    "inactiveAttachments": 0
+  },
+  "relevant": {
+    "definition": "dec_decisionTypes contains '6(1)(b)' or '8(2)'",
+    "totalRelevantCases": 9466,
+    "totalRelevantDecisions": 9480,
+    "totalRelevantAttachments": 9950
+  },
+  "matches": {
+    "totalHits": 34,
+    "matchedCases": 11,
+    "matchedDecisions": 11,
+    "matchedAttachments": 34,
+    "matchedRelevantCases": 9,
+    "matchedRelevantDecisions": 9,
+    "relevantHits": 23,
+    "firstHitAt": "2026-05-30T10:07:27.342755",
+    "lastHitAt": "2026-05-30T10:19:49.144989",
+    "hitsByLanguage": {
+      "EN": 7,
+      "DE": 4,
+      "EL": 4,
+      "FI": 4,
+      "PT": 4,
+      "DA": 3,
+      "ES": 3,
+      "SV": 2,
+      "FR": 1,
+      "IT": 1,
+      "NL": 1
+    },
+    "topKeywordPatterns": [
+      {
+        "pattern": "arbitrat*",
+        "count": 7
+      },
+      {
+        "pattern": "arbitrag*",
+        "count": 5
+      },
+      {
+        "pattern": "διαιτη*",
+        "count": 4
+      },
+      {
+        "pattern": "voldgift*",
+        "count": 3
+      },
+      {
+        "pattern": "arbitraj*",
+        "count": 2
+      },
+      {
+        "pattern": "Schiedsverfahren*",
+        "count": 2
+      },
+      {
+        "pattern": "arbitraj* | procedimiento arbitral*",
+        "count": 1
+      },
+      {
+        "pattern": "arbitral*",
+        "count": 1
+      },
+      {
+        "pattern": "procédure arbitrale*",
+        "count": 1
+      },
+      {
+        "pattern": "Schiedsgericht*",
+        "count": 1
+      },
+      {
+        "pattern": "Schiedsgericht* | Schiedsverfahren*",
+        "count": 1
+      },
+      {
+        "pattern": "skiljeförfar*",
+        "count": 1
+      },
+      {
+        "pattern": "skiljeförfar* | skiljedom*",
+        "count": 1
+      },
+      {
+        "pattern": "välimies*",
+        "count": 1
+      },
+      {
+        "pattern": "välimies* | välimiesmenettel*",
+        "count": 1
+      }
+    ]
+  },
+  "rates": {
+    "hitRateAllProcessedAttachmentsPct": 4.82,
+    "hitRateRelevantProcessedAttachmentsPct": 3.81,
+    "matchedCasesPctOfAllCases": 0.11,
+    "matchedCasesPctOfRelevantCases": 0.1,
+    "matchedDecisionsPctOfRelevantDecisions": 0.09
+  }
+}
