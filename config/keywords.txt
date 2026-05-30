@@ -31,6 +31,7 @@ DE: Schiedsgericht*
 DE: Schiedsverfahren*
 DE: Schiedsklausel*
 DE: Schiedsgutachten*
+DE: Schieds*
  
 EL: διαιτη*
  
@@ -42,14 +43,15 @@ ES: procedimiento arbitral*
 ET: vahekoh*
 ET: arbitraaž*
  
-# FI: välitys*  — too broad: matches 'välityksellä' (= via/through), causing false positives
+FI: välitysl*
+FI: välitysm*
 FI: välimies*
 FI: välimiesmenettel*
 FI: välitysmenettely*
 FI: välityslautakunta*
  
-# FR: arbitrag*  — too broad: matches 'arbitrage' (= economic arbitrage), causing false positives
-# FR: arbitral*  — too broad for the same reason
+FR: arbitrag*
+# FR: arbitral*  — too broad, causing false positives 
 FR: tribunal arbitral*
 FR: clause compromissoire*
 FR: procédure arbitrale*
