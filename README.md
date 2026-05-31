@@ -92,6 +92,9 @@ docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_sc
 # Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
 docker compose exec python python ingestion/load_decision_hits.py
 
+# Sama, aga ainult N järgmist töötlemata PDF-i (asenda 5; võib käivitada korduvalt — iga kord võetakse järgmised read decision_id järgi, juba töödeldud read ja decision_hits kirjed jäävad alles)
+docker compose exec -e TEST_LIMIT=5 python python ingestion/load_decision_hits.py
+
 # decision_hits tabelist esimese salvestatud rea pärimine (hit_id järgi)
 docker compose exec python python analysis/query_decision_hits_sample.py
 
