@@ -194,27 +194,32 @@ Genereerib kokkuvõtte decision_hits tabelisse salevestatud andmetest [`summariz
 
 ---
 
-## dbt mudelid *(kavandamisel)*
+## dbt mudelid
 
 dbt **ei** lae JSON-it ega PDF-e uuesti. Allikad on `raw.decisions` ja `raw.decision_hits`.
 
 ### dbt staging (`models/staging/`)
-Näiteks: `stg_decision_hits`, `stg_relevant_decisions`
 
-- loeb Postgres `raw` tabeleid (`source()` definitsioonid)
-- minimaalne puhastus: veerunimed, filtrid
+Mudelid: `stg_decisions`, `stg_decision_hits` (Postgres skeem **`staging`**).
+
+- loeb `raw` tabeleid (`source()` failis `schema.yml`)
+- pass-through vaated — sama sisu mis `raw`-s, ilma äriloogikata
+- dokumentatsioon ja testid (`not_null`, `unique` võtmeveergudel)
 
 ### dbt intermediate (`models/intermediate/`)
-Näiteks: `int_decision_hits`, `int_relevant_decisions`
 
-- metaandmete valik
-- selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused
+Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`intermediate`**).
+
+**`int_relevant_decisions`**:
+- ainult Art. `6(1)(b)` / `8(2)` manused (`isActive = true`), nii märksõnu sisaldavad kui märksõnu mittesisaldavad, ehk kõik `6(1)(b)` / `8(2)`
+- JSON-väljad eraldi veergudeks: `decision_type_label`, `sector_code`, `sector_label`
 - kuupäevad: `TEXT` → `DATE`
-- NACE: koodi ja nimetuse eraldamine
-- lisada veerg **numerator:** `raw.decision_hits` (märksõnaga PDF-id)
-- lisada veerg **denominator:** `raw.decisions`, filtreeritud Art. `6(1)(b)` / `8(2)` (kõik asjakohased PDF-id, mitte ainult hitid)
-- **tabamuse osakaal:** `decision_hits` sisaldab ainult hitte; intermediate joinib `decisions` (töödeldud, relevant) + `LEFT JOIN decision_hits` → `has_keyword_hit`; osakaal = hitid / kõik relevant
-- andmekvaliteedi testid
+- PDF olek: `is_pdf_processed`, `is_pdf_ok`
+
+**`int_decisions_with_hits`**:
+- `int_relevant_decisions` **LEFT JOIN** `stg_decision_hits` (`decision_id` järgi) - kõik `6(1)(b)` / `8(2)`
+- `has_keyword_hit` veerg — jah/ei, kas `6(1)(b)` / `8(2)` PDF-ist leiti vahekohtu märksõna
+- tabamuse osakaal: `has_keyword_hit = true` / kõik read
 
 ### dbt marts (`models/marts/`)
 Näiteks: `mart_arbitration_monthly`, `mart_arbitration_by_sector`

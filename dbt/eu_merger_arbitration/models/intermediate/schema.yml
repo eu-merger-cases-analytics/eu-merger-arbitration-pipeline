@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: int_relevant_decisions
+    description: >
+      Active attachments under Art. 6(1)(b) or Art. 8(2), with sector and
+      decision-type JSON fields parsed into flat columns.
+    columns:
+      - name: decision_id
+        description: "Primary key; one row per PDF attachment"
+        data_tests:
+          - not_null
+          - unique
+      - name: decision_type_label
+        description: "Human-readable decision type from dec_decisionTypes JSON"
+      - name: sector_code
+        description: "NACE sector code from case_caseSectors JSON"
+      - name: sector_label
+        description: "NACE sector label from case_caseSectors JSON"
+
+  - name: int_decisions_with_hits
+    description: >
+      Relevant attachments with optional keyword hit (LEFT JOIN decision_hits).
+      Use has_keyword_hit for arbitration mention yes/no metrics.
+    columns:
+      - name: decision_id
+        data_tests:
+          - not_null
+          - unique
+      - name: has_keyword_hit
+        description: "True when a matching row exists in stg_decision_hits"

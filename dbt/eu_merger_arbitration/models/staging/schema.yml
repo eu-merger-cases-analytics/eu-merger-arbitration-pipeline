@@ -2,7 +2,29 @@ version: 2
 
 sources:
   - name: raw
+    description: "Python ingestion layer (load_decisions.py, load_decision_hits.py)"
     schema: raw
     tables:
       - name: decisions
+        description: "One row per PDF attachment; all case/decision metadata from JSON"
       - name: decision_hits
+        description: "One row per attachment where arbitration keywords matched in the PDF"
+
+models:
+  - name: stg_decisions
+    description: "Staging view over raw.decisions — one row per PDF attachment"
+    columns:
+      - name: decision_id
+        description: "Surrogate primary key from raw.decisions"
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_decision_hits
+    description: "Staging view over raw.decision_hits — keyword matches only"
+    columns:
+      - name: hit_id
+        description: "Surrogate primary key from raw.decision_hits"
+        data_tests:
+          - not_null
+          - unique

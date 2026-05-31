@@ -4,6 +4,18 @@ Täpsem andmevoo kirjeldus: [`data_pipeline.md`](data_pipeline.md).
 
 Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteinerid on üleval (`docker compose up -d --build`).
 
+## Pipeline'i järjekord (esimene kord)
+
+| Samm | Jaotis | Mida teeb |
+|------|--------|-----------|
+| 1 | Keskkond | Docker + `.env` |
+| 2 | Andmete laadimine | JSON → `raw.decisions` → PDF-id → `raw.decision_hits` |
+| 3 | Analüüs *(valikuline)* | Arenduse ja kvaliteedi kontroll |
+| 4 | dbt | `raw` → `staging` → `intermediate` *(marts tuleb hiljem)* |
+| 5 | Andmebaas | psql ja näidispäringud |
+
+**Oluline:** dbt (jaotis 4) eeldab, et jaotis 2 on vähemalt osaliselt tehtud — `load_decisions.py` peab olema käinud; `load_decision_hits.py` võib jätkuda taustal (PDF samm võtab tunde).
+
 ---
 
 ## Eeltingimused
@@ -82,8 +94,8 @@ docker compose exec python python analysis/inspect_json.py
 # Üks näidisrida raw.decisions (esimene decision_id järgi)
 docker compose exec python python analysis/query_decisions_sample.py
 
-# Üks näidisrida raw.decision_hits (esimene hit_id järgi)
-docker compose exec python python analysis/query_decision_hits_sample.py
+# decision_hits tabelist soovitud arvu ridade pärimine
+docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sample.py
 
 # PDF töötlemise ja tabamuste kokkuvõte → summarize_decision_hits_output.json
 docker compose exec python python analysis/summarize_decision_hits.py
@@ -99,21 +111,52 @@ docker compose exec python python analysis/check_attachment_link_ref_uniqueness.
 
 ## 4. dbt
 
+Käivita pärast jaotist 2. Mudelid ilmuvad Postgresi skeemidesse **`staging`**, **`intermediate`**, **`marts`** (mitte `public_staging`).
+
+**Mudelid:** `stg_decisions`, `stg_decision_hits` → `int_relevant_decisions`, `int_decisions_with_hits` → *(marts veel puuduvad)*
+
+### Kohustuslik järjekord (esimene dbt jooks)
+
 ```bash
-# Kõik mudelid
+# 1. Kõik mudelid (staging + intermediate)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
 
-# Ainult staging kiht
+# 2. Testid
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
+```
+
+### Kihtide kaupa (arenduses)
+
+```bash
+# Ainult staging
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select staging --profiles-dir ."
 
+# Ainult intermediate (eeldab staging)
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select intermediate --profiles-dir ."
+
 # Üks mudel
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select stg_decision_hits --profiles-dir ."
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select int_decisions_with_hits --profiles-dir ."
 
-# Testid
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
-
-# Projekti süntaks kontroll (ilma käivitamiseta)
+# Süntaks kontroll (ilma käivitamiseta)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt parse --profiles-dir ."
+```
+
+### Kontroll pärast dbt run
+
+```bash
+# Skeemid ja vaated
+docker compose exec db psql -U user -d eu-merger-arbitration -c "
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_schema IN ('staging', 'intermediate')
+ORDER BY table_schema, table_name;"
+
+# Relevant otsused ja tabamused
+docker compose exec db psql -U user -d eu-merger-arbitration -c "
+SELECT
+  COUNT(*) AS relevant_attachments,
+  COUNT(*) FILTER (WHERE has_keyword_hit) AS with_keyword_hit
+FROM intermediate.int_decisions_with_hits;"
 ```
 
 ---
@@ -161,7 +204,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Seejärel korda **jaotis 2** samm-sammult.
+Seejärel korda **jaotis 2** samm-sammult, seejärel **jaotis 4** (dbt).
 
 ### Ainult raw tabelite tühjendamine (konteinerid jäävad käima)
 
@@ -191,4 +234,4 @@ docker compose exec python python ingestion/load_decision_hits.py
 | `analysis/check_attachment_link_ref_uniqueness.py` | Unikaalsuse kontroll | Ei |
 | `init/create_raw_schema.sql` | `raw.decisions` | Jah |
 | `init/create_raw_decision_hits.sql` | `raw.decision_hits` | Jah |
-| dbt `dbt run` / `dbt test` | Staging → marts | Jah (kui mudelid olemas) |
+| dbt `dbt run` / `dbt test` | `raw` → `staging` → `intermediate` | Jah (pärast jaotist 2) |

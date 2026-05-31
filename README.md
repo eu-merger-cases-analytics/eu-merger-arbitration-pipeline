@@ -100,8 +100,8 @@ docker compose exec -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_deci
 # TEST skript, N järgmist töötlemata PDF-i (asenda 5; võib käivitada korduvalt — iga kord võetakse järgmised read decision_id järgi, juba töödeldud read ja decision_hits kirjed jäävad alles)
 docker compose exec -e TEST_LIMIT=5 python python ingestion/load_decision_hits.py
 
-# decision_hits tabelist esimese salvestatud rea pärimine (hit_id järgi)
-docker compose exec python python analysis/query_decision_hits_sample.py
+# decision_hits tabelist soovitud arvu ridade pärimine
+docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sample.py
 
 # decisions_hits tabelisse salvestatud andmetest kokkuvõtte genereerimine summarize_decision_hits_output.json faili
 docker compose exec python python analysis/summarize_decision_hits.py
