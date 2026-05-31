@@ -77,11 +77,20 @@ docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw
 # Kõigi otsuste laadimine andmebaasi decisions tabelisse
 docker compose exec python python ingestion/load_decisions.py
 
+# decisions tabelist esimese salvestatud rea pärimine (decision_id järgi)
+docker compose exec python python analysis/query_decisions_sample.py
+
 # Raw skeema decisions_hits tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
 
-# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse.
-docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
+# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
+docker compose exec python python ingestion/load_decision_hits.py
+
+# decision_hits tabelist esimese salvestatud rea pärimine (hit_id järgi)
+docker compose exec python python analysis/query_decision_hits_sample.py
+
+# decisions_hits tabelisse salvestatud andmetest kokkuvõtte genereerimine summarize_decision_hits_output.json faili
+docker compose exec python python analysis/summarize_decision_hits.py
  
 # dbt käivitamine
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."

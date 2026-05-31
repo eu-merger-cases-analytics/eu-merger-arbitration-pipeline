@@ -1,6 +1,6 @@
 """
-Fetches all rows from raw.decisions for case_caseNumber M.409 and writes
-output to query_decisions_sample_output.txt (overwrites on each run).
+Fetches the first row from raw.decisions and writes output to
+query_decisions_sample_output.txt (overwrites on each run).
 
 Run:
     docker compose exec python python analysis/query_decisions_sample.py
@@ -17,7 +17,6 @@ OUTPUT_PATH = Path(__file__).resolve().parent / "query_decisions_sample_output.t
 
 SCHEMA = "raw"
 TABLE = "decisions"
-CASE_NUMBER = "M.409"
 
 
 def get_connection():
@@ -33,15 +32,15 @@ def get_connection():
     )
 
 
-def fetch_rows(conn, case_number: str) -> list[dict]:
-    """Returns all rows from raw.decisions where case_caseNumber matches."""
+def fetch_sample_row(conn) -> dict | None:
+    """Returns the first row inserted into raw.decisions (lowest decision_id)."""
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(
             f'SELECT * FROM {SCHEMA}.{TABLE} '
-            f'WHERE "case_caseNumber" = %s ORDER BY "decision_id"',
-            (case_number,),
+            f'ORDER BY "decision_id" LIMIT 1'
         )
-        return [dict(row) for row in cur.fetchall()]
+        row = cur.fetchone()
+        return dict(row) if row else None
 
 
 def format_row(row: dict) -> str:
@@ -64,19 +63,20 @@ def main() -> None:
 
     conn = get_connection()
     try:
-        rows = fetch_rows(conn, case_number=CASE_NUMBER)
+        row = fetch_sample_row(conn)
     finally:
         conn.close()
 
-    if not rows:
-        out(f'No rows found for case_caseNumber = "{CASE_NUMBER}".')
+    if row is None:
+        out(f"No rows found in {SCHEMA}.{TABLE}.")
         out("Run first: python ingestion/load_decisions.py")
     else:
-        out(f'All rows from raw.decisions where case_caseNumber = "{CASE_NUMBER}": {len(rows)}')
-        for i, row in enumerate(rows, 1):
-            out()
-            out(f"--- Row {i} ---")
-            out(format_row(row))
+        out(
+            f"First saved row from {SCHEMA}.{TABLE} "
+            f'(decision_id={row.get("decision_id")}, case={row.get("case_caseNumber")}):'
+        )
+        out()
+        out(format_row(row))
 
     OUTPUT_PATH.write_text(buf.getvalue(), encoding="utf-8")
     print(f"\nOutput saved to: {OUTPUT_PATH}")

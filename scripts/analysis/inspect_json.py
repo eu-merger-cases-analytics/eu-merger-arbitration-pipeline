@@ -66,7 +66,7 @@ def main() -> None:
     all_cases = list(data.values())
     relevant_cases = [c for c in all_cases if case_has_relevant_decision(c)]
  
-    out(f"Note: all statistics below are for cases containing '6(1)(b)' or '8(2)' in")
+    out(f"Note: all statistics below are for cases containing '6(1)(b)' or '8(2)' in JSON raw file")
     out(f"decisionTypes labels, unless stated otherwise.")
  
     # --- Totals ---

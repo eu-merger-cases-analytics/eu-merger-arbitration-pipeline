@@ -7,13 +7,16 @@
 -- Data columns are added dynamically by load_decisions.py based on
 -- the JSON structure. This file only creates the internal tracking columns.
 --
+-- Re-running drops raw.decision_hits first (FK to decisions), then raw.decisions.
+-- After re-run: load_decisions.py, create_raw_decision_hits.sql, load_decision_hits.py.
+--
 -- Usage:
---   docker compose exec db psql -U user -d eu-merger-arbitration \
---     -f /init/create_raw_schema.sql
+--   docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
 -- =============================================================================
- 
+
 CREATE SCHEMA IF NOT EXISTS raw;
- 
+
+DROP TABLE IF EXISTS raw.decision_hits;
 DROP TABLE IF EXISTS raw.decisions;
  
 CREATE TABLE raw.decisions (
@@ -26,8 +29,9 @@ CREATE TABLE raw.decisions (
     "att_metadataReference"    TEXT        NOT NULL,
     UNIQUE ("att_attachmentLink", "att_metadataReference"),
  
-    -- PDF processing tracking (NULL = not yet processed by load_to_staging.py)
+    -- PDF processing tracking (NULL = not yet processed by load_decision_hits.py)
     "pdfProcessedAt"    TIMESTAMP,
+    "pdfProcessingError" TEXT,
  
     -- Update tracking
     "isActive"          BOOLEAN     NOT NULL DEFAULT TRUE,
@@ -41,5 +45,6 @@ COMMENT ON TABLE raw.decisions IS
     'Data columns are added dynamically by load_decisions.py. '
     '(att_attachmentLink, att_metadataReference) is the unique business key. '
     'isActive=FALSE means the PDF is missing from the current JSON. '
-    'pdfProcessedAt=NULL means the PDF has not been processed by load_to_staging.py yet.';
+    'pdfProcessedAt=NULL means the PDF has not been processed by load_decision_hits.py yet. '
+    'pdfProcessingError is set when load_decision_hits.py fails on that row.';
  

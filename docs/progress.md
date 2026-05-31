@@ -23,7 +23,7 @@
   - kaitse mass-deaktiveerimise vastu.
 - [`init/create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) — tabel `raw.decision_hits` (võtme-, tabamus- ja jälgimisveerud).
 - [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py) — PDF-id → märksõnaotsing → `raw.decision_hits`:
-  - loeb `raw.decisions`-st töötlemata PDF-id (`pdfProcessedAt IS NULL`, `isActive = TRUE`);
+  - loeb `raw.decisions` tabelist töötlemata PDF-id (`pdfProcessedAt IS NULL`, `isActive = TRUE`);
   - otsib märksõnu `config/keywords.txt` järgi vastavalt `att_attachmentLanguage`-le;
   - salvestab tabamused `raw.decision_hits` (metaandmed kopeeritakse `raw.decisions`-st);
   - uuendab `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).
@@ -41,7 +41,7 @@
    - `models/intermediate/` — kuupäevad, NACE, joinid, kvaliteet, selekteeritakse 6(1)(b) ja 8(2) otsused.
    - `models/marts/` — dashboardi mõõdikud.  
 
-**Uuenda README** — täielik käivitamise järjekord vastavalt `data_pipeline.md`.  
+**Uuenda README** — täielik käivitamise järjekord vastavalt `data_pipeline.md`, projekti lõplik struktuur.  
 
 **Uuenda [`docs/architecture.md`](architecture.md)**- andmebaasi kihtide kirjeldus võib vajada uuendamist vastavalt `data_pipeline.md`-le.  
 
@@ -55,6 +55,7 @@
 
 | Takistus / risk | Mõju | Võimalik maandus |
 |-----------------|------|------------------|
-| PDF töötlemine on aeglane (~3 h täismahus) | Pipeline viibib; arendus/testimine aeglane | `TEST_LIMIT`; eraldi Airflow samm; resume `pdfProcessedAt` kaudu |
+| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall |
+| PDF töötlemine on aeglane (5+ h) | Pipeline viibib; arendus/testimine aeglane | Airflow andmevoog hoolikalt läbi mõelda |
 | EC JSON struktuuri muutused | `load_decisions` võib jätta veerud/väärtused puudu | Dünaamiline schema + hoiatused; `inspect_json.py` perioodiline kontroll |
 | Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |

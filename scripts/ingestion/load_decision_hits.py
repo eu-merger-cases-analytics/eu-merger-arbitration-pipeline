@@ -17,12 +17,15 @@ Run:
 
 Optional:
     TEST_LIMIT=10 docker compose exec python python ingestion/load_decision_hits.py
+    RETRY_DOWNLOAD_ERRORS=1 docker compose exec python python ingestion/load_decision_hits.py
+    REQUEST_DELAY_SECONDS=2 docker compose exec -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_decision_hits.py
 """
 
 import io
 import logging
 import os
 import re
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -30,6 +33,8 @@ import pdfplumber
 import psycopg2
 import psycopg2.extras
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 logging.basicConfig(
     level=logging.INFO,
@@ -58,6 +63,7 @@ DECISIONS_INTERNAL_COLUMNS = {
     "removedDetectedAt",
     "loadedAt",
     "pdfProcessedAt",
+    "pdfProcessingError",
     "lastCheckedAt",
 }
 
@@ -73,8 +79,49 @@ HITS_FIXED_COLUMNS = {
     "loadedAt",
 }
 
-CONTEXT_CHARS = 50
+CONTEXT_CHARS = 100
 REQUEST_TIMEOUT = 120
+REQUEST_DELAY_SECONDS = float(os.environ.get("REQUEST_DELAY_SECONDS", "1.5"))
+USER_AGENT = (
+    "eu-merger-arbitration-pipeline/1.0 "
+    "(research; +https://github.com/)"
+)
+
+
+def format_duration(seconds: float) -> str:
+    """Formats elapsed seconds for log messages."""
+    if seconds < 60:
+        return f"{seconds:.1f}s"
+    if seconds < 3600:
+        minutes = int(seconds // 60)
+        return f"{minutes}m {seconds % 60:.0f}s"
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    return f"{hours}h {minutes}m {seconds % 60:.0f}s"
+
+
+def build_http_session() -> requests.Session:
+    """Session with retries, backoff, and a browser-like User-Agent."""
+    retry = Retry(
+        total=5,
+        connect=5,
+        read=5,
+        backoff_factor=2,
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=("GET",),
+        raise_on_status=False,
+    )
+    session = requests.Session()
+    session.headers.update(
+        {
+            "User-Agent": USER_AGENT,
+            "Accept": "application/pdf,*/*",
+        }
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
 
 
 @dataclass
@@ -171,8 +218,8 @@ def attachment_language(row: dict) -> str | None:
     return None
 
 
-def download_pdf(url: str) -> bytes:
-    response = requests.get(url, timeout=REQUEST_TIMEOUT)
+def download_pdf(session: requests.Session, url: str) -> bytes:
+    response = session.get(url, timeout=REQUEST_TIMEOUT)
     response.raise_for_status()
     return response.content
 
@@ -218,10 +265,21 @@ def add_missing_columns(conn, columns: set[str], table: str, exclude: set[str]) 
     conn.commit()
 
 
-def fetch_pending_rows(conn, limit: int | None) -> list[dict]:
+def fetch_pending_rows(
+    conn,
+    limit: int | None,
+    *,
+    retry_download_errors: bool = False,
+) -> list[dict]:
+    if retry_download_errors:
+        where = (
+            '"isActive" = TRUE AND "pdfProcessingError" LIKE \'download:%%\''
+        )
+    else:
+        where = '"isActive" = TRUE AND "pdfProcessedAt" IS NULL'
     sql = f"""
         SELECT * FROM {SCHEMA}.{DECISIONS_TABLE}
-        WHERE "isActive" = TRUE AND "pdfProcessedAt" IS NULL
+        WHERE {where}
         ORDER BY "decision_id"
     """
     params: list = []
@@ -233,12 +291,23 @@ def fetch_pending_rows(conn, limit: int | None) -> list[dict]:
         return [dict(row) for row in cur.fetchall()]
 
 
-def mark_pdf_processed(conn, decision_id: int) -> None:
+def ensure_processing_error_column(conn) -> None:
+    """Adds pdfProcessingError on existing databases created before the column existed."""
     with conn.cursor() as cur:
         cur.execute(
-            f'UPDATE {SCHEMA}.{DECISIONS_TABLE} SET "pdfProcessedAt" = NOW() '
+            f'ALTER TABLE {SCHEMA}.{DECISIONS_TABLE} '
+            f'ADD COLUMN IF NOT EXISTS "pdfProcessingError" TEXT'
+        )
+    conn.commit()
+
+
+def mark_pdf_processed(conn, decision_id: int, error: str | None = None) -> None:
+    with conn.cursor() as cur:
+        cur.execute(
+            f'UPDATE {SCHEMA}.{DECISIONS_TABLE} '
+            f'SET "pdfProcessedAt" = NOW(), "pdfProcessingError" = %s '
             f'WHERE "decision_id" = %s',
-            (decision_id,),
+            (error, decision_id),
         )
     conn.commit()
 
@@ -284,6 +353,7 @@ def insert_hit(
 def process_row(
     row: dict,
     keywords_by_lang: dict[str, list[list[str]]],
+    session: requests.Session,
 ) -> MatchResult | None:
     decision_id = row["decision_id"]
     link = row["att_attachmentLink"]
@@ -299,7 +369,7 @@ def process_row(
         return None
 
     log.info("[%s] Downloading PDF: %s", decision_id, link)
-    pdf_bytes = download_pdf(link)
+    pdf_bytes = download_pdf(session, link)
     text = extract_pdf_text(pdf_bytes)
     if not text.strip():
         log.warning("[%s] No extractable text in PDF", decision_id)
@@ -325,6 +395,19 @@ def main() -> None:
     if limit is not None:
         log.info("TEST_LIMIT=%d — processing at most %d row(s)", limit, limit)
 
+    retry_download_errors = os.environ.get("RETRY_DOWNLOAD_ERRORS", "").lower() in {
+        "1", "true", "yes",
+    }
+    if retry_download_errors:
+        log.info("RETRY_DOWNLOAD_ERRORS — re-processing rows with download failures only")
+
+    log.info(
+        "Download pacing: REQUEST_DELAY_SECONDS=%.1f, REQUEST_TIMEOUT=%d",
+        REQUEST_DELAY_SECONDS,
+        REQUEST_TIMEOUT,
+    )
+
+    session = build_http_session()
     conn = get_connection()
     hits_inserted = 0
     processed = 0
@@ -336,14 +419,22 @@ def main() -> None:
             decisions_columns - DECISIONS_INTERNAL_COLUMNS - HITS_FIXED_COLUMNS
         )
         add_missing_columns(conn, set(copy_columns), HITS_TABLE, HITS_FIXED_COLUMNS)
+        ensure_processing_error_column(conn)
 
-        rows = fetch_pending_rows(conn, limit)
+        rows = fetch_pending_rows(
+            conn, limit, retry_download_errors=retry_download_errors
+        )
         log.info("Found %d row(s) to process", len(rows))
+
+        run_started = time.perf_counter()
+        row_elapsed_sum = 0.0
 
         for row in rows:
             decision_id = row["decision_id"]
+            row_started = time.perf_counter()
+            error_msg: str | None = None
             try:
-                match = process_row(row, keywords_by_lang)
+                match = process_row(row, keywords_by_lang, session)
                 if match:
                     insert_hit(conn, row, match, copy_columns)
                     hits_inserted += 1
@@ -355,15 +446,33 @@ def main() -> None:
                     )
             except requests.RequestException as exc:
                 errors += 1
+                error_msg = f"download: {exc}"
                 log.error("[%s] PDF download failed: %s", decision_id, exc)
             except Exception as exc:
                 errors += 1
+                error_msg = f"processing: {exc}"
                 log.exception("[%s] Processing failed: %s", decision_id, exc)
             finally:
-                mark_pdf_processed(conn, decision_id)
+                mark_pdf_processed(conn, decision_id, error_msg)
                 processed += 1
+                row_elapsed = time.perf_counter() - row_started
+                row_elapsed_sum += row_elapsed
+                log.debug("[%s] Row finished in %.2fs", decision_id, row_elapsed)
+                if REQUEST_DELAY_SECONDS > 0:
+                    time.sleep(REQUEST_DELAY_SECONDS)
+
+        run_elapsed = time.perf_counter() - run_started
+        if processed:
+            avg_row = row_elapsed_sum / processed
+            log.info(
+                "Processing time: %s wall clock | %.2fs avg per row (excl. REQUEST_DELAY_SECONDS) | %.1fs delay between rows",
+                format_duration(run_elapsed),
+                avg_row,
+                REQUEST_DELAY_SECONDS,
+            )
 
     finally:
+        session.close()
         conn.close()
 
     log.info(

@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-05-30T10:26:38.689216+00:00",
+  "generatedAt": "2026-05-31T01:50:55.472819+00:00",
   "testLimit": null,
   "processing": {
-    "firstProcessedAt": "2026-05-30T10:06:45.819207",
-    "lastProcessedAt": "2026-05-30T10:20:41.011758",
-    "processedAttachments": 706,
-    "pendingAttachments": 10402,
-    "processedRelevantAttachments": 604,
-    "pendingRelevantAttachments": 9346,
-    "processingComplete": false
+    "firstProcessedAt": "2026-05-30T16:12:54.431025",
+    "lastProcessedAt": "2026-05-31T01:40:06.765094",
+    "processedAttachments": 11108,
+    "pendingAttachments": 0,
+    "processedRelevantAttachments": 9950,
+    "pendingRelevantAttachments": 0,
+    "processingComplete": true
   },
   "totals": {
     "totalCases": 9896,
@@ -23,96 +23,112 @@
     "totalRelevantAttachments": 9950
   },
   "matches": {
-    "totalHits": 34,
-    "matchedCases": 11,
-    "matchedDecisions": 11,
-    "matchedAttachments": 34,
-    "matchedRelevantCases": 9,
-    "matchedRelevantDecisions": 9,
-    "relevantHits": 23,
-    "firstHitAt": "2026-05-30T10:07:27.342755",
-    "lastHitAt": "2026-05-30T10:19:49.144989",
+    "totalHits": 273,
+    "matchedCases": 177,
+    "matchedDecisions": 189,
+    "matchedAttachments": 273,
+    "matchedRelevantCases": 161,
+    "matchedRelevantDecisions": 162,
+    "relevantHits": 218,
+    "firstHitAt": "2026-05-30T16:13:40.799993",
+    "lastHitAt": "2026-05-31T01:38:10.535734",
     "hitsByLanguage": {
-      "EN": 7,
-      "DE": 4,
-      "EL": 4,
-      "FI": 4,
-      "PT": 4,
-      "DA": 3,
-      "ES": 3,
-      "SV": 2,
-      "FR": 1,
-      "IT": 1,
-      "NL": 1
+      "EN": 170,
+      "DE": 17,
+      "PT": 17,
+      "ES": 15,
+      "EL": 13,
+      "DA": 8,
+      "FI": 8,
+      "FR": 8,
+      "SV": 7,
+      "IT": 5,
+      "NL": 5
     },
     "topKeywordPatterns": [
       {
         "pattern": "arbitrat*",
-        "count": 7
+        "count": 170
       },
       {
         "pattern": "arbitrag*",
-        "count": 5
-      },
-      {
-        "pattern": "διαιτη*",
-        "count": 4
-      },
-      {
-        "pattern": "voldgift*",
-        "count": 3
+        "count": 22
       },
       {
         "pattern": "arbitraj*",
-        "count": 2
+        "count": 13
+      },
+      {
+        "pattern": "διαιτη*",
+        "count": 13
+      },
+      {
+        "pattern": "voldgift*",
+        "count": 8
       },
       {
         "pattern": "Schiedsverfahren*",
-        "count": 2
+        "count": 7
       },
       {
-        "pattern": "arbitraj* | procedimiento arbitral*",
-        "count": 1
+        "pattern": "tribunal arbitral*",
+        "count": 6
       },
       {
         "pattern": "arbitral*",
-        "count": 1
-      },
-      {
-        "pattern": "procédure arbitrale*",
-        "count": 1
-      },
-      {
-        "pattern": "Schiedsgericht*",
-        "count": 1
+        "count": 5
       },
       {
         "pattern": "Schiedsgericht* | Schiedsverfahren*",
-        "count": 1
+        "count": 5
       },
       {
-        "pattern": "skiljeförfar*",
-        "count": 1
+        "pattern": "Schiedsgericht*",
+        "count": 4
       },
       {
         "pattern": "skiljeförfar* | skiljedom*",
-        "count": 1
-      },
-      {
-        "pattern": "välimies*",
-        "count": 1
+        "count": 3
       },
       {
         "pattern": "välimies* | välimiesmenettel*",
-        "count": 1
+        "count": 3
+      },
+      {
+        "pattern": "arbitraj* | procedimiento arbitral*",
+        "count": 2
+      },
+      {
+        "pattern": "skiljedom*",
+        "count": 2
+      },
+      {
+        "pattern": "skiljeförfar*",
+        "count": 2
+      }
+    ]
+  },
+  "errors": {
+    "definition": "pdfProcessingError IS NOT NULL on raw.decisions (set by load_decision_hits.py)",
+    "totalErrorAttachments": 3,
+    "totalErrorRelevantAttachments": 2,
+    "downloadErrors": 0,
+    "processingErrors": 3,
+    "successfulAttachments": 11105,
+    "topErrorMessages": [
+      {
+        "message": "processing: No /Root object! - Is this really a PDF?",
+        "count": 3
       }
     ]
   },
   "rates": {
-    "hitRateAllProcessedAttachmentsPct": 4.82,
-    "hitRateRelevantProcessedAttachmentsPct": 3.81,
-    "matchedCasesPctOfAllCases": 0.11,
-    "matchedCasesPctOfRelevantCases": 0.1,
-    "matchedDecisionsPctOfRelevantDecisions": 0.09
+    "hitRateAllProcessedAttachmentsPct": 2.46,
+    "hitRateRelevantProcessedAttachmentsPct": 2.19,
+    "errorRateAllProcessedAttachmentsPct": 0.03,
+    "errorRateRelevantProcessedAttachmentsPct": 0.02,
+    "matchedCasesPctOfAllCases": 1.79,
+    "matchedCasesPctOfRelevantCases": 1.7,
+    "matchedDecisionsPctOfRelevantDecisions": 1.71
   }
 }

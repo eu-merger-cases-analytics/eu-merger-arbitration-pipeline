@@ -110,6 +110,33 @@ def fetch_summary(conn) -> dict:
             {"pattern": kw, "count": cnt} for kw, cnt in cur.fetchall()
         ]
 
+        # --- PDF processing errors (from load_decision_hits.py) ---
+        cur.execute(f"""
+            SELECT
+                COUNT(*) FILTER (WHERE "pdfProcessingError" IS NOT NULL)
+                                                                           AS error_attachments,
+                COUNT(*) FILTER (WHERE "pdfProcessingError" IS NOT NULL AND {rel})
+                                                                           AS error_relevant_attachments,
+                COUNT(*) FILTER (WHERE "pdfProcessingError" LIKE 'download:%')
+                                                                           AS download_errors,
+                COUNT(*) FILTER (WHERE "pdfProcessingError" LIKE 'processing:%')
+                                                                           AS processing_errors
+            FROM {SCHEMA}.decisions
+        """)
+        err_row = cur.fetchone()
+
+        cur.execute(f"""
+            SELECT LEFT("pdfProcessingError", 120) AS error_sample, COUNT(*) AS cnt
+            FROM {SCHEMA}.decisions
+            WHERE "pdfProcessingError" IS NOT NULL
+            GROUP BY LEFT("pdfProcessingError", 120)
+            ORDER BY cnt DESC, error_sample
+            LIMIT 10
+        """)
+        top_errors = [
+            {"message": msg, "count": cnt} for msg, cnt in cur.fetchall()
+        ]
+
     def pct(num: int, denom: int) -> float | None:
         if denom == 0:
             return None
@@ -142,6 +169,15 @@ def fetch_summary(conn) -> dict:
         first_hit_at,
         last_hit_at,
     ) = hit_row
+
+    (
+        error_attachments,
+        error_relevant_attachments,
+        download_errors,
+        processing_errors,
+    ) = err_row
+
+    successful_attachments = processed_attachments - error_attachments
 
     return {
         "generatedAt": datetime.now(timezone.utc).isoformat(),
@@ -180,10 +216,25 @@ def fetch_summary(conn) -> dict:
             "hitsByLanguage": hits_by_language,
             "topKeywordPatterns": top_keywords,
         },
+        "errors": {
+            "definition": "pdfProcessingError IS NOT NULL on raw.decisions (set by load_decision_hits.py)",
+            "totalErrorAttachments": error_attachments,
+            "totalErrorRelevantAttachments": error_relevant_attachments,
+            "downloadErrors": download_errors,
+            "processingErrors": processing_errors,
+            "successfulAttachments": successful_attachments,
+            "topErrorMessages": top_errors,
+        },
         "rates": {
             "hitRateAllProcessedAttachmentsPct": pct(total_hits, processed_attachments),
             "hitRateRelevantProcessedAttachmentsPct": pct(
                 relevant_hits, processed_relevant_attachments
+            ),
+            "errorRateAllProcessedAttachmentsPct": pct(
+                error_attachments, processed_attachments
+            ),
+            "errorRateRelevantProcessedAttachmentsPct": pct(
+                error_relevant_attachments, processed_relevant_attachments
             ),
             "matchedCasesPctOfAllCases": pct(matched_cases, total_cases),
             "matchedCasesPctOfRelevantCases": pct(matched_relevant_cases, relevant_cases),
@@ -208,6 +259,11 @@ def print_summary(summary: dict) -> None:
     print(f"  Attachments processed:    {p['processedAttachments']} "
           f"(pending: {p['pendingAttachments']})")
     print(f"  Keyword hits:             {m['totalHits']}")
+    e = summary.get("errors")
+    if e:
+        print(f"  Processing errors:        {e['totalErrorAttachments']} "
+              f"(download: {e['downloadErrors']}, processing: {e['processingErrors']})")
+        print(f"  Successful (no error):    {e['successfulAttachments']}")
     print(f"  Matched cases:            {m['matchedCases']} "
           f"({r['matchedCasesPctOfRelevantCases']}% of relevant cases)")
     print(f"  Matched decisions:        {m['matchedDecisions']} "

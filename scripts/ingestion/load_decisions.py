@@ -53,7 +53,7 @@ TABLE = "decisions"
 # Internal columns — not from JSON, never compared or overwritten
 INTERNAL_COLUMNS = {
     "decision_id", "isActive", "removedDetectedAt",
-    "loadedAt", "pdfProcessedAt", "lastCheckedAt",
+    "loadedAt", "pdfProcessedAt", "pdfProcessingError", "lastCheckedAt",
 }
 
 
