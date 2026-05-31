@@ -13,9 +13,9 @@
 - [`scripts/requirements.txt`](../scripts/requirements.txt) — `requests`, `psycopg2-binary`, `pdfplumber`.
 
 ### Algandmete laadimine ja töötlemine (Python)
-- [`init/create_raw_schema.sql`](../init/create_raw_schema.sql) — skeem `raw`, tabel `raw.decisions` (karkass + jälgimisveerud).
 - [`download_json.py`](../scripts/ingestion/download_json.py) — JSON allalaadimine `data/raw/case-data-M.json`, valideerimine, katkestuskaitse.
 - [`inspect_json.py`](../scripts/analysis/inspect_json.py) — arenduslik JSON-i ülevaade (`inspect_json_output.txt`).
+- [`init/create_raw_schema.sql`](../init/create_raw_schema.sql) — skeem `raw`, tabel `raw.decisions` (karkass + jälgimisveerud).
 - [`load_decisions.py`](../scripts/ingestion/load_decisions.py) — JSON → `raw.decisions`:
   - dünaamiline veergude lisamine JSON struktuuri põhjal;
   - upsert ja väljade muutuste logimine;
@@ -31,14 +31,19 @@
   - `sources` (`raw.decisions`, `raw.decision_hits`);
   - `models/staging/` — `stg_decision_hits`, `stg_relevant_decisions`;
   - `models/intermediate/` — kuupäevad, NACE, joinid, kvaliteet, selekteeritakse 6(1)(b) ja 8(2) otsused.
-  - `models/marts/` — dashboardi mõõdikud.  
+  - `models/marts/` — dashboardi mõõdikud; loodud üks mudel.  
+
+### Superset
+  - Seadistatud.
 
 
 ---
 
 ## Järgmised sammud
 
-**Dashboard** — Superset või Streamlit, seotud dbt mart tabelitega.  
+**dbt marts** — Luua ülejäänud mudelid.  
+
+**Dashboard** — Superset (või ka Streamlit).  
 
 **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt).  
 
@@ -52,7 +57,7 @@
 
 | Takistus / risk | Mõju | Võimalik maandus |
 |-----------------|------|------------------|
-| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall, võib olla ei ole siiski vajalik |
+| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall, võib olla ei ole siiski vajalik, sest mingit blokkimist ei toimu |
 | PDF töötlemine on aeglane (3+ h) | Pipeline viibib; arendus/testimine aeglane | Airflow andmevoog hoolikalt läbi mõelda |
 | EC JSON struktuuri muutused | `load_decisions` võib jätta veerud/väärtused puudu | Dünaamiline schema + hoiatused; `inspect_json.py` perioodiline kontroll |
 | Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |

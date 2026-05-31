@@ -66,6 +66,29 @@ services:
     working_dir: /dbt
     tty: true
 
+  superset:
+    image: apache/superset:4.1.2-dev
+    container_name: eu-merger-arbitration-superset
+    env_file:
+      - .env
+    environment:
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+      SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY:-dev-only-change-me}
+      SUPERSET_ADMIN_USER: ${SUPERSET_ADMIN_USER:-admin}
+      SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD:-admin}
+      SUPERSET_ADMIN_EMAIL: ${SUPERSET_ADMIN_EMAIL:-admin@local}
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./superset:/app/pythonpath
+      - superset_home:/app/superset_home
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["/bin/bash", "/app/pythonpath/bootstrap.sh"]
+
 volumes:
   eu-merger-arbitration:
     name: eu-merger-arbitration-pg
+  superset_home:
+    name: eu-merger-arbitration-superset-home

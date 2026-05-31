@@ -13,6 +13,7 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 | 3 | Analüüs *(valikuline)* | Arenduse ja kvaliteedi kontroll |
 | 4 | dbt | `raw` → `staging` → `intermediate` → `marts` |
 | 5 | Andmebaas | psql ja näidispäringud |
+| 6 | Superset *(valikuline)* | Dashboard test `http://localhost:8088` |
 
 ---
 
@@ -199,7 +200,48 @@ FROM raw.decisions WHERE \"isActive\" = TRUE;"
 
 ---
 
-## 6. Peatamine
+## 6. Superset (test)
+
+Lihtne ühe-konteineri seadistus. Superset'i enda metadata on SQLite'is; andmed tulevad olemasolevast Postgresist (`marts`).
+
+**Eeldab:** jaotis 4 on tehtud (`mart_arbitration_decisions` olemas).
+
+```bash
+# Käivita Superset (esimene kord võtab aega — image allalaadimine + init)
+docker compose up -d superset
+
+# Logid (oota kuni "Starting Superset on http://localhost:8088")
+docker compose logs -f superset
+```
+
+Ava brauseris: **http://localhost:8088**  
+Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
+
+### Andmebaasi ühendus Supersetis (üks kord)
+
+1. **Settings → Database connections → + Database**
+2. Vali **PostgreSQL**
+3. **SQLAlchemy URI** (Docker-võrk, mitte localhost):
+
+   ```
+   postgresql+psycopg2://user:user@db:5432/eu-merger-arbitration
+   ```
+
+   (Kasuta `.env` väärtusi, kui need erinevad.)
+
+4. **Test connection** → **Connect**
+
+### Dataset ja chart
+
+1. **Data → Datasets → + Dataset** → vali ühendus → skeem **`marts`** → tabel **`mart_arbitration_decisions`**
+2. **Charts → + Chart** → vali dataset
+3. Lisa filter **`decision_adoption_date`** (Time range)
+4. Näiteks **Big Number**: metric `COUNT(*)`, filter perioodil
+5. Teine chart: `COUNT(*)` where `has_keyword_hit = true`, või **Table** / **Pie** sektori järgi
+
+---
+
+## 7. Peatamine
 
 ```bash
 docker compose down
@@ -207,7 +249,7 @@ docker compose down
 
 ---
 
-## 7. Nullist alustamine
+## 8. Nullist alustamine
 
 ### Täielik reset (Postgresi maht kustub)
 

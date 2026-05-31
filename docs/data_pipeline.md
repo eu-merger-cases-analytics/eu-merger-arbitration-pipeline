@@ -238,6 +238,13 @@ Tulevased marts (nt kuu- või sektoriagregaadid) võivad ehitada sama tabeli pea
 
 ---
 
-## Dasboard (Apache Superset või Streamlit)  *(kavandamisel)*  
+## Dashboard (Apache Superset)
 
+Testseadistus on `compose.yml` failis (konteiner `superset`, port **8088**).
+
+- **Allikas:** `marts.mart_arbitration_decisions`
+- **Perioodifilter:** `decision_adoption_date`
+- **Mõõdikud:** relevantsed otsused, märksõnu sisaldavad otsused, osakaal (vt marts jaotis ülal)
+
+Käivitus ja andmebaasi ühendus: [`run_commands.md`](run_commands.md) jaotis 6.
 
