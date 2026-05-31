@@ -1,4 +1,4 @@
-Note: all statistics below are for cases containing '6(1)(b)' or '8(2)' in
+Note: all statistics below are for cases containing '6(1)(b)' or '8(2)' in JSON raw file
 decisionTypes labels, unless stated otherwise.
 
 ============================================================

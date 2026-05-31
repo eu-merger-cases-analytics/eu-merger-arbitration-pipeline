@@ -73,6 +73,9 @@ docker compose exec python python analysis/inspect_json.py
  
 # Raw skeema ja decisions tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
+
+# Kontroll: kas raw.decisions on olemas (peaks nägema ühte rida: raw | decisions)
+docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
  
 # Kõigi otsuste laadimine andmebaasi decisions tabelisse
 docker compose exec python python ingestion/load_decisions.py
@@ -82,6 +85,9 @@ docker compose exec python python analysis/query_decisions_sample.py
 
 # Raw skeema decisions_hits tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
+
+# Kontroll: kas raw.decisions ja raw.decision_hits on olemas (peaks nägema kaks rida)
+docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
 # Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
 docker compose exec python python ingestion/load_decision_hits.py
@@ -104,3 +110,30 @@ docker compose exec db psql -U user -d eu-merger-arbitration
 # Konteinerite peatamine
 docker compose down
 ```
+
+### Andmevoo nullist käivitamine (tühi andmebaas, tabelid puuduvad)
+
+```bash
+# 1. Peata konteinerid ja kustuta Postgresi mahud (-v)
+docker compose down -v
+
+# 2. (Valikuline) Kustuta ka kohalik JSON ja analüüsi väljundfailid
+# Windows PowerShell:
+#   Remove-Item -Force data/raw/case-data-M.json -ErrorAction SilentlyContinue
+#   Remove-Item -Force scripts/analysis/*_output.txt, scripts/analysis/summarize_decision_hits_output.json -ErrorAction SilentlyContinue
+
+# 3. Käivita konteinerid uuesti  ja korda käivitamise skriptide järjekorda ülaltpoolt alates
+docker compose up -d --build
+docker compose ps
+
+```
+
+**Ainult tabelite tühjendamine** (konteinerid jäävad käima, Postgresi maht jääb alles):
+
+```bash
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
+docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
+# seejärel load_decisions.py ja load_decision_hits.py (PDF-id töödeldakse uuesti)
+```
+
+`create_raw_schema.sql` kustutab enne `raw.decision_hits` ja `raw.decisions` (FK tõttu järjekord on skriptis olemas).

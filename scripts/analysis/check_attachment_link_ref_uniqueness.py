@@ -11,9 +11,9 @@ Output is printed to the console and saved to check_attachment_link_ref_output.t
 (overwrites on each run).
 
 Run:
-    python analysis/check_attachment_link_ref.py
+    python analysis/check_attachment_link_ref_uniqueness.py.py
 
-    docker compose exec python python analysis/check_attachment_link_ref.py
+    docker compose exec python python analysis/check_attachment_link_ref_uniqueness.py
 """
 
 import json

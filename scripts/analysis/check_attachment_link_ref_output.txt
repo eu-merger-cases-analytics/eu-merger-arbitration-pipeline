@@ -1,4 +1,4 @@
-Source: C:\Users\katri\software_development\eu-merger-arbitration-pipeline\data\raw\case-data-M.json
+Source: /data/raw/case-data-M.json
 Total attachment rows (with attachmentLink): 11109
 Unique attachmentLink values:                11095
 Unique (link, metadataReference) pairs:      11108
