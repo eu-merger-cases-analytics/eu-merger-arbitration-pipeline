@@ -1,0 +1,84 @@
+First saved row from raw.decision_hits (hit_id=1, case=M.1185):
+
+att_attachmentCategory: None
+att_attachmentDocumentDate: None
+att_attachmentIdSequence: 4
+att_attachmentLanguage: FR
+att_attachmentLink: https://ec.europa.eu/competition/mergers/cases/decisions/m1185_fr.pdf
+att_attachmentLocationType: DDOC
+att_attachmentName: Art. 6(1)(b) with conditions & obligations -  - mtf-dec-m-01185-020-1-19980604-0440-pub-fr
+att_attachmentPublicationBusinessDate: None
+att_attachmentPublicationDescription: None
+att_attachmentSentDate: 2004-12-07
+att_language: fr
+att_metadataReference: M.1185-DEC39394-ATT4
+att_metadataType: METADATA_DECISION_ATTACHMENT
+caseAtt_attachmentCategory: None
+caseAtt_attachmentDocumentDate: None
+caseAtt_attachmentIdSequence: None
+caseAtt_attachmentLanguage: None
+caseAtt_attachmentLink: None
+caseAtt_attachmentLocationType: None
+caseAtt_attachmentName: None
+caseAtt_attachmentPublicationBusinessDate: None
+caseAtt_attachmentPublicationDescription: None
+caseAtt_attachmentSentDate: None
+caseAtt_language: None
+caseAtt_metadataReference: None
+caseAtt_metadataType: None
+case_caseAidInstruments: 
+case_caseCartel: Antitrust
+case_caseCompanies: ALCATEL / THOMSON CSF - SCS
+case_caseCourtCases: 
+case_caseDeadlineDate: None
+case_caseDg: None
+case_caseEvents: None
+case_caseEventsDates: None
+case_caseExternalLinks: None
+case_caseInitiationDate: 1998-05-18
+case_caseInstrument: Merger
+case_caseInvestigationPhase: None
+case_caseLastDecisionDate: 1998-06-04
+case_caseLegalBasis: 
+case_caseLinks: 
+case_caseNotificationDate: 1998-05-18
+case_caseNumber: M.1185
+case_caseNumberPart: 1185
+case_caseOfficialJournalPublications: None
+case_caseOfficialJournalPublicationsPublishedDates: 
+case_casePressReleases: None
+case_casePressReleasesPublicationDates: None
+case_casePrimaryLaws: 
+case_caseRegions: 
+case_caseRegulation: Council Regulation 4064/89
+case_caseRenotificationDate: None
+case_caseSecondaryLaws: 
+case_caseSectors: {"code":"NaceSectorsC_30_3","label":"C.30.3 - Manufacture of air and spacecraft and related machinery"}
+case_caseSimplified: Normal procedure
+case_caseSimplifiedProcedure: false
+case_caseTimelineEvents: None
+case_caseTimelineEventsDates: None
+case_caseTitle: ALCATEL / THOMSON CSF - SCS
+case_caseType: None
+case_language: en
+case_metadataReference: M.1185
+case_metadataType: METADATA_CASE
+dec_decisionAdoptionDate: 1998-06-04
+dec_decisionCelexReference: None
+dec_decisionExternalLinks: None
+dec_decisionNumber: 39394
+dec_decisionOfficialJournalPublications: {"items":[{"reference":"C272","publishedDate":"1998-09-01","priorPublication":"false"}]}
+dec_decisionOfficialJournalPublicationsPublishedDates: 1998-09-01
+dec_decisionOjPriorPublication: false
+dec_decisionPressReleases: None
+dec_decisionPressReleasesPublicationDates: None
+dec_decisionTypes: {"code":"DecisionType440","label":"Art. 6(1)(b) with conditions & obligations"}
+dec_language: en
+dec_metadataReference: M.1185-DEC39394
+dec_metadataType: METADATA_DECISION
+decision_id: 20
+hit_id: 1
+loadedAt: 2026-05-31 02:41:31.465461
+matchContext: de la clause compromissoire prévue par le Nouveau Code de Procédure Civile français, une instance d’arbitrage indépendante et compétente (“l’Arbitre”). L’Arbitre jugera en dernier ressort de tout liti
+matchedKeywords: arbitrag*
+matchedLanguage: FR

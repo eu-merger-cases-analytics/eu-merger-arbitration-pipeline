@@ -81,7 +81,7 @@ HITS_FIXED_COLUMNS = {
 
 CONTEXT_CHARS = 100
 REQUEST_TIMEOUT = 120
-REQUEST_DELAY_SECONDS = float(os.environ.get("REQUEST_DELAY_SECONDS", "1.5"))
+REQUEST_DELAY_SECONDS = float(os.environ.get("REQUEST_DELAY_SECONDS", "0"))
 USER_AGENT = (
     "eu-merger-arbitration-pipeline/1.0 "
     "(research; +https://github.com/)"

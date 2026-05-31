@@ -54,6 +54,8 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 
 
 ## Käivitamine
+
+Täielik käskude nimekiri (kõik variandid, reset, dbt, valikulised skriptid): [`docs/run_commands.md`](run_commands.md)
  
 ```bash
 # Keskkonna seadistamine
@@ -74,7 +76,7 @@ docker compose exec python python analysis/inspect_json.py
 # Raw skeema ja decisions tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
 
-# Kontroll: kas raw.decisions on olemas (peaks nägema ühte rida: raw | decisions)
+# Kontroll: kas raw.decisions on olemas
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
  
 # Kõigi otsuste laadimine andmebaasi decisions tabelisse
@@ -86,13 +88,16 @@ docker compose exec python python analysis/query_decisions_sample.py
 # Raw skeema decisions_hits tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
 
-# Kontroll: kas raw.decisions ja raw.decision_hits on olemas (peaks nägema kaks rida)
+# Kontroll: kas raw.decisions ja raw.decision_hits on olemas
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
-# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
+# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde, testimiseks kasuta TEST skripti).
 docker compose exec python python ingestion/load_decision_hits.py
 
-# Sama, aga ainult N järgmist töötlemata PDF-i (asenda 5; võib käivitada korduvalt — iga kord võetakse järgmised read decision_id järgi, juba töödeldud read ja decision_hits kirjed jäävad alles)
+# Sama, pausiga PDF-ide vahel (vähendab allalaadimisvigu, töötlemisaeg eriti pikk)
+docker compose exec -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_decision_hits.py
+
+# TEST skript, N järgmist töötlemata PDF-i (asenda 5; võib käivitada korduvalt — iga kord võetakse järgmised read decision_id järgi, juba töödeldud read ja decision_hits kirjed jäävad alles)
 docker compose exec -e TEST_LIMIT=5 python python ingestion/load_decision_hits.py
 
 # decision_hits tabelist esimese salvestatud rea pärimine (hit_id järgi)
@@ -114,7 +119,7 @@ docker compose exec db psql -U user -d eu-merger-arbitration
 docker compose down
 ```
 
-### Andmevoo nullist käivitamine (tühi andmebaas, tabelid puuduvad)
+### Andmevoo nullist käivitamine
 
 ```bash
 # 1. Peata konteinerid ja kustuta Postgresi mahud (-v)
