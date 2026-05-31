@@ -11,10 +11,8 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 | 1 | Keskkond | Docker + `.env` |
 | 2 | Andmete laadimine | JSON → `raw.decisions` → PDF-id → `raw.decision_hits` |
 | 3 | Analüüs *(valikuline)* | Arenduse ja kvaliteedi kontroll |
-| 4 | dbt | `raw` → `staging` → `intermediate` *(marts tuleb hiljem)* |
+| 4 | dbt | `raw` → `staging` → `intermediate` → `marts` |
 | 5 | Andmebaas | psql ja näidispäringud |
-
-**Oluline:** dbt (jaotis 4) eeldab, et jaotis 2 on vähemalt osaliselt tehtud — `load_decisions.py` peab olema käinud; `load_decision_hits.py` võib jätkuda taustal (PDF samm võtab tunde).
 
 ---
 

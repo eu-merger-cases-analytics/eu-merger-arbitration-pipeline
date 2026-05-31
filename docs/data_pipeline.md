@@ -29,8 +29,6 @@ Analüütika (dbt):
   → dashboard (Superset / Streamlit)
 ```
 
-**Nimetamine:** Postgres skeemi nime `staging` ei kasutata, et ei oleks sama dbt staging kihiga. Mõlemad Pythoni väljundid jäävad `raw` skeemi alla. Vana nimi `load_to_staging.py` on asendatud nimega `load_decision_hits.py`.
-
 ---
 
 ## Init SQL
@@ -135,7 +133,7 @@ Loeb `raw.decisions` tabelist töötlemata PDF-id, otsib vahekohtu märksõnu ja
 - Attachment-metaandmed
 - `matchedKeywords` — kõik PDF-is leitud unikaalsed märksõnad (` | ` eraldatud)
 - `matchedLanguage` — otsingu keel
-- `matchContext` — tekstilõik kõige varasema tabamuse ümbruses (~100 tähemärki enne ja pärast)
+- `matchContext` — tekstilõik kõige varasema tabamuse ümbruses (100 tähemärki enne ja pärast)
 
 **Keskkonnamuutuja:** `TEST_LIMIT=N` — töötleb ainult esimesed N töötlemata PDF-i (testimiseks).
 
@@ -190,7 +188,7 @@ Done. Processed: n  |  Hits saved: n  |  Errors: n
 ---
 
 ### [`summarize_decision_hits.py`](../scripts/analysis/summarize_decision_hits.py)
-Genereerib kokkuvõtte decision_hits tabelisse salevestatud andmetest [`summarize_decision_hits_output.json`](../scripts/analysis/summarize_decision_hits_output.json) faili (iga käivitus kirjutab faili üle).
+Genereerib kokkuvõtte decision_hits tabelisse salvestatud andmetest [`summarize_decision_hits_output.json`](../scripts/analysis/summarize_decision_hits_output.json) faili (iga käivitus kirjutab faili üle).
 
 ---
 
@@ -203,7 +201,7 @@ dbt **ei** lae JSON-it ega PDF-e uuesti. Allikad on `raw.decisions` ja `raw.deci
 Mudelid: `stg_decisions`, `stg_decision_hits` (Postgres skeem **`staging`**).
 
 - loeb `raw` tabeleid (`source()` failis `schema.yml`)
-- pass-through vaated — sama sisu mis `raw`-s, ilma äriloogikata
+- pass-through vaated — sama sisu mis `raw`-s
 - dokumentatsioon ja testid (`not_null`, `unique` võtmeveergudel)
 
 ### dbt intermediate (`models/intermediate/`)
@@ -211,14 +209,14 @@ Mudelid: `stg_decisions`, `stg_decision_hits` (Postgres skeem **`staging`**).
 Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`intermediate`**).
 
 **`int_relevant_decisions`**:
-- ainult Art. `6(1)(b)` / `8(2)` manused (`isActive = true`), nii märksõnu sisaldavad kui märksõnu mittesisaldavad, ehk kõik `6(1)(b)` / `8(2)`
+- ainult Art. `6(1)(b)` / `8(2)` manused (`isActive = true`), nii märksõnu sisaldavad kui märksõnu mittesisaldavad ehk kõik `6(1)(b)` / `8(2)`
 - JSON-väljad eraldi veergudeks: `decision_type_label`, `sector_code`, `sector_label`
 - kuupäevad: `TEXT` → `DATE`
 - PDF olek: `is_pdf_processed`, `is_pdf_ok`
 
 **`int_decisions_with_hits`**:
-- `int_relevant_decisions` **LEFT JOIN** `stg_decision_hits` (`decision_id` järgi) - kõik `6(1)(b)` / `8(2)`
-- `has_keyword_hit` veerg — jah/ei, kas `6(1)(b)` / `8(2)` PDF-ist leiti vahekohtu märksõna
+- `int_relevant_decisions` **LEFT JOIN** `stg_decision_hits` (`decision_id` järgi) ehk kõik `6(1)(b)` / `8(2)`
+- `has_keyword_hit` veerg — jah/ei, kas `6(1)(b)` / `8(2)` PDF-ist leiti vahekohtu märksõna ehk kõik `6(1)(b)` / `8(2)`, mille igal real on märgitud, kas sisaldab märksõna või mitte
 - tabamuse osakaal: `has_keyword_hit = true` / kõik read
 
 ### dbt marts (`models/marts/`)
