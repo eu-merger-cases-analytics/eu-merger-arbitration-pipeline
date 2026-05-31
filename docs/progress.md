@@ -34,7 +34,12 @@
   - `models/marts/` — dashboardi mõõdikud; loodud üks mudel.  
 
 ### Superset
-  - Seadistatud.
+  - seadistatud testimiseks.
+  - loodud üks dashboard ühe diagrammiga
+  <p align="left">
+    <img src="images/ss_total_decisions.png" width="200">
+  </p>
+
 
 
 ---
