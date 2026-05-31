@@ -4,7 +4,7 @@ Täpsem andmevoo kirjeldus: [`data_pipeline.md`](data_pipeline.md).
 
 Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteinerid on üleval (`docker compose up -d --build`).
 
-## Pipeline'i järjekord (esimene kord)
+## Pipeline'i järjekord
 
 | Samm | Jaotis | Mida teeb |
 |------|--------|-----------|
@@ -60,13 +60,13 @@ docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw
 # Kontroll: raw.decisions + raw.decision_hits
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
-# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; jätkub pdfProcessedAt järgi)
+# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; katkestuse korral jätkub pdfProcessedAt järgi)
 docker compose exec python python ingestion/load_decision_hits.py
 ```
 
 ### PDF töötlemise variandid
 
-Vaikimisi `REQUEST_DELAY_SECONDS=0` (paus puudub). Kui tekib palju `download:` vigu, proovi pausiga või uuesti proovimist:
+Vaikimisi `REQUEST_DELAY_SECONDS=0` (paus puudub). Kui tekib palju `download:` vigu, proovi pausiga või töötle ainult veaga read:
 
 ```bash
 # Paus PDF-ide vahel (nt 2 s)
@@ -98,6 +98,12 @@ docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sa
 # PDF töötlemise ja tabamuste kokkuvõte → summarize_decision_hits_output.json
 docker compose exec python python analysis/summarize_decision_hits.py
 
+# Kuupäevade täituvus JSON-is ja raw.decisions-is
+docker compose exec python python analysis/summarize_date_fields.py
+
+# Manuse vs otsuse tase (tabamuste arvutamise kontroll)
+docker compose exec python python analysis/check_decision_grain.py
+
 # Manuste link + metadataReference kontroll JSON-is
 docker compose exec python python analysis/check_attachment_link_ref.py
 
@@ -111,12 +117,12 @@ docker compose exec python python analysis/check_attachment_link_ref_uniqueness.
 
 Käivita pärast jaotist 2. Mudelid ilmuvad Postgresi skeemidesse **`staging`**, **`intermediate`**, **`marts`** (mitte `public_staging`).
 
-**Mudelid:** `stg_decisions`, `stg_decision_hits` → `int_relevant_decisions`, `int_decisions_with_hits` → *(marts veel puuduvad)*
+**Mudelid:** `stg_decisions`, `stg_decision_hits` → `int_relevant_decisions`, `int_decisions_with_hits` → `mart_arbitration_decisions`
 
 ### Kohustuslik järjekord (esimene dbt jooks)
 
 ```bash
-# 1. Kõik mudelid (staging + intermediate)
+# 1. Kõik mudelid (staging + intermediate + marts)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
 
 # 2. Testid
@@ -132,8 +138,11 @@ docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select st
 # Ainult intermediate (eeldab staging)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select intermediate --profiles-dir ."
 
+# Ainult marts (eeldab intermediate)
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select marts --profiles-dir ."
+
 # Üks mudel
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select int_decisions_with_hits --profiles-dir ."
+docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select mart_arbitration_decisions --profiles-dir ."
 
 # Süntaks kontroll (ilma käivitamiseta)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt parse --profiles-dir ."
@@ -142,19 +151,30 @@ docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt parse --profile
 ### Kontroll pärast dbt run
 
 ```bash
-# Skeemid ja vaated
+# Skeemid, vaated ja tabelid
 docker compose exec db psql -U user -d eu-merger-arbitration -c "
 SELECT table_schema, table_name
 FROM information_schema.tables
-WHERE table_schema IN ('staging', 'intermediate')
+WHERE table_schema IN ('staging', 'intermediate', 'marts')
 ORDER BY table_schema, table_name;"
 
-# Relevant otsused ja tabamused
+# Relevant manused ja tabamused (attachment grain)
 docker compose exec db psql -U user -d eu-merger-arbitration -c "
 SELECT
   COUNT(*) AS relevant_attachments,
   COUNT(*) FILTER (WHERE has_keyword_hit) AS with_keyword_hit
 FROM intermediate.int_decisions_with_hits;"
+
+# Relevant otsused, tabamused ja osakaal (decision grain — dashboard)
+docker compose exec db psql -U user -d eu-merger-arbitration -c "
+SELECT
+  COUNT(*) AS relevant_decisions,
+  COUNT(*) FILTER (WHERE has_keyword_hit) AS decisions_with_hit,
+  ROUND(
+    100.0 * COUNT(*) FILTER (WHERE has_keyword_hit) / NULLIF(COUNT(*), 0),
+    2
+  ) AS hit_share_pct
+FROM marts.mart_arbitration_decisions;"
 ```
 
 ---
@@ -228,8 +248,10 @@ docker compose exec python python ingestion/load_decision_hits.py
 | `analysis/query_decisions_sample.py` | Näidis `raw.decisions` | Ei |
 | `analysis/query_decision_hits_sample.py` | Näidis `raw.decision_hits` | Ei |
 | `analysis/summarize_decision_hits.py` | Kokkuvõtte JSON | Ei |
+| `analysis/summarize_date_fields.py` | Kuupäevade täituvus | Ei |
+| `analysis/check_decision_grain.py` | Otsuse vs manuse tase | Ei |
 | `analysis/check_attachment_link_ref.py` | Link/ref kontroll | Ei |
 | `analysis/check_attachment_link_ref_uniqueness.py` | Unikaalsuse kontroll | Ei |
 | `init/create_raw_schema.sql` | `raw.decisions` | Jah |
 | `init/create_raw_decision_hits.sql` | `raw.decision_hits` | Jah |
-| dbt `dbt run` / `dbt test` | `raw` → `staging` → `intermediate` | Jah (pärast jaotist 2) |
+| dbt `dbt run` / `dbt test` | `raw` → `staging` → `intermediate` → `marts` | Jah (pärast jaotist 2) |

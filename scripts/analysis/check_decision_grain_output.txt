@@ -1,0 +1,58 @@
+Decision grain vs attachment grain (relevant Art. 6(1)(b) / 8(2))
+Source: intermediate.int_decisions_with_hits
+
+Business rule for decision-level hit:
+  A decision has a hit when ANY of its attachments has has_keyword_hit = true.
+
+========================================================================
+COUNTS
+  Relevant attachments (denominator, attachment grain):   9,950
+  Relevant decisions   (denominator, decision grain):     9,480
+  Hit attachments      (numerator, attachment grain):        277
+  Hit decisions        (numerator, decision grain):          193
+
+  Hit rate (attachments): 2.78%
+  Hit rate (decisions):   2.04%
+
+  Decisions with >1 attachment: 96
+  Max attachments on one decision: 11
+
+========================================================================
+DECISION KEY
+  Distinct decision_number values:              9,480
+  Distinct (case_number, decision_number):     9,480
+  In this relevant subset, decision_number is unique (no cross-case collisions).
+  Still use (case_number, decision_number) as the canonical key — safer globally.
+  No decision_number shared across different cases in relevant data.
+
+========================================================================
+ATTACHMENTS PER DECISION
+  1 attachment(s): 9,384 decisions
+  2 attachment(s): 19 decisions
+  3 attachment(s): 37 decisions
+  9 attachment(s): 1 decisions
+  10 attachment(s): 21 decisions
+  11 attachment(s): 18 decisions
+
+========================================================================
+EXAMPLES: multi-attachment decisions WITH a hit (first 10)
+  (shows why attachment grain over-counts decisions)
+  case=M.1601 decision=39876 | 10 attachments, 9 with hit, decision_hit=True
+  case=M.1313 decision=39538 | 10 attachments, 9 with hit, decision_hit=True
+  case=M.2876 decision=37900 | 11 attachments, 8 with hit, decision_hit=True
+  case=M.1671 decision=39973 | 10 attachments, 8 with hit, decision_hit=True
+  case=M.623 decision=38686 | 10 attachments, 8 with hit, decision_hit=True
+  case=M.1813 decision=40152 | 10 attachments, 8 with hit, decision_hit=True
+  case=M.1628 decision=39908 | 10 attachments, 6 with hit, decision_hit=True
+  case=M.1383 decision={0751CC4C-A125-405A-B845-0DAD87DCDD6E} | 11 attachments, 5 with hit, decision_hit=True
+  case=M.2947 decision=37908 | 11 attachments, 4 with hit, decision_hit=True
+  case=M.1673 decision=39982 | 10 attachments, 4 with hit, decision_hit=True
+
+========================================================================
+RECOMMENDATION
+  - Keep int_decisions_with_hits at attachment grain (PDF processing, keyword context).
+  - Add decision-grain model for marts/dashboard, e.g. int_relevant_decisions_agg:
+      GROUP BY case_number, decision_number
+      has_keyword_hit = bool_or(has_keyword_hit)
+      decision_adoption_date = min(decision_adoption_date)  -- same on all rows
+  - Mart metrics (counts, share, period filter) should use decision grain.

@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: mart_arbitration_decisions
+    description: >
+      One row per relevant Art. 6(1)(b) or 8(2) decision. Filter by
+      decision_adoption_date for dashboard period selection; aggregate
+      count(*) and bool_or-style hit counts to get decisions, hits, and share.
+    columns:
+      - name: decision_key
+        description: "Surrogate key: case_number || decision_number"
+        data_tests:
+          - not_null
+          - unique
+      - name: case_number
+        data_tests:
+          - not_null
+      - name: decision_number
+        data_tests:
+          - not_null
+      - name: decision_adoption_date
+        description: "From dec_decisionAdoptionDate; use for dashboard date range filters"
+        data_tests:
+          - not_null
+      - name: has_keyword_hit
+        description: "True when any attachment for this decision has a keyword hit"
+        data_tests:
+          - not_null
+      - name: attachment_count
+        description: "Number of PDF attachments rolled up into this decision"
+      - name: hit_attachment_count
+        description: "Attachments with a keyword hit (can exceed 1; decision counts once)"

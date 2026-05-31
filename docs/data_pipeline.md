@@ -23,7 +23,7 @@ Toorandmete töötlemine (Python, SQL):
   → summarize_decision_hits.py → summarize_decision_hits_output.json [valikuline, ei pea olema automatiseeritud andmevoo osa]
 
 Analüütika (dbt):
-  → dbt staging (view) — minimaalne puhastus allikast
+  → dbt staging (view) — raw andmed
   → dbt intermediate (view) — äriloogika (kuupäevad, NACE, joinid, kvaliteet), selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused
   → dbt marts (tabel) — dashboardi mõõdikud
   → dashboard (Superset / Streamlit)
@@ -220,13 +220,20 @@ Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`
 - tabamuse osakaal: `has_keyword_hit = true` / kõik read
 
 ### dbt marts (`models/marts/`)
-Näiteks: `mart_arbitration_monthly`, `mart_arbitration_by_sector`
 
-Dashboardi mõõdikud (vt `architecture.md`):
-- vahekohtu mainimiste arv kuus/aastas
-- osakaal tingimuslikest otsustest (`matched / total relevant`)
-- jaotus NACE sektori järgi
-- trend ajas sektori kaupa
+Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
+
+- **Üks rida = üks otsus** (mitte PDF-manus): `GROUP BY case_number, decision_number`
+- ainult Art. `6(1)(b)` / `8(2)` (tuleb `int_decisions_with_hits`-ist)
+- **kuupäev:** `decision_adoption_date` (`dec_decisionAdoptionDate`) — dashboardi perioodifilter
+- **tabamus:** `has_keyword_hit = true`, kui **vähemalt ühel** manusel on märksõna
+- **Dashboardi arvutused**:
+  1. Vali periood: filtreeri read, kus `decision_adoption_date` jääb valitud vahemikku.
+  2. **Kõik relevant otsused (nimetaja):** loe filtreeritud ridade arv — iga rida on üks Art. `6(1)(b)` / `8(2)` otsus.
+  3. **Tabatud otsused (arvujada):** loe read, kus `has_keyword_hit = true`.
+  4. **Osakaal:** tabatud otsused ÷ kõik relevant otsused (samal perioodil).
+
+Tulevased marts (nt kuu- või sektoriagregaadid) võivad ehitada sama tabeli pealt.
 
 
 ---
