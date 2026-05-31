@@ -4,8 +4,7 @@
 
 ```
 Andmete laadimine (Python):
-  → download_json.py
-  → data/raw/case-data-M.json
+  → download_json.py → data/raw/case-data-M.json
   → inspect_json.py → inspect_json_output.txt [valikuline, ei pea olema automatiseeritud andmevoo osa]
 
 Toorandmete töötlemine (Python, SQL):
@@ -56,7 +55,7 @@ Loob tabeli `raw.decision_hits` (märksõnale vastanud PDF-id). Käivita pärast
 - Tabamuse veerud (`load_decision_hits.py` täidab need PDF-i otsingu tulemusena):
   - `matchedKeywords` — kõik leitud unikaalsed märksõnad, eraldatud ` | `
   - `matchedLanguage` — millise keele reegleid kasutati
-  - `matchContext` — PDF-i tekstilõik (~100 tähemärki enne ja pärast) dokumendi **kõige varasema** tabamuse ümbruses
+  - `matchContext` — PDF-i tekstilõik (100 tähemärki enne ja pärast) dokumendi **kõige varasema** tabamuse ümber
   - `loadedAt` — millal tabamus andmebaasi salvestati
 
 ---
@@ -217,30 +216,27 @@ Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`
 **`int_decisions_with_hits`**:
 - `int_relevant_decisions` **LEFT JOIN** `stg_decision_hits` (`decision_id` järgi) ehk kõik `6(1)(b)` / `8(2)`
 - `has_keyword_hit` veerg — jah/ei, kas `6(1)(b)` / `8(2)` PDF-ist leiti vahekohtu märksõna ehk kõik `6(1)(b)` / `8(2)`, mille igal real on märgitud, kas sisaldab märksõna või mitte
-- tabamuse osakaal: `has_keyword_hit = true` / kõik read
 
 ### dbt marts (`models/marts/`)
 
 Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
 
 - **Üks rida = üks otsus** (mitte PDF-manus): `GROUP BY case_number, decision_number`
-- ainult Art. `6(1)(b)` / `8(2)` (tuleb `int_decisions_with_hits`-ist)
+- ainult Art. `6(1)(b)` / `8(2)` (tuleb `int_decisions_with_hits` tabelist)
 - **kuupäev:** `decision_adoption_date` (`dec_decisionAdoptionDate`) — dashboardi perioodifilter
 - **tabamus:** `has_keyword_hit = true`, kui **vähemalt ühel** manusel on märksõna
 - **Dashboardi arvutused**:
   1. Vali periood: filtreeri read, kus `decision_adoption_date` jääb valitud vahemikku.
-  2. **Kõik relevant otsused (nimetaja):** loe filtreeritud ridade arv — iga rida on üks Art. `6(1)(b)` / `8(2)` otsus.
-  3. **Tabatud otsused (arvujada):** loe read, kus `has_keyword_hit = true`.
+  2. **Kõik relevantsed otsused:** loe filtreeritud ridade arv — iga rida on üks Art. `6(1)(b)` / `8(2)` otsus.
+  3. **Tabatud otsused:** loe read, kus `has_keyword_hit = true`.
   4. **Osakaal:** tabatud otsused ÷ kõik relevant otsused (samal perioodil).
-
-Tulevased marts (nt kuu- või sektoriagregaadid) võivad ehitada sama tabeli pealt.
 
 
 ---
 
 ## Dashboard (Apache Superset)
 
-Testseadistus on `compose.yml` failis (konteiner `superset`, port **8088**).
+Seadistus `compose.yml` failis (konteiner `superset`, port **8088**).
 
 - **Allikas:** `marts.mart_arbitration_decisions`
 - **Perioodifilter:** `decision_adoption_date`

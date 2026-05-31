@@ -14,7 +14,7 @@
 
 ### Algandmete laadimine ja töötlemine (Python)
 - [`download_json.py`](../scripts/ingestion/download_json.py) — JSON allalaadimine `data/raw/case-data-M.json`, valideerimine, katkestuskaitse.
-- [`inspect_json.py`](../scripts/analysis/inspect_json.py) — arenduslik JSON-i ülevaade (`inspect_json_output.txt`).
+- [`inspect_json.py`](../scripts/analysis/inspect_json.py) — JSON faili ülevaade (`inspect_json_output.txt`).
 - [`init/create_raw_schema.sql`](../init/create_raw_schema.sql) — skeem `raw`, tabel `raw.decisions` (karkass + jälgimisveerud).
 - [`load_decisions.py`](../scripts/ingestion/load_decisions.py) — JSON → `raw.decisions`:
   - dünaamiline veergude lisamine JSON struktuuri põhjal;
@@ -24,9 +24,9 @@
 - [`init/create_raw_decision_hits.sql`](../init/create_raw_decision_hits.sql) — tabel `raw.decision_hits` (võtme-, tabamus- ja jälgimisveerud).
 - [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py) — PDF-id → märksõnaotsing → `raw.decision_hits`:
   - loeb `raw.decisions` tabelist töötlemata PDF-id (`pdfProcessedAt IS NULL`, `isActive = TRUE`);
-  - otsib märksõnu `config/keywords.txt` järgi vastavalt `att_attachmentLanguage`-le;
-  - salvestab tabamused `raw.decision_hits` (metaandmed kopeeritakse `raw.decisions`-st);
-  - uuendab `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).
+  - otsib märksõnu `config/keywords.txt` järgi vastavalt `att_attachmentLanguage` väärtusele;
+  - salvestab tabamused `raw.decision_hits` (metaandmed kopeeritakse `raw.decisions` tabelist);
+  - uuendab `raw.decisions` veeru `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).
 ### dbt
   - `sources` (`raw.decisions`, `raw.decision_hits`);
   - `models/staging/` — `stg_decision_hits`, `stg_relevant_decisions`;
@@ -41,15 +41,15 @@
 
 ## Järgmised sammud
 
-**dbt marts** — Luua ülejäänud mudelid.  
+**dbt marts** — luua ülejäänud mudelid.  
 
-**Dashboard** — Superset (või ka Streamlit).  
+**Dashboard** — Superset (või ka Streamlit) vaadete ehitamine.  
 
 **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt).  
 
-**Uuenda README** — täielik käivitamise järjekord vastavalt `data_pipeline.md`, projekti lõplik struktuur.  
+**Uuendada README** — projekti lõplik struktuur.  
 
-**Uuenda [`docs/architecture.md`](architecture.md)**- andmebaasi kihtide kirjeldus võib vajada uuendamist vastavalt `data_pipeline.md`-le.  
+**Uuendada [`docs/architecture.md`](architecture.md)**- andmebaasi kihtide kirjeldus võib vajada uuendamist vastavalt `data_pipeline.md`-le.  
 
 ---
 
@@ -57,7 +57,7 @@
 
 | Takistus / risk | Mõju | Võimalik maandus |
 |-----------------|------|------------------|
-| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall, võib olla ei ole siiski vajalik, sest mingit blokkimist ei toimu |
+| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall (võib olla ei ole siiski vajalik, sest mingit blokeerimist ei toimu) |
 | PDF töötlemine on aeglane (3+ h) | Pipeline viibib; arendus/testimine aeglane | Airflow andmevoog hoolikalt läbi mõelda |
-| EC JSON struktuuri muutused | `load_decisions` võib jätta veerud/väärtused puudu | Dünaamiline schema + hoiatused; `inspect_json.py` perioodiline kontroll |
+| JSON faili struktuuri muutused | `load_decisions` võib jätta veerud/väärtused puudu | Dünaamiline schema + hoiatused; `inspect_json.py` perioodiline kontroll |
 | Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |

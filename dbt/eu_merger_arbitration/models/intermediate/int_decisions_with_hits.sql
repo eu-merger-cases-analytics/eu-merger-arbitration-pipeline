@@ -1,5 +1,5 @@
 /*
-  Relevant attachments (denominator) left-joined to keyword hits (numerator).
+  Relevant attachments left-joined to keyword hits.
   One row per relevant attachment; hit columns are null when no keyword match.
 */
 

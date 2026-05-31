@@ -55,7 +55,7 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 
 ## Käivitamine
 
-Täielik käskude nimekiri (kõik variandid, reset, dbt, valikulised skriptid): [`docs/run_commands.md`](docs/run_commands.md)
+Pikem käskude nimekiri: [`docs/run_commands.md`](docs/run_commands.md)
  
 ```bash
 # Keskkonna seadistamine
@@ -88,20 +88,8 @@ docker compose exec python python analysis/query_decisions_sample.py
 # Raw skeema decisions_hits tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
 
-# Kontroll: kas raw.decisions ja raw.decision_hits on olemas
-docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
-
-# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde, testimiseks kasuta TEST skripti).
+# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
 docker compose exec python python ingestion/load_decision_hits.py
-
-# Sama, pausiga PDF-ide vahel (vähendab allalaadimisvigu, töötlemisaeg eriti pikk)
-docker compose exec -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_decision_hits.py
-
-# TEST skript, N järgmist töötlemata PDF-i (asenda 5; võib käivitada korduvalt — iga kord võetakse järgmised read decision_id järgi, juba töödeldud read ja decision_hits kirjed jäävad alles)
-docker compose exec -e TEST_LIMIT=5 python python ingestion/load_decision_hits.py
-
-# decision_hits tabelist soovitud arvu ridade pärimine
-docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sample.py
 
 # decisions_hits tabelisse salvestatud andmetest kokkuvõtte genereerimine summarize_decision_hits_output.json faili
 docker compose exec python python analysis/summarize_decision_hits.py

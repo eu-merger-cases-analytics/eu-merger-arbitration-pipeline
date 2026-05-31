@@ -13,7 +13,7 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 | 3 | Analüüs *(valikuline)* | Arenduse ja kvaliteedi kontroll |
 | 4 | dbt | `raw` → `staging` → `intermediate` → `marts` |
 | 5 | Andmebaas | psql ja näidispäringud |
-| 6 | Superset *(valikuline)* | Dashboard test `http://localhost:8088` |
+| 6 | Superset | Dashboard test `http://localhost:8088` |
 
 ---
 
@@ -40,7 +40,7 @@ docker compose ps
 
 ## 2. Andmete laadimine (Python)
 
-### Kohustuslik järjekord (esimene täisjooks)
+### Kohustuslik järjekord
 
 ```bash
 # JSON allalaadimine → data/raw/case-data-M.json
@@ -61,13 +61,13 @@ docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw
 # Kontroll: raw.decisions + raw.decision_hits
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
-# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; katkestuse korral jätkub pdfProcessedAt järgi)
+# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; katkestuse korral jätkub uuestikäivitamisel pdfProcessedAt järgi)
 docker compose exec python python ingestion/load_decision_hits.py
 ```
 
 ### PDF töötlemise variandid
 
-Vaikimisi `REQUEST_DELAY_SECONDS=0` (paus puudub). Kui tekib palju `download:` vigu, proovi pausiga või töötle ainult veaga read:
+Vaikimisi `REQUEST_DELAY_SECONDS=0` (pdf-d laetakse järjest). Kui tekib palju `download` vigu, proovi pausiga või töötle ainult veaga read:
 
 ```bash
 # Paus PDF-ide vahel (nt 2 s)
@@ -87,7 +87,7 @@ docker compose exec -e RETRY_DOWNLOAD_ERRORS=1 -e REQUEST_DELAY_SECONDS=2 python
 Need skriptid **ei kuulu** automaatsesse pipeline'i; kasulikud arenduses ja kvaliteedi kontrollis.
 
 ```bash
-# JSON-i struktuur enne laadimist
+# JSON-i struktuur
 docker compose exec python python analysis/inspect_json.py
 
 # Üks näidisrida raw.decisions (esimene decision_id järgi)
@@ -99,14 +99,11 @@ docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sa
 # PDF töötlemise ja tabamuste kokkuvõte → summarize_decision_hits_output.json
 docker compose exec python python analysis/summarize_decision_hits.py
 
-# Kuupäevade täituvus JSON-is ja raw.decisions-is
+# Kuupäevade väärtuste olemasolu kontroll JSON-is ja raw.decisions tabelis
 docker compose exec python python analysis/summarize_date_fields.py
 
 # Manuse vs otsuse tase (tabamuste arvutamise kontroll)
 docker compose exec python python analysis/check_decision_grain.py
-
-# Manuste link + metadataReference kontroll JSON-is
-docker compose exec python python analysis/check_attachment_link_ref.py
 
 # Unikaalsuse kontroll (link + metadataReference)
 docker compose exec python python analysis/check_attachment_link_ref_uniqueness.py
@@ -116,11 +113,11 @@ docker compose exec python python analysis/check_attachment_link_ref_uniqueness.
 
 ## 4. dbt
 
-Käivita pärast jaotist 2. Mudelid ilmuvad Postgresi skeemidesse **`staging`**, **`intermediate`**, **`marts`** (mitte `public_staging`).
+Käivita pärast jaotist 2. Mudelid ilmuvad Postgresi skeemidesse **`staging`**, **`intermediate`**, **`marts`**.
 
 **Mudelid:** `stg_decisions`, `stg_decision_hits` → `int_relevant_decisions`, `int_decisions_with_hits` → `mart_arbitration_decisions`
 
-### Kohustuslik järjekord (esimene dbt jooks)
+### Kohustuslik järjekord
 
 ```bash
 # 1. Kõik mudelid (staging + intermediate + marts)
@@ -130,7 +127,7 @@ docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
 ```
 
-### Kihtide kaupa (arenduses)
+### Kihtide kaupa (arenduses jooksul)
 
 ```bash
 # Ainult staging
@@ -145,7 +142,7 @@ docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select ma
 # Üks mudel
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --select mart_arbitration_decisions --profiles-dir ."
 
-# Süntaks kontroll (ilma käivitamiseta)
+# Süntaks kontroll (kontrollib ilma käivitamiseta, kas dbt projekti failid ja ülesehitus on korras)
 docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt parse --profiles-dir ."
 ```
 
@@ -159,14 +156,14 @@ FROM information_schema.tables
 WHERE table_schema IN ('staging', 'intermediate', 'marts')
 ORDER BY table_schema, table_name;"
 
-# Relevant manused ja tabamused (attachment grain)
+# Relevantsed manused ja tabamused (attachment taseme granulaarsus)
 docker compose exec db psql -U user -d eu-merger-arbitration -c "
 SELECT
   COUNT(*) AS relevant_attachments,
   COUNT(*) FILTER (WHERE has_keyword_hit) AS with_keyword_hit
 FROM intermediate.int_decisions_with_hits;"
 
-# Relevant otsused, tabamused ja osakaal (decision grain — dashboard)
+# Relevantsed otsused, tabamused ja osakaal (decision taseme granulaarus)
 docker compose exec db psql -U user -d eu-merger-arbitration -c "
 SELECT
   COUNT(*) AS relevant_decisions,
@@ -183,7 +180,10 @@ FROM marts.mart_arbitration_decisions;"
 ## 5. Andmebaas
 
 ```bash
-# Interaktiivne psql
+# PostgreSQL interaktiivne käsurea klient (psql) db-konteineris.
+# Avab sessiooni andmebaasiga eu-merger-arbitration; saad käivitada SQL-päringuid
+# otse terminalis (nt SELECT * FROM marts.mart_arbitration_decisions LIMIT 5;).
+# Skeemid: raw, staging, intermediate, marts. Väljumine: \q
 docker compose exec db psql -U user -d eu-merger-arbitration
 
 # Näide: tabamuste arv
@@ -200,7 +200,7 @@ FROM raw.decisions WHERE \"isActive\" = TRUE;"
 
 ---
 
-## 6. Superset (test)
+## 6. Superset
 
 Lihtne ühe-konteineri seadistus. Superset'i enda metadata on SQLite'is; andmed tulevad olemasolevast Postgresist (`marts`).
 

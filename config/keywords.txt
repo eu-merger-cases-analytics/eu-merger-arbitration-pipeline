@@ -22,8 +22,8 @@
  
 BG: арбитраж*
  
-CZ: rozhodč*:řízen*
-CZ: arbitraž*
+CS: rozhodč*:řízen*
+CS: arbitraž*
  
 DA: voldgift*
  
