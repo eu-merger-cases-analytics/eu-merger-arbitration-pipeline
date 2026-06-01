@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-05-31T09:57:21.360471+00:00",
+  "generatedAt": "2026-06-01T08:52:47.435829+00:00",
   "testLimit": null,
   "processing": {
-    "firstProcessedAt": "2026-05-31T02:40:55.626692",
-    "lastProcessedAt": "2026-05-31T09:54:01.258640",
+    "firstProcessedAt": "2026-06-01T01:00:16.173045",
+    "lastProcessedAt": "2026-06-01T05:14:10.003030",
     "processedAttachments": 11108,
     "pendingAttachments": 0,
     "processedRelevantAttachments": 9950,
@@ -30,8 +30,8 @@
     "matchedRelevantCases": 191,
     "matchedRelevantDecisions": 193,
     "relevantHits": 277,
-    "firstHitAt": "2026-05-31T02:41:31.465461",
-    "lastHitAt": "2026-05-31T09:43:57.821193",
+    "firstHitAt": "2026-06-01T01:00:26.932008",
+    "lastHitAt": "2026-06-01T05:04:00.402023",
     "hitsByLanguage": {
       "EN": 170,
       "FR": 57,

@@ -61,7 +61,7 @@ docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw
 # Kontroll: raw.decisions + raw.decision_hits
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
-# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; katkestuse korral jätkub uuestikäivitamisel pdfProcessedAt järgi)
+# PDF-id → märksõnaotsing → raw.decision_hits (võtab tunde; katkestuse korral jätkub uuesti käivitamisel pdfProcessedAt järgi)
 docker compose exec python python ingestion/load_decision_hits.py
 ```
 
@@ -70,13 +70,13 @@ docker compose exec python python ingestion/load_decision_hits.py
 Vaikimisi `REQUEST_DELAY_SECONDS=0` (pdf-d laetakse järjest). Kui tekib palju `download` vigu, proovi pausiga või töötle ainult veaga read:
 
 ```bash
-# Paus PDF-ide vahel (nt 2 s)
-docker compose exec -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_decision_hits.py
+# Paus PDF-ide vahel (nt 1 s)
+docker compose exec -e REQUEST_DELAY_SECONDS=1 python python ingestion/load_decision_hits.py
 
 # Ainult N järgmist töötlemata PDF-i (asenda 5)
 docker compose exec -e TEST_LIMIT=5 python python ingestion/load_decision_hits.py
 
-# Uuesti proovi ainult allalaadimise veaga read
+# Uuesti ainult allalaadimise veaga read
 docker compose exec -e RETRY_DOWNLOAD_ERRORS=1 -e REQUEST_DELAY_SECONDS=2 python python ingestion/load_decision_hits.py
 ```
 
@@ -99,10 +99,13 @@ docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sa
 # PDF töötlemise ja tabamuste kokkuvõte → summarize_decision_hits_output.json
 docker compose exec python python analysis/summarize_decision_hits.py
 
+# Tabamustega ridade JSON fail data\processed\decision_hits.json
+docker compose exec python python analysis/export_decision_hits_json.py 
+
 # Kuupäevade väärtuste olemasolu kontroll JSON-is ja raw.decisions tabelis
 docker compose exec python python analysis/summarize_date_fields.py
 
-# Manuse vs otsuse tase (tabamuste arvutamise kontroll)
+# Manuse vs otsuse tase (tabamuste arvutamise kontroll pärst dbt käivitamist)
 docker compose exec python python analysis/check_decision_grain.py
 
 # Unikaalsuse kontroll (link + metadataReference)
@@ -156,7 +159,7 @@ FROM information_schema.tables
 WHERE table_schema IN ('staging', 'intermediate', 'marts')
 ORDER BY table_schema, table_name;"
 
-# Relevantsed manused ja tabamused (attachment taseme granulaarsus)
+# Relevantsed PDF-id ja tabamused (attachment taseme granulaarsus)
 docker compose exec db psql -U user -d eu-merger-arbitration -c "
 SELECT
   COUNT(*) AS relevant_attachments,
@@ -219,21 +222,19 @@ Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
 
 ### Andmebaasi ühendus Supersetis (üks kord)
 
-1. **Settings → Database connections → + Database**
+1. ** '+' dropdown → Data → Connect database →**
 2. Vali **PostgreSQL**
-3. **SQLAlchemy URI** (Docker-võrk, mitte localhost):
+3. Vali **Connect this database wih a SQLAlchemy URI string instead** (Docker-võrk, mitte localhost):
 
    ```
    postgresql+psycopg2://user:user@db:5432/eu-merger-arbitration
    ```
 
-   (Kasuta `.env` väärtusi, kui need erinevad.)
-
 4. **Test connection** → **Connect**
 
 ### Dataset ja chart
 
-1. **Data → Datasets → + Dataset** → vali ühendus → skeem **`marts`** → tabel **`mart_arbitration_decisions`**
+1. ** '+' dropdown → Data → Create Dataset** → vali ühendus → skeem **`marts`** → tabel **`mart_arbitration_decisions`**
 2. **Charts → + Chart** → vali dataset
 3. Lisa filter **`decision_adoption_date`** (Time range)
 4. Näiteks **Big Number**: metric `COUNT(*)`, filter perioodil

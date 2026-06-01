@@ -79,7 +79,7 @@ dec_metadataReference: M.1185-DEC39394
 dec_metadataType: METADATA_DECISION
 decision_id: 20
 hit_id: 1
-loadedAt: 2026-05-31 02:41:31.465461
+loadedAt: 2026-06-01 01:00:26.932008
 matchContext: de la clause compromissoire prévue par le Nouveau Code de Procédure Civile français, une instance d’arbitrage indépendante et compétente (“l’Arbitre”). L’Arbitre jugera en dernier ressort de tout liti
 matchedKeywords: arbitrag*
 matchedLanguage: FR
@@ -163,7 +163,7 @@ dec_metadataReference: M.1186-DEC39396
 dec_metadataType: METADATA_DECISION
 decision_id: 22
 hit_id: 2
-loadedAt: 2026-05-31 02:41:38.886137
+loadedAt: 2026-06-01 01:00:32.002486
 matchContext: assemblées générales et des conseils d’administration de GEAL. Il prévoit également un mécanisme d’arbitrage indépendant en cas de désaccord. 9. Par ailleurs, le projet de statuts de GEAL prévoit un
 matchedKeywords: arbitrag*
 matchedLanguage: FR
@@ -247,7 +247,7 @@ dec_metadataReference: M.2050-DEC40427
 dec_metadataType: METADATA_DECISION
 decision_id: 69
 hit_id: 3
-loadedAt: 2026-05-31 02:43:05.411831
+loadedAt: 2026-06-01 01:01:02.821161
 matchContext: increase substantially after the first two years. Finally, the undertaking did not provide for any arbitration mechanism in case of a dispute. 78. For these reasons, the Commission reached the conclu
 matchedKeywords: arbitrat*
 matchedLanguage: EN
@@ -331,7 +331,7 @@ dec_metadataReference: M.2097-DEC40482
 dec_metadataType: METADATA_DECISION
 decision_id: 150
 hit_id: 4
-loadedAt: 2026-05-31 02:46:20.741117
+loadedAt: 2026-06-01 01:02:51.621556
 matchContext: προµηθευτές παραδίδουν τα προϊόντα στις κτιριακές εγκαταστάσεις των πελατών. Εάν δεν είναι δυνατή η διαιτησία τιµών µεταξύ των πελατών, οι προµηθευτές µπορούν να χρεώνουν διαφορετικές τιµές σε πελάτες
 matchedKeywords: διαιτη*
 matchedLanguage: EL
@@ -415,7 +415,7 @@ dec_metadataReference: M.2097-DEC40482
 dec_metadataType: METADATA_DECISION
 decision_id: 152
 hit_id: 5
-loadedAt: 2026-05-31 02:46:30.940666
+loadedAt: 2026-06-01 01:02:59.873049
 matchContext: as, par exemple, lorsque des fournisseurs livrent les produits directement chez le client. Si aucun arbitrage entre les clients n’est possible, les fournisseurs peuvent appliquer des prix différenciés
 matchedKeywords: arbitrag*
 matchedLanguage: FR
