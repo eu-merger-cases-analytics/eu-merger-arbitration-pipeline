@@ -23,43 +23,56 @@ Kirjeldus andmestikust ja selle kasutusest:
 
 Euroopa Komisjoni avaandmed: igal (töö?)päeval uuenev JSON-fail koondumisotsustega al 1990, saadaval ülaloleval lingil. Kasutatakse tingimuslikult heakskiitvate otsuste (st nii 1989 kui 2004 koondumismääruse Art 6(1)(b) või Art 8(2) all tehtud otsuste) pdf-ides sõnaotsingute alusel selliste menetluste tulemustena reastamiseks, milles on kaalutud tingimuste jõustamiseks vahekohtumehhanismi. Salvestame nende menetluste kohta ka metaandmeid, et võimaldada hiljem üksikasjalikumat analüüsi otsustest, nende ajaloost ja trendidest. 
 
-Metaandmed, mida plaanime iga märksõnale hiti andnud otsuse kohta salvestada, on mh:
-1.	Koondumise osaliste nimed
-2.	Koondumisteate kuupäev
-3.	Menetluse tüüp
-4.	Menetluse number
-5.	Määrus, mille all menetlust läbi viidi (kas 1989. või 2004. aasta oma)
-6.	Tegevusala sektor(id), mida koondumine puudutas, NACE koodi alusel
-7.	Kas oli lihtsustatud menetlus (ei tohiks olla tingimusliku otsuseni viinud – kui tuleb positiivne väli, siis anda teade ebatavalisest tulemusest (kuigi ei pruugi päris tingimata viga olla))
-8.	Menetluse alguskuupäev
-9.	Viimase otsuse kuupäev menetluses
-10.	Konkreetse otsisõnale vastanud otsuse dokumendinumber (erineb menetluse numbrist)
-11.	Euroopa Liidu Teatajas otsuse avaldamise kuupäev
-12.	Otsuse keel
-13.	Link otsuse pdf-failile
-14.	Otsuse pdfi failinimi
-
 
 ## Andmevoog
-Skeem: ELT, kuna avaandmetes sisalduvad Komisjoni otsused on kõik mitte-konfidentsiaalsed (andmed ei sisalda ärisaladust ega isikuandmeid). Vt täpsemat diagrammi koos selgitustega siin: https://docs.google.com/presentation/d/1kcEEKtDwguRiQEN5g-xl2KySd35rJbNikOB7Dnkd5dw/edit?slide=id.p#slide=id.p  
 
-<p align="center">
-  <img src="images/architecture.png" width="800">
-</p>
+Skeem: ELT — avaandmetes sisalduvad Komisjoni otsused on avalikud (ei sisalda ärisaladust ega isikuandmeid).
 
-Detailne andmevoo kirjeldus: [`data_pipeline.md`](data_pipeline.md)
+```mermaid
+%%{init: {"themeVariables": {"fontSize": "17px"}}}%%
+flowchart TB
+    subgraph ing [Ingestion]
+        direction TB
+        ec["EC JSON<br/>all cases"]
+        dl["download_json<br/>file on disk"]
+        ld["load_decisions<br/>all JSON columns"]
+        rawD[("raw.decisions<br/>every PDF row")]
+        lh["load_decision_hits<br/>PDF keyword scan"]
+        rawH[("raw.decision_hits<br/>hits only")]
+        ec --> dl --> ld --> rawD --> lh --> rawH
+    end
 
-Tööriistad: Python, DBT ja Airflow
+    subgraph dbtL [dbt]
+        direction TB
+        stg[("staging<br/>views raw mirror")]
+        inte[("intermediate<br/>6-1-b 8-2 plus hit flag")]
+        mart[("mart<br/>table one row per decision")]
+        stg --> inte --> mart
+    end
+
+    ss[Superset]
+    af[Airflow planned]
+
+    rawH --> stg
+    mart --> ss
+    af -.-> dl
+    af -.-> lh
+    af -.-> mart
+```
+
+Detailne kirjeldus: [`data_pipeline.md`](data_pipeline.md)
+
+Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: käsitsi / tulevikus Airflow.
 
 
 ## Andmebaasi kihid
 
 | Kiht | Roll |
 |------|------|
-| `staging` | Hoiab allika andmeid töötlemata kujul. |
-| `intermediate` | Rakendab äriloogikat. |
-| `mart` | Hoiab transformeeritud ja äriloogikat sisaldavaid tabeleid. |
-Vt ka detaile eelmises punktis viidatud skeemilt.
+| `raw` | Algallikast laetakse andmebaasi kõik andmed ja märksõnu sisaldavate PDF failide andmed. |
+| `dbt staging` | Andmebaasist raw andmed töötlemata kujul. |
+| `dbt intermediate` | Transformeerib andmeid ja rakendab äriloogikat. |
+| `dbt marts` | Dashboardi tabelid (nt `mart_arbitration_decisions`). |
 
 
 ## Tööjaotus
@@ -69,16 +82,17 @@ Vt ka detaile eelmises punktis viidatud skeemilt.
 | Andmeallika omanik | Kirjutab sissevõtu ja uuendamise loogika | Katrin (kood); Riina (ekspertiis andmeallika sisu reaalelu vastete osas – nt mis sätete all vastu võetud otsuseid üldse otsida ja lugeda; andmekvaliteedi vigade osas ennetavad meetmed (nt teostada sõnaotsing nii vanilje-Art 8(2) kui Art 8(2) with conditions and obligations alla pesastatud otsustest, kuna 8(2) ilma tingimusteta on haruharv ja testotsingu alusel näeme, et vanilje-8(2)-na pesastatud otsustes on vahel ikkagi tingimused ja kohustused sees.)) |
 | Transformatsioonide omanik | Kirjutab intermediate ja mart kihi mudelid ning mõõdikute arvutuse | Riina (äripoole disain, sh otsisõnad kõigis EU 24 ametlikus keeles), Katrin (kood) |
 | Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | Vahur |
-| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Riina, kood Vahur, Katrin |
+| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Riina, Vahur, Katrin |
 
 
 ## Riskid
 
 | Risk | Mõju | Maandus |
 |------|------|---------|
-| Euroopa Komisjoni lehekülg, kust andmed laetakse, ei ole ligipääsetav | Andmeid ei saa uuendada | Uuendamist korratakse. Kaalume backfilli juhtudel, kus korduskatse ei toimi nt 3 päeva järjest
-| Andmefaili struktuur on muutunud | Ei leia vajalikke väärtusi üles | Faili struktuuri kontroll, muutustest teavitamine |
+| Euroopa Komisjoni lehekülg, kust andmed laetakse, ei ole ligipääsetav | Andmeid ei saa uuendada | Uuendamist korratakse, backfill
+| Andmefaili struktuur on muutunud | Ei leia vajalikke väärtusi üles | Dünaamiline schema, faili struktuuri kontroll, muutustest teavitamine |
 | Scheduler ei käivitu, andmed ei värskendu automaatselt | Saame päringust vananenud väärtused | Logide kontrollimine |
+| Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |
 
 
 ## Privaatsus ja turve

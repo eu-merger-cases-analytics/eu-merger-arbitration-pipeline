@@ -31,7 +31,7 @@
   - `sources` (`raw.decisions`, `raw.decision_hits`);
   - `models/staging/` — `stg_decision_hits`, `stg_relevant_decisions`;
   - `models/intermediate/` — kuupäevad, NACE, joinid, kvaliteet, selekteeritakse 6(1)(b) ja 8(2) otsused.
-  - `models/marts/` — dashboardi mõõdikud; loodud üks mudel.  
+  - `models/marts/` — dashboardi mõõdikud.  
 
 ### Superset
   - seadistatud testimiseks.
@@ -46,15 +46,11 @@
 
 ## Järgmised sammud
 
-**dbt marts** — luua ülejäänud mudelid.  
-
-**Dashboard** — Superset (või ka Streamlit) vaadete ehitamine.  
+**Dashboard** — Superset dashboardi ehitamine.  
 
 **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt).  
 
 **Uuendada README** — projekti lõplik struktuur.  
-
-**Uuendada [`docs/architecture.md`](architecture.md)**- andmebaasi kihtide kirjeldus võib vajada uuendamist vastavalt `data_pipeline.md`-le.  
 
 ---
 
