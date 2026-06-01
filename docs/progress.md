@@ -35,9 +35,9 @@
 
 ### Superset
   - seadistatud testimiseks.
-  - loodud üks dashboard ühe diagrammiga
+  - loodud dashboard
   <p align="left">
-    <img src="images/ss_total_decisions.png" width="200">
+    <img src="images/superset_eu-merger-arbitration-2026-06-01.jpg" width="1200">
   </p>
 
 
@@ -45,8 +45,6 @@
 ---
 
 ## Järgmised sammud
-
-**Dashboard** — Superset dashboardi ehitamine.  
 
 **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt).  
 
