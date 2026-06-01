@@ -1,10 +1,10 @@
-# Käivitamise käskude täielik nimekiri
+# Käivitamise käsud
 
 Täpsem andmevoo kirjeldus: [`data_pipeline.md`](data_pipeline.md).
 
 Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteinerid on üleval (`docker compose up -d --build`).
 
-## Pipeline'i järjekord
+## Andmevoog
 
 | Samm | Jaotis | Mida teeb |
 |------|--------|-----------|
@@ -49,7 +49,7 @@ docker compose exec python python ingestion/download_json.py
 # Raw skeema + raw.decisions tabel
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
 
-# Kontroll: raw.decisions peaks olemas olema
+# Kontroll: raw.decisions
 docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
 
 # JSON → raw.decisions
@@ -220,11 +220,11 @@ docker compose logs -f superset
 Ava brauseris: **http://localhost:8088**  
 Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
 
-### Andmebaasi ühendus Supersetis (üks kord)
+### Andmebaasi ühendus Supersetis
 
 1. ** '+' dropdown → Data → Connect database →**
 2. Vali **PostgreSQL**
-3. Vali **Connect this database wih a SQLAlchemy URI string instead** (Docker-võrk, mitte localhost):
+3. Vali **Connect this database with a SQLAlchemy URI string instead** (Docker-võrk, mitte localhost):
 
    ```
    postgresql+psycopg2://user:user@db:5432/eu-merger-arbitration
@@ -242,7 +242,7 @@ Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
 
 ---
 
-## 7. Peatamine
+## 7. Konteinerite peatamine
 
 ```bash
 docker compose down
@@ -279,22 +279,3 @@ docker compose exec python python ingestion/load_decision_hits.py
 `create_raw_schema.sql` kustutab enne `raw.decision_hits`, seejärel `raw.decisions`.
 
 ---
-
-## Kiire viide: skriptid
-
-| Skript | Roll | Pipeline |
-|--------|------|----------|
-| `ingestion/download_json.py` | JSON allalaadimine | Jah |
-| `ingestion/load_decisions.py` | JSON → `raw.decisions` | Jah |
-| `ingestion/load_decision_hits.py` | PDF + märksõnad → `raw.decision_hits` | Jah |
-| `analysis/inspect_json.py` | JSON ülevaade | Ei |
-| `analysis/query_decisions_sample.py` | Näidis `raw.decisions` | Ei |
-| `analysis/query_decision_hits_sample.py` | Näidis `raw.decision_hits` | Ei |
-| `analysis/summarize_decision_hits.py` | Kokkuvõtte JSON | Ei |
-| `analysis/summarize_date_fields.py` | Kuupäevade täituvus | Ei |
-| `analysis/check_decision_grain.py` | Otsuse vs manuse tase | Ei |
-| `analysis/check_attachment_link_ref.py` | Link/ref kontroll | Ei |
-| `analysis/check_attachment_link_ref_uniqueness.py` | Unikaalsuse kontroll | Ei |
-| `init/create_raw_schema.sql` | `raw.decisions` | Jah |
-| `init/create_raw_decision_hits.sql` | `raw.decision_hits` | Jah |
-| dbt `dbt run` / `dbt test` | `raw` → `staging` → `intermediate` → `marts` | Jah (pärast jaotist 2) |

@@ -23,9 +23,9 @@ Toorandmete töötlemine (Python, SQL):
 
 Analüütika (dbt):
   → dbt staging (view) — raw andmed
-  → dbt intermediate (view) — äriloogika (kuupäevad, NACE, joinid, kvaliteet), selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused
+  → dbt intermediate (view) — transformatsioon, äriloogika (kuupäevad, NACE, joinid, kvaliteet, selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused)
   → dbt marts (tabel) — dashboardi mõõdikud
-  → dashboard (Superset / Streamlit)
+  → dashboard (Superset)
 ```
 
 ---
@@ -76,16 +76,13 @@ Laeb EU Komisjoni koondumisotsuste JSON faili kettale: `data/raw/case-data-M.jso
 ---
 
 ### [`inspect_json.py`](../scripts/analysis/inspect_json.py)
-Uurib allalaetud faili `data/raw/case-data-M.json` struktuuri ja kvaliteeti enne andmebaasi laadimist. Arendusaegne tööriist (`scripts/analysis/`), **ei pea kuuluma automaatsesse pipeline'i**. Käivita pärast `download_json.py`.
-
-**Sisend:** `data/raw/case-data-M.json`  
+Uurib allalaetud faili `data/raw/case-data-M.json` struktuuri ja kvaliteeti. Statistika kaasuste kohta, millel on vähemalt üks otsus, mille `decisionTypes` sisaldab `6(1)(b)` või `8(2)`. Arendusaegne tööriist (`scripts/analysis/`), **ei pea kuuluma automaatsesse pipeline'i**. Käivita pärast `download_json.py`.  
 **Väljund:** konsool + `scripts/analysis/inspect_json_output.txt` (iga käivitus kirjutab faili üle).  
-Statistikat kaasuste kohta, millel on vähemalt üks otsus, mille `decisionTypes` sisaldab `6(1)(b)` või `8(2)`:
 
 ---
 
 ### [`load_decisions.py`](../scripts/ingestion/load_decisions.py)
-Laeb **kõigi** kaasuste **kõik metaandmed** failist `data/raw/case-data-M.json` tabelisse `raw.decisions`.
+Laeb **kõigi kaasuste kõik metaandmed** failist `data/raw/case-data-M.json` tabelisse `raw.decisions`.
 
 **Üks rida = üks unikaalne PDF** (`attachmentLink + att_metadataReference`). Case ja decision väljad korduvad, täielik normaliseerimine toimub dbt-s.
 
@@ -109,13 +106,13 @@ Laeb **kõigi** kaasuste **kõik metaandmed** failist `data/raw/case-data-M.json
 ---
 
 ### [`load_decision_hits.py`](../scripts/ingestion/load_decision_hits.py)
-Loeb `raw.decisions` tabelist töötlemata PDF-id, otsib vahekohtu märksõnu ja salvestab **ainult tabamusega otsuste metaandmed** tabelisse `raw.decision_hits`. `raw.decisions`sisaldab kõik manused, `raw.decision_hits` osakaal arvutatakse dbt-s (intermediate).
+Loeb `raw.decisions` tabelist töötlemata PDF-id, otsib vahekohtu märksõnu ja salvestab **ainult tabamusega otsuste metaandmed** tabelisse `raw.decision_hits`. `raw.decisions`sisaldab kõik manused, `raw.decision_hits` ainult märksõnu sisaldavad.
 
 **Töövoog iga PDF kohta:**
 1. Vali read: `pdfProcessedAt IS NULL`, `isActive = TRUE` (pdf pole veel töödeldud ja võrreldes andmebaasi salvestatud andmetega pole laetud json failis pdf kadunud)
 2. Lae PDF alla `att_attachmentLink` URL-ilt
 3. Otsi tekstist `config/keywords.txt` pdf keelele vastavad märksõnad (`att_attachmentLanguage` / `attachmentLanguage`)
-4. Kui märksõna leitud → lisa rida `raw.decision_hits` tabelisse
+4. Kui märksõna leitud, lisa rida `raw.decision_hits` tabelisse
 5. Uuenda `raw.decisions.pdfProcessedAt = NOW()` (**alati**, ka ilma tabamuseta)
 
 **Checkpoint:**
@@ -162,15 +159,16 @@ Viga ei tähenda, et rida puudub — metaandmed jäävad `raw.decisions` tabelis
 | `download:` | PDF-i allalaadimine ebaõnnestus (võrgu katkestus, aegumine, serveri throttling) | Tuleb uuesti laadida |
 | `processing:` | Fail laeti alla, aga pole kehtiv PDF (nt HTML vastus) | Ei — URL/probleem on püsiv |
 
-### Väljundid
+### Jooksva käivituse kokkuvõte
 
-**1. Konsool (`load_decision_hits.py`)** — jooksva käivituse kokkuvõte:
+**Konsoolis:**
+
 ```text
-Done. Processed: n  |  Hits saved: n  |  Errors: n
+Done. Processed: 150  |  Hits saved: 3  |  Errors: 2
+Processing time: 12m 34s wall clock | 5.02s avg per row (excl. REQUEST_DELAY_SECONDS) | 0.0s delay between rows
 ```
-`Errors` loeb ainult selle käivituse vigu, mitte kogu andmebaasi seisu.
 
-**2. JSON (`summarize_decision_hits.py`)** — plokk `errors` failis `summarize_decision_hits_output.json`:
+**JSON (`summarize_decision_hits.py`):** — plokk `errors` failis `summarize_decision_hits_output.json`:
 - `totalErrorAttachments` — vigadega manuste arv kokku
 - `downloadErrors` / `processingErrors` — jaotus prefiksi järgi
 - `successfulAttachments` — edukalt töödeldud (viga puudub)
@@ -209,7 +207,7 @@ Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`
 
 **`int_relevant_decisions`**:
 - ainult Art. `6(1)(b)` / `8(2)` manused (`isActive = true`), nii märksõnu sisaldavad kui märksõnu mittesisaldavad ehk kõik `6(1)(b)` / `8(2)`
-- JSON-väljad eraldi veergudeks: `decision_type_label`, `sector_code`, `sector_label`
+- mitut väärtust sisaldavad JSON-väljad eraldi veergudeks: `decision_type_label`, `sector_code`, `sector_label`
 - kuupäevad: `TEXT` → `DATE`
 - PDF olek: `is_pdf_processed`, `is_pdf_ok`
 
@@ -223,14 +221,25 @@ Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
 
 - **Üks rida = üks otsus** (mitte PDF-manus): `GROUP BY case_number, decision_number`
 - ainult Art. `6(1)(b)` / `8(2)` (tuleb `int_decisions_with_hits` tabelist)
-- **kuupäev:** `decision_adoption_date` (`dec_decisionAdoptionDate`) — dashboardi perioodifilter
-- **tabamus:** `has_keyword_hit = true`, kui **vähemalt ühel** manusel on märksõna
-- **Dashboardi arvutused**:
-  1. Vali periood: filtreeri read, kus `decision_adoption_date` jääb valitud vahemikku.
-  2. **Kõik relevantsed otsused:** loe filtreeritud ridade arv — iga rida on üks Art. `6(1)(b)` / `8(2)` otsus.
-  3. **Tabatud otsused:** loe read, kus `has_keyword_hit = true`.
-  4. **Osakaal:** tabatud otsused ÷ kõik relevant otsused (samal perioodil).
 
+**Veerud** (`marts.mart_arbitration_decisions`):
+
+| Veerg | Tüüp / roll |
+|-------|-------------|
+| `decision_key` | Tekst — `case_number` + `decision_number` (unikaalne võti) |
+| `case_number` | Menetluse number |
+| `decision_number` | Otsuse number |
+| `decision_adoption_date` | Kuupäev — otsuse vastuvõtmise kuupäev |
+| `has_keyword_hit` | Jah/ei — kas vähemalt ühel manusel on vahekohtu märksõna |
+| `attachment_count` | Manuste arv sellel otsusel |
+| `hit_attachment_count` | Manuste arv, kus märksõna leiti (võib olla > 1) |
+| `decision_type_code` | Otsuse tüübi kood (`dec_decisionTypes`) |
+| `decision_type_label` | Otsuse tüübi nimetus |
+| `sector_code` | NACE sektori kood (`case_caseSectors`) |
+| `sector_label` | NACE sektori nimetus |
+| `case_companies` | Osalised ettevõtted |
+| `case_regulation` | Koondumismäärus (1989 / 2004) |
+| `case_simplified_procedure` | Lihtsustatud menetlus (jah/ei) |
 
 ---
 

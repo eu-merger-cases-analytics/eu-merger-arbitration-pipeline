@@ -28,11 +28,21 @@ Kasu tõuseb:
 
 ## Arhitektuur
 
-<p align="center">
-  <img src="docs/images/architecture.png" width="800">
-</p>
+```mermaid
+flowchart TB
+    ec[JSON]
+    py[Python sissevott]
+    raw[Postgres raw]
+    dbt[dbt vaated ja mart]
+    ss[Superset]
+    af[Airflow tulevikus]
 
-Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
+    ec --> py --> raw --> dbt --> ss
+    af -.-> py
+    af -.-> dbt
+```
+
+Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md) · [`docs/data_pipeline.md`](docs/data_pipeline.md)
 
 
 ## Andmestik
@@ -49,7 +59,7 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md)
 | Sissevõtt | Python |
 | Transformatsioon | dbt Core 1.10 |
 | Andmehoidla | PostgreSQL (pgDuckDB) |
-| Näidikulaud | Apache Superset 6.x (või Streamlit) |
+| Näidikulaud | Apache Superset 6.x |
 | Orkestreerimine | Apache Airflow 3.x  |
 
 
@@ -75,15 +85,9 @@ docker compose exec python python analysis/inspect_json.py
  
 # Raw skeema ja decisions tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
-
-# Kontroll: kas raw.decisions on olemas
-docker compose exec db psql -U user -d eu-merger-arbitration -c "SELECT table_schema, table_name FROM information_schema.tables WHERE table_schema = 'raw' ORDER BY table_name;"
  
 # Kõigi otsuste laadimine andmebaasi decisions tabelisse
 docker compose exec python python ingestion/load_decisions.py
-
-# decisions tabelist esimese salvestatud rea pärimine (decision_id järgi)
-docker compose exec python python analysis/query_decisions_sample.py
 
 # Raw skeema decisions_hits tabeli loomine
 docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
