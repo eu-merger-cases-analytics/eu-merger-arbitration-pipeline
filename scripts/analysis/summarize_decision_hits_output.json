@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-01T08:52:47.435829+00:00",
+  "generatedAt": "2026-06-01T09:43:58.458975+00:00",
   "testLimit": null,
   "processing": {
-    "firstProcessedAt": "2026-06-01T01:00:16.173045",
-    "lastProcessedAt": "2026-06-01T05:14:10.003030",
+    "firstProcessedAt": "2026-05-31T10:51:17.858794",
+    "lastProcessedAt": "2026-06-01T09:19:48.789664",
     "processedAttachments": 11108,
     "pendingAttachments": 0,
     "processedRelevantAttachments": 9950,
@@ -30,8 +30,8 @@
     "matchedRelevantCases": 191,
     "matchedRelevantDecisions": 193,
     "relevantHits": 277,
-    "firstHitAt": "2026-06-01T01:00:26.932008",
-    "lastHitAt": "2026-06-01T05:04:00.402023",
+    "firstHitAt": "2026-05-31T10:52:06.360850",
+    "lastHitAt": "2026-06-01T08:45:20.725301",
     "hitsByLanguage": {
       "EN": 170,
       "FR": 57,
@@ -110,23 +110,23 @@
   },
   "errors": {
     "definition": "pdfProcessingError IS NOT NULL on raw.decisions (set by load_decision_hits.py)",
-    "totalErrorAttachments": 3,
-    "totalErrorRelevantAttachments": 2,
+    "totalErrorAttachments": 4,
+    "totalErrorRelevantAttachments": 3,
     "downloadErrors": 0,
-    "processingErrors": 3,
-    "successfulAttachments": 11105,
+    "processingErrors": 4,
+    "successfulAttachments": 11104,
     "topErrorMessages": [
       {
         "message": "processing: No /Root object! - Is this really a PDF?",
-        "count": 3
+        "count": 4
       }
     ]
   },
   "rates": {
     "hitRateAllProcessedAttachmentsPct": 3.18,
     "hitRateRelevantProcessedAttachmentsPct": 2.78,
-    "errorRateAllProcessedAttachmentsPct": 0.03,
-    "errorRateRelevantProcessedAttachmentsPct": 0.02,
+    "errorRateAllProcessedAttachmentsPct": 0.04,
+    "errorRateRelevantProcessedAttachmentsPct": 0.03,
     "matchedCasesPctOfAllCases": 2.19,
     "matchedCasesPctOfRelevantCases": 2.02,
     "matchedDecisionsPctOfRelevantDecisions": 2.04
