@@ -62,7 +62,7 @@ flowchart TB
 
 Detailne kirjeldus: [`data_pipeline.md`](data_pipeline.md)
 
-Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: käsitsi / tulevikus Airflow.
+Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: käsitsi / tulevikus Airflow — [`airflow_getting_started.md`](airflow_getting_started.md).
 
 
 ## Andmebaasi kihid

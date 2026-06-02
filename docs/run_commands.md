@@ -14,6 +14,7 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 | 4 | dbt | `raw` → `staging` → `intermediate` → `marts` |
 | 5 | Andmebaas | psql ja näidispäringud |
 | 6 | Superset | Dashboard test `http://localhost:8088` |
+| — | Airflow *(tulevikus)* | [`airflow_getting_started.md`](airflow_getting_started.md) |
 
 ---
 

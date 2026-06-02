@@ -46,7 +46,7 @@
 
 ## Järgmised sammud
 
-**Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt).  
+**Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt). Samm-sammult: [`airflow_getting_started.md`](airflow_getting_started.md).  
 
 **Uuendada README** — projekti lõplik struktuur.  
 
