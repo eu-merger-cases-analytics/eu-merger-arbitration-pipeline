@@ -9,6 +9,9 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
+# Airflow (runtime; DAGs are in airflow/dags/)
+airflow/logs/
+
 # Logs & temp files
 *.log
 tmp/

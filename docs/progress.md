@@ -8,7 +8,7 @@
 - [`docs/data_pipeline.md`](data_pipeline.md) — detailne andmevoo kirjeldus.
 
 ### Infrastruktuur
-- [`Dockerfile.python`](../Dockerfile.python), [`Dockerfile.dbt`](../Dockerfile.dbt), [`compose.yml`](../compose.yml).
+- [`Dockerfile.python`](../Dockerfile.python), [`Dockerfile.dbt`](../Dockerfile.dbt), [`Dockerfile.airflow`](../Dockerfile.airflow), [`compose.yml`](../compose.yml).
 - [`config/keywords.txt`](../config/keywords.txt) — vahekohtu otsisõnad EL keeltes.
 - [`scripts/requirements.txt`](../scripts/requirements.txt) — `requests`, `psycopg2-binary`, `pdfplumber`.
 
@@ -35,10 +35,12 @@
 
 ### Superset
   - seadistatud testimiseks.
-  - loodud dashboard
+  - loodud kaks dashboardi, docs\dashboard\dashboard_export_20260602.zip ja:
   <p align="left">
     <img src="images/superset_eu-merger-arbitration-2026-06-01.jpg" width="1200">
   </p>
+
+### **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt → export_mart_arbitration_decisions_csv.py).
 
 
 
@@ -46,9 +48,9 @@
 
 ## Järgmised sammud
 
-**Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt). Samm-sammult: [`airflow_getting_started.md`](airflow_getting_started.md).  
+**Airflow täiendamine** — käitumine vigade korral.  
 
-**Uuendada README** — projekti lõplik struktuur.  
+**Täpsustada dokumentatsioon** — kontrollida doc failid.  
 
 ---
 

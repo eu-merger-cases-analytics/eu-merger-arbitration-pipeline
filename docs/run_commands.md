@@ -14,7 +14,7 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 | 4 | dbt | `raw` → `staging` → `intermediate` → `marts` |
 | 5 | Andmebaas | psql ja näidispäringud |
 | 6 | Superset | Dashboard test `http://localhost:8088` |
-| — | Airflow *(tulevikus)* | [`airflow_getting_started.md`](airflow_getting_started.md) |
+| 7 | Airflow | Init + UI `http://localhost:8080`, DAG `eu_merger_arbitration` |
 
 ---
 
@@ -32,10 +32,20 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 ```bash
 cp .env.example .env
 
+# Kõik teenused (sh Airflow). Ilma Airflowita: docker compose up -d --build db python dbt superset
 docker compose up -d --build
 
 docker compose ps
 ```
+
+Esimene Airflow käivitus (metastore + admin kasutaja; võtab mõne minuti):
+
+```bash
+docker compose up airflow-init
+docker compose up -d airflow-webserver airflow-scheduler
+```
+
+Kui kasutad ülal `docker compose up -d --build`, käivitatakse `airflow-init` automaatselt enne webserverit ja schedulerit.
 
 ---
 
@@ -255,7 +265,71 @@ Kui soovid olemasoleva dashboardi üles laadida:
 
 ---
 
-## 7. Konteinerite peatamine
+## 7. Airflow
+
+Airflow on sama `compose.yml` failis (`airflow-postgres`, `airflow-init`, `airflow-webserver`, `airflow-scheduler`). DAG-id on repost kaustas `airflow/dags/`. Airflow'i **metadata** on eraldi Postgresis (`airflow-postgres`); pipeline'i andmed on endiselt teenuses `db` (port **5434**).
+
+**Eeldab:** `.env` sisaldab `AIRFLOW_*` väärtusi (vaata `.env.example`).
+
+### Install ja init (esimene kord)
+
+```bash
+# 1. Metastore + admin kasutaja (ühekordne samm; oota kuni konteiner lõpetab)
+docker compose up airflow-init
+
+# 2. UI ja scheduler
+docker compose up -d airflow-webserver airflow-scheduler
+
+# Logid (oota kuni webserver on terve)
+docker compose logs -f airflow-webserver
+```
+
+Või koos ülejäänud stackiga:
+
+```bash
+docker compose up -d --build
+```
+
+### UI ja login
+
+- Aadress: **http://localhost:8080**
+- Login: `.env` → `AIRFLOW_ADMIN_USER` / `AIRFLOW_ADMIN_PASSWORD` (vaikimisi `admin` / `admin`)
+
+### Pipeline DAG-id
+
+| DAG | Kasutus |
+|-----|--------|
+| **`eu_merger_arbitration`** | **Põhi-DAG** — esimesel käivitusel loob `raw` tabelid kui puuduvad; hiljem uuendab andmeid ja töötleb uued PDF-id. Ajakava **iga päev 03:00** (`0 3 * * *`) |
+| **`eu_merger_arbitration_test`** | Test — `TEST_LIMIT=100` PDF-id + init (valikuline enne põhi-DAG-i) |
+
+Lõpetab: `dbt_run` → **`export_mart_csv`** → `data/processed/mart_arbitration_decisions.csv`.
+
+**Esimene kord:** käivita **`eu_merger_arbitration`** (või test DAG) — init SQL käivitatakse automaatselt, kui `raw.decisions` / `raw.decision_hits` puuduvad. Käsitsi init pole kohustuslik.
+
+**Täisnullistus (harv):** see DAG **ei kustuta** olemasolevaid raw tabeleid (dbt vaated võivad blokeerida `DROP`). Nullistamiseks kustuta esmalt dbt skeemid või kasuta `docker compose down -v` + uus stack (vt §9).
+
+Airflow käivitab teenuseid läbi `scripts/airflow/compose_exec.py` (`docker exec` konteineritele `eu-merger-arbitration-python` jne).
+
+Rohkem: [`airflow_getting_started.md`](airflow_getting_started.md).
+
+### Airflow peatamine (ülejäänud stack jääb käima)
+
+```bash
+docker compose stop airflow-webserver airflow-scheduler
+```
+
+### Airflow metastore nullist (kustutab Airflow'i DB ja logid)
+
+```bash
+docker compose down
+docker volume rm eu-merger-arbitration-airflow-pg
+docker compose up airflow-init
+docker compose up -d airflow-webserver airflow-scheduler
+```
+
+---
+
+## 8. Konteinerite peatamine
 
 ```bash
 docker compose down
@@ -263,7 +337,7 @@ docker compose down
 
 ---
 
-## 8. Nullist alustamine
+## 9. Nullist alustamine
 
 ### Täielik reset (Postgresi maht kustub)
 

@@ -3,7 +3,7 @@
 
 ## Äriküsimus
 
-Mitmes vaadeldava perioodi Euroopa Komisjoni tingimuslikus koondumisotsuses on kaalutud tingimuste jõustamiseks vahekohtumehhanismi ning milline on selliste otsuste sektoraalne jaotuvus ja trend (NACE-koodide alusel)? 
+Mitmes vaadeldava perioodi Euroopa Komisjoni tingimuslikus koondumisotsuses (artiklid 6(1)(b) ja 8(2)) on kaalutud tingimuste jõustamiseks vahekohtumehhanismi ning milline on selliste otsuste sektoraalne jaotuvus ja trend (NACE-koodide alusel)? 
 
 
 ## Mõõdikud
@@ -31,38 +31,47 @@ Skeem: ELT — avaandmetes sisalduvad Komisjoni otsused on avalikud (ei sisalda 
 ```mermaid
 %%{init: {"themeVariables": {"fontSize": "17px"}}}%%
 flowchart TB
-    subgraph ing [Ingestion]
+    subgraph ing [Sissevõtt]
         direction TB
-        ec["EC JSON<br/>all cases"]
-        dl["download_json<br/>file on disk"]
-        ld["load_decisions<br/>all JSON columns"]
-        rawD[("raw.decisions<br/>every PDF row")]
-        lh["load_decision_hits<br/>PDF keyword scan"]
-        rawH[("raw.decision_hits<br/>hits only")]
-        ec --> dl --> ld --> rawD --> lh --> rawH
+        ec["JSON<br/>kõik kaasused (cases)"]
+        dl["download_json<br/>json andmefail salvestatakse kettale"]
+        erD["ensure_raw_decisions<br/>loob raw.decisions kui puudub"]
+        ld["load_decisions<br/>salvestab andmebaasi kõik andmed"]
+        rawD[("raw.decisions<br/>granulaarsuse aste üks PDF")]
+        erH["ensure_raw_hits<br/>loob raw.decision_hits kui puudub"]
+        lh["load_decision_hits<br/>loeb läbi PDF failid ja selekteerib need, kus esineb märksõna"]
+        rawH[("raw.decision_hits<br/>granulaarsuse aste üks PDF, kus esineb märksõna")]
+        ec --> dl --> erD --> ld --> rawD --> erH --> lh --> rawH
     end
 
     subgraph dbtL [dbt]
         direction TB
-        stg[("staging<br/>views raw mirror")]
-        inte[("intermediate<br/>6-1-b 8-2 plus hit flag")]
-        mart[("mart<br/>table one row per decision")]
+        dbtRun[dbt_run]
+        stg[("staging<br/>raw andmed")]
+        inte[("intermediate<br/>transformeerib andmed, selekteerib artiklite 6-1-b 8-2 otsused, info märksõna sisaldumise kohta")]
+        mart[("mart<br/>granulaarsus üks otsus, valitud metaandmed")]
         stg --> inte --> mart
     end
 
     ss[Superset]
-    af[Airflow planned]
+    exp["export_mart_csv<br/>mart andmetabelist CSV fail"]
+    af["Airflow<br/>DAG eu_merger_arbitration"]
 
     rawH --> stg
     mart --> ss
+    mart --> exp
     af -.-> dl
+    af -.-> erD
+    af -.-> ld
+    af -.-> erH
     af -.-> lh
-    af -.-> mart
+    af -.-> dbtRun
+    af -.-> exp
 ```
 
 Detailne kirjeldus: [`data_pipeline.md`](data_pipeline.md)
 
-Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: käsitsi / tulevikus Airflow — [`airflow_getting_started.md`](airflow_getting_started.md).
+Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: Airflow.
 
 
 ## Andmebaasi kihid

@@ -6,7 +6,7 @@ Antud projekt ehitab Euroopa Komisjoni avalike koondumisotsuste andmestiku põhj
 
 ## Äriküsimus
   
-Mitmes vaadeldava perioodi Euroopa Komisjoni tingimuslikus koondumisotsuses on kaalutud tingimuste jõustamiseks vahekohtumehhanismi ning milline on selliste otsuste sektoraalne jaotuvus ja trend (NACE-koodide alusel).  
+Mitmes vaadeldava perioodi Euroopa Komisjoni tingimuslikus koondumisotsuses (artiklid 6(1)(b) ja 8(2)) on kaalutud tingimuste jõustamiseks vahekohtumehhanismi ning milline on selliste otsuste sektoraalne jaotuvus ja trend (NACE-koodide alusel).  
 
 Kasu tõuseb: 
 
@@ -31,14 +31,15 @@ Kasu tõuseb:
 ```mermaid
 flowchart TB
     ec[JSON]
-    py[Python sissevott]
+    py[Python sissevõtt]
     raw[Postgres raw]
-    dbt[dbt vaated ja mart]
+    dbt[dbt]
     ss[Superset]
-    af[Airflow tulevikus]
+    af[Airflow]
 
     ec --> py --> raw --> dbt --> ss
     af -.-> py
+    af -.-> raw
     af -.-> dbt
 ```
 
@@ -65,48 +66,24 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md) · [`docs/data
 
 ## Käivitamine
 
-Pikem käskude nimekiri: [`docs/run_commands.md`](docs/run_commands.md)
- 
+Pikem käskude nimekiri (käsitsi sammud, andmete analüüs, dbt, Superset, restart): [`docs/run_commands.md`](docs/run_commands.md)
+
 ```bash
-# Keskkonna seadistamine
+# Keskkond
 cp .env.example .env
- 
-# Konteinerite käivitamine
+
+# Kõik teenused (db, python, dbt, superset, airflow-init, Airflow UI + scheduler)
 docker compose up -d --build
- 
-# Kontroll, et kõik konteinerid jooksevad
-docker compose ps   # "healthy" või "running"
- 
-# Andmete allalaadimine
-docker compose exec python python ingestion/download_json.py
- 
-# JSON-i struktuuri uurimine
-docker compose exec python python analysis/inspect_json.py
- 
-# Raw skeema ja decisions tabeli loomine
-docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_schema.sql
- 
-# Kõigi otsuste laadimine andmebaasi decisions tabelisse
-docker compose exec python python ingestion/load_decisions.py
+docker compose ps   # oota "healthy" / "running" (esimene Airflow init võtab mõne minuti)
 
-# Raw skeema decisions_hits tabeli loomine
-docker compose exec db psql -U user -d eu-merger-arbitration -f /init/create_raw_decision_hits.sql
+# Pipeline — Airflow
+# UI: http://localhost:8080  (login: .env → AIRFLOW_ADMIN_USER / AIRFLOW_ADMIN_PASSWORD)
+# Lülita sisse ja käivita DAG "eu_merger_arbitration" (iga päev 03:00; esimesel korral loob raw tabelid, laadib JSON/PDF-id, dbt, CSV)
+# Kiire test 100 PDF-i töötlemiseks: DAG "eu_merger_arbitration_test"
 
-# Märksõnu sisaldavate pdf-dega otsuste laadimine raw.decision_hits tabelisse (võtab aega tunde).
-docker compose exec python python ingestion/load_decision_hits.py
-
-# decisions_hits tabelisse salvestatud andmetest kokkuvõtte genereerimine summarize_decision_hits_output.json faili
-docker compose exec python python analysis/summarize_decision_hits.py
- 
-# dbt käivitamine
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt run --profiles-dir ."
- 
-# dbt testid
-docker compose exec dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."
- 
-# Andmebaasi sisselogimine
+# Valikuline: andmebaas
 docker compose exec db psql -U user -d eu-merger-arbitration
- 
-# Konteinerite peatamine
+
+# Peatamine
 docker compose down
 ```
