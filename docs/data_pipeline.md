@@ -237,6 +237,7 @@ Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
 | `decision_type_label` | Otsuse tüübi nimetus |
 | `sector_code` | NACE sektori kood (`case_caseSectors`) |
 | `sector_label` | NACE sektori nimetus |
+| `case_title` | Juhtumi pealkiri (`caseTitle` JSON-is) |
 | `case_companies` | Osalised ettevõtted |
 | `case_regulation` | Koondumismäärus (1989 / 2004) |
 | `case_simplified_procedure` | Lihtsustatud menetlus (jah/ei) |

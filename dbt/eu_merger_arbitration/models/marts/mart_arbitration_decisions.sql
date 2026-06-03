@@ -26,6 +26,7 @@ select
     min(sector_code) as sector_code,
     min(sector_label) as sector_label,
 
+    min(case_title) as case_title,
     min(case_companies) as case_companies,
     min(case_regulation) as case_regulation,
     min(case_simplified_procedure) as case_simplified_procedure

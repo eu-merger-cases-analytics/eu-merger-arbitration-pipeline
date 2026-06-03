@@ -54,6 +54,7 @@ select
     ("pdfProcessedAt" is not null) as is_pdf_processed,
     ("pdfProcessingError" is null and "pdfProcessedAt" is not null) as is_pdf_ok,
 
+    "case_caseTitle" as case_title,
     "case_caseCompanies" as case_companies,
     "case_caseRegulation" as case_regulation,
     "case_caseSimplified" as case_simplified_procedure

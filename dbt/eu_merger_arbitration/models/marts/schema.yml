@@ -30,3 +30,5 @@ models:
         description: "Number of PDF attachments rolled up into this decision"
       - name: hit_attachment_count
         description: "Attachments with a keyword hit (can exceed 1; decision counts once)"
+      - name: case_title
+        description: "Case title from JSON caseTitle (case_caseTitle in raw)"

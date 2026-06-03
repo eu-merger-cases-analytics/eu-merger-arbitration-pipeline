@@ -101,7 +101,10 @@ docker compose exec -e ROW_LIMIT=5 python python analysis/query_decision_hits_sa
 docker compose exec python python analysis/summarize_decision_hits.py
 
 # Tabamustega ridade JSON fail data\processed\decision_hits.json
-docker compose exec python python analysis/export_decision_hits_json.py 
+docker compose exec python python analysis/export_decision_hits_json.py
+
+# Mart tabel CSV-na data\processed\mart_arbitration_decisions.csv (eelda dbt run)
+docker compose exec python python analysis/export_mart_arbitration_decisions_csv.py 
 
 # Kuupäevade väärtuste olemasolu kontroll JSON-is ja raw.decisions tabelis
 docker compose exec python python analysis/summarize_date_fields.py
@@ -232,6 +235,15 @@ Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
    ```
 
 4. **Test connection** → **Connect**
+
+### Dashboardi ZIP import
+
+Kui soovid olemasoleva dashboardi üles laadida:
+
+1. Ava **Settings → Import dashboards**
+2. Laadi üles fail `docs/dashboard/dashboard_export_20260602.zip`
+3. Kui küsitakse andmebaasi parooli, sisesta `.env` failist `POSTGRES_PASSWORD` (vaikimisi `user`)
+4. Ava **Dashboards** vaade ja vali imporditud dashboard
 
 ### Dataset ja chart
 
