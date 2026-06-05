@@ -38,14 +38,14 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Esimene Airflow käivitus (metastore + admin kasutaja; võtab mõne minuti):
+Esimakordsel Airflow käivitusel (võtab mõne minuti):
 
 ```bash
 docker compose up airflow-init
 docker compose up -d airflow-webserver airflow-scheduler
 ```
 
-Kui kasutad ülal `docker compose up -d --build`, käivitatakse `airflow-init` automaatselt enne webserverit ja schedulerit.
+Kui kasutad ülal `docker compose up -d --build`, käivitatakse `airflow-init` automaatselt.
 
 ---
 

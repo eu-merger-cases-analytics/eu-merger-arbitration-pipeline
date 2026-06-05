@@ -90,8 +90,8 @@ Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: Ai
 |------|----------|--------|
 | Andmeallika omanik | Kirjutab sissevõtu ja uuendamise loogika | Katrin (kood); Riina (ekspertiis andmeallika sisu reaalelu vastete osas – nt mis sätete all vastu võetud otsuseid üldse otsida ja lugeda; andmekvaliteedi vigade osas ennetavad meetmed (nt teostada sõnaotsing nii vanilje-Art 8(2) kui Art 8(2) with conditions and obligations alla pesastatud otsustest, kuna 8(2) ilma tingimusteta on haruharv ja testotsingu alusel näeme, et vanilje-8(2)-na pesastatud otsustes on vahel ikkagi tingimused ja kohustused sees.)) |
 | Transformatsioonide omanik | Kirjutab intermediate ja mart kihi mudelid ning mõõdikute arvutuse | Riina (äripoole disain, sh otsisõnad kõigis EU 24 ametlikus keeles), Katrin (kood) |
-| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | Vahur |
-| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Riina, Vahur, Katrin |
+| Kvaliteedi omanik | Testid ja kontroll | Vahur, Toivo |
+| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Riina |
 
 
 ## Riskid

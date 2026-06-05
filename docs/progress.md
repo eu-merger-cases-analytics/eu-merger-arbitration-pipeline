@@ -35,10 +35,7 @@
 
 ### Superset
   - seadistatud testimiseks.
-  - loodud kaks dashboardi, docs\dashboard\dashboard_export_20260602.zip ja:
-  <p align="left">
-    <img src="images/superset_eu-merger-arbitration-2026-06-01.jpg" width="1200">
-  </p>
+  - loodud dashboard, docs\dashboard\dashboard_export_20260602.zip.
 
 ### **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt → export_mart_arbitration_decisions_csv.py).
 

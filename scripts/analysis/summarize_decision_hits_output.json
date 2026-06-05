@@ -1,26 +1,26 @@
 {
-  "generatedAt": "2026-06-01T09:43:58.458975+00:00",
+  "generatedAt": "2026-06-04T07:16:24.360850+00:00",
   "testLimit": null,
   "processing": {
-    "firstProcessedAt": "2026-05-31T10:51:17.858794",
-    "lastProcessedAt": "2026-06-01T09:19:48.789664",
-    "processedAttachments": 11108,
+    "firstProcessedAt": "2026-06-01T01:00:16.173045",
+    "lastProcessedAt": "2026-06-03T13:56:14.959161",
+    "processedAttachments": 11110,
     "pendingAttachments": 0,
-    "processedRelevantAttachments": 9950,
+    "processedRelevantAttachments": 9952,
     "pendingRelevantAttachments": 0,
     "processingComplete": true
   },
   "totals": {
-    "totalCases": 9896,
-    "totalAttachments": 11108,
-    "activeAttachments": 11108,
-    "inactiveAttachments": 0
+    "totalCases": 9897,
+    "totalAttachments": 11110,
+    "activeAttachments": 11109,
+    "inactiveAttachments": 1
   },
   "relevant": {
     "definition": "dec_decisionTypes contains '6(1)(b)' or '8(2)'",
-    "totalRelevantCases": 9466,
-    "totalRelevantDecisions": 9480,
-    "totalRelevantAttachments": 9950
+    "totalRelevantCases": 9467,
+    "totalRelevantDecisions": 9482,
+    "totalRelevantAttachments": 9952
   },
   "matches": {
     "totalHits": 353,
@@ -30,8 +30,8 @@
     "matchedRelevantCases": 191,
     "matchedRelevantDecisions": 193,
     "relevantHits": 277,
-    "firstHitAt": "2026-05-31T10:52:06.360850",
-    "lastHitAt": "2026-06-01T08:45:20.725301",
+    "firstHitAt": "2026-06-01T01:00:26.932008",
+    "lastHitAt": "2026-06-01T05:04:00.402023",
     "hitsByLanguage": {
       "EN": 170,
       "FR": 57,
@@ -110,23 +110,23 @@
   },
   "errors": {
     "definition": "pdfProcessingError IS NOT NULL on raw.decisions (set by load_decision_hits.py)",
-    "totalErrorAttachments": 4,
-    "totalErrorRelevantAttachments": 3,
+    "totalErrorAttachments": 3,
+    "totalErrorRelevantAttachments": 2,
     "downloadErrors": 0,
-    "processingErrors": 4,
-    "successfulAttachments": 11104,
+    "processingErrors": 3,
+    "successfulAttachments": 11107,
     "topErrorMessages": [
       {
         "message": "processing: No /Root object! - Is this really a PDF?",
-        "count": 4
+        "count": 3
       }
     ]
   },
   "rates": {
     "hitRateAllProcessedAttachmentsPct": 3.18,
     "hitRateRelevantProcessedAttachmentsPct": 2.78,
-    "errorRateAllProcessedAttachmentsPct": 0.04,
-    "errorRateRelevantProcessedAttachmentsPct": 0.03,
+    "errorRateAllProcessedAttachmentsPct": 0.03,
+    "errorRateRelevantProcessedAttachmentsPct": 0.02,
     "matchedCasesPctOfAllCases": 2.19,
     "matchedCasesPctOfRelevantCases": 2.02,
     "matchedDecisionsPctOfRelevantDecisions": 2.04
