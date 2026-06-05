@@ -64,6 +64,13 @@ with DAG(
         ),
     )
 
+    dbt_test = BashOperator(
+        task_id="dbt_test",
+        bash_command=(
+            f'{COMPOSE_EXEC} dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."'
+        ),
+    )
+
     export_mart_csv = BashOperator(
         task_id="export_mart_csv",
         bash_command=(
@@ -78,5 +85,6 @@ with DAG(
         >> init_hits_schema
         >> load_decision_hits
         >> dbt_run
+        >> dbt_test
         >> export_mart_csv
     )

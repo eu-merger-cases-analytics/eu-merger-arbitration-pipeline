@@ -5,7 +5,7 @@
 ```
 Andmete laadimine (Python):
   → download_json.py → data/raw/case-data-M.json
-  → inspect_json.py → inspect_json_output.txt [valikuline, ei pea olema automatiseeritud andmevoo osa]
+  → inspect_json.py → inspect_json_output.txt [valikuline, ei ole automatiseeritud andmevoo osa]
 
 Toorandmete töötlemine (Python, SQL):
   → create_raw_schema.sql
@@ -19,7 +19,7 @@ Toorandmete töötlemine (Python, SQL):
   → load_decision_hits.py
       (töötleb raw.decisions tabelist otsuste PDF-id;
       kirjutab raw.decision_hits tabelisse ainult märksõnaga vastete kõik metaandmed)
-  → summarize_decision_hits.py → summarize_decision_hits_output.json [valikuline, ei pea olema automatiseeritud andmevoo osa]
+  → summarize_decision_hits.py → summarize_decision_hits_output.json [valikuline, ei ole automatiseeritud andmevoo osa]
 
 Analüütika (dbt):
   → dbt staging (view) — raw andmed
@@ -64,7 +64,7 @@ Loob tabeli `raw.decision_hits` (märksõnale vastanud PDF-id). Käivita pärast
 ## Skriptid
 
 ### [`download_json.py`](../scripts/ingestion/download_json.py)
-Laeb EU Komisjoni koondumisotsuste JSON faili kettale: `data/raw/case-data-M.json`.
+Laeb Komisjoni koondumisotsuste JSON faili kettale: `data/raw/case-data-M.json`.
 
 - Kui andmebaasi laadimine katkeb, saab uuesti käivitada ilma uue allalaadimiseta
 - `inspect_json.py` ja `load_decisions.py` loevad seda faili
@@ -77,7 +77,7 @@ Laeb EU Komisjoni koondumisotsuste JSON faili kettale: `data/raw/case-data-M.jso
 ---
 
 ### [`inspect_json.py`](../scripts/analysis/inspect_json.py)
-Uurib allalaetud faili `data/raw/case-data-M.json` struktuuri ja kvaliteeti. Statistika kaasuste kohta, millel on vähemalt üks otsus, mille `decisionTypes` sisaldab `6(1)(b)` või `8(2)`. Arendusaegne tööriist (`scripts/analysis/`), **ei pea kuuluma automaatsesse pipeline'i**. Käivita pärast `download_json.py`.  
+Uurib allalaetud faili `data/raw/case-data-M.json` struktuuri ja kvaliteeti. Statistika kaasuste kohta, millel on vähemalt üks otsus, mille `decisionTypes` sisaldab `6(1)(b)` või `8(2)`. Arendusaegne tööriist (`scripts/analysis/`), **ei kuulu automaatsesse pipeline'i**. Käivita pärast `download_json.py`.  
 **Väljund:** konsool + `scripts/analysis/inspect_json_output.txt` (iga käivitus kirjutab faili üle).  
 
 ---
@@ -200,7 +200,7 @@ Mudelid: `stg_decisions`, `stg_decision_hits` (Postgres skeem **`staging`**).
 
 - loeb `raw` tabeleid (`source()` failis `schema.yml`)
 - pass-through vaated — sama sisu mis `raw`-s
-- dokumentatsioon ja testid (`not_null`, `unique` võtmeveergudel)
+- dokumentatsioon ja testid
 
 ### dbt intermediate (`models/intermediate/`)
 
@@ -220,7 +220,7 @@ Mudelid: `int_relevant_decisions`, `int_decisions_with_hits` (Postgres skeem **`
 
 Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
 
-- **Üks rida = üks otsus** (mitte PDF-manus): `GROUP BY case_number, decision_number`
+- **Üks rida = üks kaasus/otsus** (mitte PDF-manus): `GROUP BY case_number, decision_number`
 - ainult Art. `6(1)(b)` / `8(2)` (tuleb `int_decisions_with_hits` tabelist)
 
 **Veerud** (`marts.mart_arbitration_decisions`):
@@ -243,6 +243,17 @@ Mudel: `mart_arbitration_decisions` (Postgres skeem **`marts`**, tabel).
 | `case_regulation` | Koondumismäärus (1989 / 2004) |
 | `case_simplified_procedure` | Lihtsustatud menetlus (jah/ei) |
 
+### dbt testid
+
+Käivitatakse pärast `dbt run` (Airflow: `dbt_test`; käsitsi: `dbt test`).
+
+| Test | Tüüp | Mida kaitseb |
+|------|------|--------------|
+| Võtmeveergudel `not_null`, `unique` | veerutest | õige rida/manus/otsus kihtide vahel |
+| `stg_decision_hits.decision_id` → `stg_decisions` | `relationships` | märksõnatulemused ei viita kadunud manustele |
+| `int_decisions_with_hits.has_keyword_hit` | `not_null` | iga relevantsel manusel on selge jah/ei lipp |
+| `mart_arbitration_decisions_aggregation_logic` | singular SQL | `attachment_count ≥ 1`, `hit_attachment_count ≤ attachment_count`, `has_keyword_hit` vastab tabamuste arvule (dashboardi osakaal) |
+
 ---
 
 ## Dashboard (Apache Superset)
@@ -254,4 +265,47 @@ Seadistus `compose.yml` failis (konteiner `superset`, port **8088**).
 - **Mõõdikud:** relevantsed otsused, märksõnu sisaldavad otsused, osakaal (vt marts jaotis ülal)
 
 Käivitus ja andmebaasi ühendus: [`run_commands.md`](run_commands.md) jaotis 6.
+
+---
+
+## Vead ja Airflow käitumine
+
+Põhi-DAG: `eu_merger_arbitration`. Ülesanded jooksevad järjest; järgmine käivitub ainult siis, kui eelmine **õnnestus**.
+
+### Millised vead võivad tekkida
+
+| Samm | Tüüpilised vead | Mis jääb alles |
+|------|-----------------|----------------|
+| `download_json` | Võrk, HTTP viga, vigane või liiga väike JSON | Vana `case-data-M.json` (kui oli); esimesel korral faili pole |
+| `ensure_raw_*` | DB pole kättesaadav, init SQL ebaõnnestub | Olemasolevad tabelid jäävad muutmata |
+| `load_decisions` | JSON puudub, DB viga, JSON-is linke pole (mass-deaktiveerimise kaitse) | Andmebaas eelmises olekus |
+| `load_decision_hits` | Üksiku PDF allalaadimine või parsimine (vt `pdfProcessingError`) | Skript ei katke üksikute PDF vigade tõttu; viga salvestatakse `raw.decisions` |
+| `dbt_run` | SQL/mudeli viga | `raw`, `staging` , `intermediate` , `marts` võivad olla muutunud |
+| `dbt_test` | Andmekvaliteedi test ebaõnnestub (vt dbt testid ülal) | `marts` uuendatud, aga CSV ja dashboard võivad näidata vigaseid mõõdikuid |
+| `export_mart_csv` | Mart puudub või faili kirjutamine ebaõnnestub | DB OK, CSV võib olla vana või puududa |
+
+
+### Mis juhtub Airflow-s
+
+**Kui ülesanne õnnestub** — järgmine ülesanne käivitub automaatselt. Kui kõik lähevad läbi, on DAG run **success**.
+
+**Kui ülesanne feilib** (skript exit ≠ 0 või timeout):
+- See ülesanne on **failed** (punane).
+- **Järgmised ülesanded ei käivitu** — pipeline seisab selles kohas.
+- DAG run on **failed**.
+- Praegu `retries: 0` — **sama run ei proovi automaatselt uuesti**.
+- Järgmine katse tuleb **järgmisel ajastatud käivitusel** või **käsitsi re-trigger**-iga.
+
+**Erand:** `load_decision_hits` võib logis näidata `Errors: N`, aga Airflow task on ikkagi **roheline**, kui skript lõpetab exit code 0. Palju PDF-vigu ≠ automaatselt punane task.
+
+### Mida teha, kui task feilib
+
+| Task | Esimene samm | Korduvkäivitus |
+|------|--------------|----------------|
+| `download_json` | Kontrolli võrku ja EC/S3 URL-i; vaata task logi | Re-trigger DAG või ainult see task (ja downstream) |
+| `ensure_raw_*` / `load_decisions` | `docker compose ps`, `.env`, DB port 5434 | Paranda põhjus, siis re-trigger |
+| `load_decision_hits` | `SELECT COUNT(*) ... WHERE "pdfProcessingError" LIKE 'download:%'` | Käsitsi: `RETRY_DOWNLOAD_ERRORS=1` (vt `run_commands.md`); või järgmine scheduled run töötleb uusi ridu |
+| `dbt_run` | `dbt run` logi, dbt mudel | Paranda SQL, re-trigger alates `dbt_run` |
+| `dbt_test` | `dbt test` logi — milline test feilis | Paranda andmed või mudel/test, re-trigger alates `dbt_run` või `dbt_test` |
+| `export_mart_csv` | Kas `dbt_test` lõpetas | Re-trigger `export_mart_csv` või kogu lõpp |
 

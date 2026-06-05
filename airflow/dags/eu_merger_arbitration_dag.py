@@ -16,7 +16,7 @@ COMPOSE_EXEC = "python /opt/project/scripts/airflow/compose_exec.py"
 # Runs on Airflow container (has docker.sock + /opt/project mount), not via python service
 ENSURE_RAW = "/opt/project/scripts/airflow/ensure_raw_table.py"
 
-SCHEDULE = "0 3 * * *"
+SCHEDULE = "0 12 * * 0"  # Sundays 12:00 (scheduler timezone)
 
 with DAG(
     dag_id="eu_merger_arbitration",
@@ -36,7 +36,7 @@ with DAG(
     | ensure raw.decision_hits | runs `create_raw_decision_hits.sql` | skipped |
     | load_decision_hits | processes PDFs (`pdfProcessedAt` null) | only new PDFs |
 
-    Schedule: daily 03:00. Keep DAG **unpaused**.
+    Schedule: Sundays 12:00 (`0 12 * * 0`). Keep DAG **unpaused**.
 
     To wipe raw and rebuild from scratch you must drop dbt views / raw tables first
     (see docs/run_commands.md) — this DAG does not force-drop existing tables.
@@ -75,6 +75,13 @@ with DAG(
         ),
     )
 
+    dbt_test = BashOperator(
+        task_id="dbt_test",
+        bash_command=(
+            f'{COMPOSE_EXEC} dbt bash -c "cd eu_merger_arbitration && dbt test --profiles-dir ."'
+        ),
+    )
+
     export_mart_csv = BashOperator(
         task_id="export_mart_csv",
         bash_command=(
@@ -89,5 +96,6 @@ with DAG(
         >> ensure_raw_hits
         >> load_decision_hits
         >> dbt_run
+        >> dbt_test
         >> export_mart_csv
     )

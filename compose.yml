@@ -70,6 +70,7 @@ services:
       - ./scripts:/scripts
       - ./config:/config
       - ./logs:/logs
+      - ./docs:/docs
     working_dir: /scripts
     tty: true
 

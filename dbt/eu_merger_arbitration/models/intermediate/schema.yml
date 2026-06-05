@@ -29,3 +29,5 @@ models:
           - unique
       - name: has_keyword_hit
         description: "True when a matching row exists in stg_decision_hits"
+        data_tests:
+          - not_null

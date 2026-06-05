@@ -49,7 +49,7 @@ flowchart TB
         dbtRun[dbt_run]
         stg[("staging<br/>raw andmed")]
         inte[("intermediate<br/>transformeerib andmed, selekteerib artiklite 6-1-b 8-2 otsused, info märksõna sisaldumise kohta")]
-        mart[("mart<br/>granulaarsus üks otsus, valitud metaandmed")]
+        mart[("mart<br/>granulaarsus üks kaasus/otsus, valitud metaandmed")]
         stg --> inte --> mart
     end
 

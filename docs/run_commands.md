@@ -248,12 +248,17 @@ Vaikimisi login: `admin` / `admin` (muuda `.env` failis `SUPERSET_ADMIN_*`).
 
 ### Dashboardi ZIP import
 
-Kui soovid olemasoleva dashboardi üles laadida:
+Skript impordib `docs/dashboard/` kaustast **uusima** `.zip` faili Superset REST API kaudu (sama sisu mis UI import).
 
-1. Ava **Settings → Import dashboards**
-2. Laadi üles fail `docs/dashboard/dashboard_export_20260602.zip`
-3. Kui küsitakse andmebaasi parooli, sisesta `.env` failist `POSTGRES_PASSWORD` (vaikimisi `user`)
-4. Ava **Dashboards** vaade ja vali imporditud dashboard
+**Eeldab:** Superset töötab ja `mart_arbitration_decisions` on olemas.
+
+```bash
+docker compose exec python python superset/import_dashboard.py
+```
+
+Skript loeb `.env`-ist `SUPERSET_ADMIN_*` ja `POSTGRES_PASSWORD`. Ava seejärel **http://localhost:8088** → **Dashboards**.
+
+Käsitsi (ilma skriptita): **Settings → Import dashboards** → `docs/dashboard/dashboard_export_20260605.zip` → parool `POSTGRES_PASSWORD` (vaikimisi `user`).
 
 ### Dataset ja chart
 
@@ -299,14 +304,12 @@ docker compose up -d --build
 
 | DAG | Kasutus |
 |-----|--------|
-| **`eu_merger_arbitration`** | **Põhi-DAG** — esimesel käivitusel loob `raw` tabelid kui puuduvad; hiljem uuendab andmeid ja töötleb uued PDF-id. Ajakava **iga päev 03:00** (`0 3 * * *`) |
+| **`eu_merger_arbitration`** | **Põhi-DAG** — esimesel käivitusel loob `raw` tabelid kui puuduvad; hiljem uuendab andmeid ja töötleb uued PDF-id. Ajakava **igal pühapäeval 12:00** (`0 12 * * 0`, scheduleri ajavöönd) |
 | **`eu_merger_arbitration_test`** | Test — `TEST_LIMIT=100` PDF-id + init (valikuline enne põhi-DAG-i) |
 
 Lõpetab: `dbt_run` → **`export_mart_csv`** → `data/processed/mart_arbitration_decisions.csv`.
 
 **Esimene kord:** käivita **`eu_merger_arbitration`** (või test DAG) — init SQL käivitatakse automaatselt, kui `raw.decisions` / `raw.decision_hits` puuduvad. Käsitsi init pole kohustuslik.
-
-**Täisnullistus (harv):** see DAG **ei kustuta** olemasolevaid raw tabeleid (dbt vaated võivad blokeerida `DROP`). Nullistamiseks kustuta esmalt dbt skeemid või kasuta `docker compose down -v` + uus stack (vt §9).
 
 Airflow käivitab teenuseid läbi `scripts/airflow/compose_exec.py` (`docker exec` konteineritele `eu-merger-arbitration-python` jne).
 
