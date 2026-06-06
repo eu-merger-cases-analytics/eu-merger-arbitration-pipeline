@@ -78,8 +78,8 @@ dec_metadataReference: M.2027-DEC40398
 dec_metadataType: METADATA_DECISION
 decision_id: 1
 isActive: True
-lastCheckedAt: 2026-06-01 00:58:11.996143
-loadedAt: 2026-06-01 00:58:11.996143
-pdfProcessedAt: 2026-06-01 01:00:16.173045
+lastCheckedAt: 2026-06-06 22:18:50.806356
+loadedAt: 2026-06-06 18:03:41.080471
+pdfProcessedAt: 2026-06-06 18:04:11.940258
 pdfProcessingError: None
 removedDetectedAt: None

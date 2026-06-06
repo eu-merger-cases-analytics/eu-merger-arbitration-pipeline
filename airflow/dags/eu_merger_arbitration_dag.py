@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 COMPOSE_EXEC = "python /opt/project/scripts/airflow/compose_exec.py"
 # Runs on Airflow container (has docker.sock + /opt/project mount), not via python service
@@ -57,7 +57,7 @@ with DAG(
     | ensure raw.decision_hits | runs `create_raw_decision_hits.sql` | skipped |
     | load_decision_hits | processes PDFs (`pdfProcessedAt` null) | only new PDFs |
 
-    Schedule: from `config/airflow_schedule.txt` (default Sundays 12:00). Keep DAG **unpaused**.
+    Schedule: from `config/airflow_schedule.txt` (default Sundays 19:00 Europe/Tallinn). Keep DAG **unpaused**.
 
     To wipe raw and rebuild from scratch you must drop dbt views / raw tables first
     (see docs/run_commands.md) — this DAG does not force-drop existing tables.

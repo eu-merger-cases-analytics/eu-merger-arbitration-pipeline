@@ -5,6 +5,8 @@ Output is printed to the console and saved to inspect_json_output.txt
 in the same folder. Re-running overwrites the file.
  
 Run after download_json.py:
+    docker compose exec python python analysis/inspect_json.py
+    
     python analysis/inspect_json.py
 """
  

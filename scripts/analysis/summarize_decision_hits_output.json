@@ -1,26 +1,26 @@
 {
-  "generatedAt": "2026-06-04T07:16:24.360850+00:00",
+  "generatedAt": "2026-06-06T22:29:25.406855+00:00",
   "testLimit": null,
   "processing": {
-    "firstProcessedAt": "2026-06-01T01:00:16.173045",
-    "lastProcessedAt": "2026-06-03T13:56:14.959161",
-    "processedAttachments": 11110,
+    "firstProcessedAt": "2026-06-06T18:04:11.940258",
+    "lastProcessedAt": "2026-06-06T22:18:23.309570",
+    "processedAttachments": 11112,
     "pendingAttachments": 0,
-    "processedRelevantAttachments": 9952,
+    "processedRelevantAttachments": 9953,
     "pendingRelevantAttachments": 0,
     "processingComplete": true
   },
   "totals": {
-    "totalCases": 9897,
-    "totalAttachments": 11110,
-    "activeAttachments": 11109,
-    "inactiveAttachments": 1
+    "totalCases": 9899,
+    "totalAttachments": 11112,
+    "activeAttachments": 11112,
+    "inactiveAttachments": 0
   },
   "relevant": {
     "definition": "dec_decisionTypes contains '6(1)(b)' or '8(2)'",
-    "totalRelevantCases": 9467,
-    "totalRelevantDecisions": 9482,
-    "totalRelevantAttachments": 9952
+    "totalRelevantCases": 9469,
+    "totalRelevantDecisions": 9483,
+    "totalRelevantAttachments": 9953
   },
   "matches": {
     "totalHits": 353,
@@ -30,8 +30,8 @@
     "matchedRelevantCases": 191,
     "matchedRelevantDecisions": 193,
     "relevantHits": 277,
-    "firstHitAt": "2026-06-01T01:00:26.932008",
-    "lastHitAt": "2026-06-01T05:04:00.402023",
+    "firstHitAt": "2026-06-06T18:04:22.616417",
+    "lastHitAt": "2026-06-06T22:08:32.182334",
     "hitsByLanguage": {
       "EN": 170,
       "FR": 57,
@@ -114,7 +114,7 @@
     "totalErrorRelevantAttachments": 2,
     "downloadErrors": 0,
     "processingErrors": 3,
-    "successfulAttachments": 11107,
+    "successfulAttachments": 11109,
     "topErrorMessages": [
       {
         "message": "processing: No /Root object! - Is this really a PDF?",

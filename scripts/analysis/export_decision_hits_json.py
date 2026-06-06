@@ -1,8 +1,8 @@
 """
 Exports all rows from raw.decision_hits to a readable JSON file in data/processed/.
 
-Run:
-    docker compose exec python python analysis/export_decision_hits_json.py
+Run:docker compose exec python python analysis/export_decision_hits_json.py
+    
 """
 
 from __future__ import annotations

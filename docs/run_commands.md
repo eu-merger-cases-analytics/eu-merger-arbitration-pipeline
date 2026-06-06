@@ -42,7 +42,7 @@ Esimakordsel Airflow käivitusel (võtab mõne minuti):
 
 ```bash
 docker compose up airflow-init
-docker compose up -d airflow-webserver airflow-scheduler
+docker compose up -d airflow-api-server airflow-scheduler airflow-dag-processor
 ```
 
 Kui kasutad ülal `docker compose up -d --build`, käivitatakse `airflow-init` automaatselt.
@@ -96,6 +96,22 @@ docker compose exec -e RETRY_DOWNLOAD_ERRORS=1 -e REQUEST_DELAY_SECONDS=2 python
 ## 3. Analüüs ja kontroll (valikuline)
 
 Need skriptid **ei kuulu** automaatsesse pipeline'i; kasulikud arenduses ja kvaliteedi kontrollis.
+
+**Kõik järjest** (sama järjekord mis allpool; peatub esimesel veal):
+
+```bash
+docker compose exec python python analysis/run_all.py
+```
+
+Eeldab: `download_json` → `load_decisions` → `load_decision_hits` → `dbt run` (mart- ja grain-skriptide jaoks).
+
+Valikuline `ROW_LIMIT` `query_decision_hits_sample.py` jaoks:
+
+```bash
+docker compose exec -e ROW_LIMIT=5 python python analysis/run_all.py
+```
+
+**Üksikud skriptid:**
 
 ```bash
 # JSON-i struktuur
@@ -222,7 +238,7 @@ FROM raw.decisions WHERE \"isActive\" = TRUE;"
 
 ## 6. Superset
 
-Lihtne ühe-konteineri seadistus. Superset'i enda metadata on SQLite'is; andmed tulevad olemasolevast Postgresist (`marts`).
+Apache Superset **6.0.0** (`Dockerfile.superset` — lean image + `psycopg2-binary`). Superset'i enda metadata on SQLite'is; andmed tulevad olemasolevast Postgresist (`marts`).
 
 **Eeldab:** jaotis 4 on tehtud (`mart_arbitration_decisions` olemas).
 
@@ -275,21 +291,24 @@ Käsitsi (ilma skriptita): **Settings → Import dashboards** → `docs/dashboar
 
 ## 7. Airflow
 
-Airflow on `compose.yml` failis (`airflow-postgres`, `airflow-init`, `airflow-webserver`, `airflow-scheduler`). DAG-id on repost kaustas `airflow/dags/`. Airflow'i **metadata** on eraldi Postgresis (`airflow-postgres`); pipeline'i andmed on endiselt teenuses `db` (port **5434**).
+Airflow on `compose.yml` failis (`airflow-postgres`, `airflow-init`, `airflow-api-server`, `airflow-scheduler`, `airflow-dag-processor`). DAG-id on repost kaustas `airflow/dags/`. Airflow'i **metadata** on eraldi Postgresis (`airflow-postgres`); pipeline'i andmed on endiselt teenuses `db` (port **5434**).
 
 **Eeldab:** `.env` sisaldab `AIRFLOW_*` väärtusi (vaata `.env.example`).
 
 ### Install ja init (esimene kord)
 
 ```bash
+# Pärast Airflow pildi uuendamist ehita kõik Airflow teenused uuesti
+docker compose build airflow-init airflow-api-server airflow-scheduler airflow-dag-processor
+
 # 1. Metastore + admin kasutaja (ühekordne samm; oota kuni konteiner lõpetab)
 docker compose up airflow-init
 
 # 2. UI ja scheduler
-docker compose up -d airflow-webserver airflow-scheduler
+docker compose up -d airflow-api-server airflow-scheduler airflow-dag-processor
 
-# Logid (oota kuni webserver on terve)
-docker compose logs -f airflow-webserver
+# Logid (oota kuni api-server on terve)
+docker compose logs -f airflow-api-server
 ```
 
 Või käivita ühe käsuga koos ülejäänud stackiga:
@@ -313,7 +332,7 @@ docker compose up -d --build
 ### Airflow peatamine (ülejäänud stack jääb käima)
 
 ```bash
-docker compose stop airflow-webserver airflow-scheduler
+docker compose stop airflow-api-server airflow-scheduler airflow-dag-processor
 ```
 
 ### Airflow metastore nullist (kustutab Airflow'i DB ja logid)
@@ -322,7 +341,7 @@ docker compose stop airflow-webserver airflow-scheduler
 docker compose down
 docker volume rm eu-merger-arbitration-airflow-pg
 docker compose up airflow-init
-docker compose up -d airflow-webserver airflow-scheduler
+docker compose up -d airflow-api-server airflow-scheduler airflow-dag-processor
 ```
 
 ---

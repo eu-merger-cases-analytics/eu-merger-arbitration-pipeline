@@ -8,82 +8,82 @@ Date-like field = metadata key name contains 'date' (case-insensitive).
 
 ========================================================================
 ALL CASES
-Cases in scope: 10232
+Cases in scope: 10238
 
 ========================================================================
 CASE metadata (case.metadata)
-Entities: 10232
+Entities: 10238
 
   Field                                             With value        Empty   Fill %
   ----------------------------------------------- ------------ ------------ --------
-  caseDeadlineDate                                       9,413          819    92.0%
-  caseEventsDates                                          480        9,752     4.7%
-  caseInitiationDate                                    10,003          229    97.8%
-  caseLastDecisionDate                                  10,198           34    99.7%
-  caseNotificationDate                                   9,972          260    97.5%
-  caseOfficialJournalPublicationsPublishedDates            404        9,828     3.9%
-  casePressReleasesPublicationDates                          1       10,231     0.0%
-  caseRenotificationDate                                    14       10,218     0.1%
-  caseTimelineEventsDates                                  108       10,124     1.1%
+  caseDeadlineDate                                       9,419          819    92.0%
+  caseEventsDates                                          480        9,758     4.7%
+  caseInitiationDate                                    10,009          229    97.8%
+  caseLastDecisionDate                                  10,201           37    99.6%
+  caseNotificationDate                                   9,978          260    97.5%
+  caseOfficialJournalPublicationsPublishedDates            413        9,825     4.0%
+  casePressReleasesPublicationDates                          1       10,237     0.0%
+  caseRenotificationDate                                    14       10,224     0.1%
+  caseTimelineEventsDates                                  108       10,130     1.1%
 
   Always filled (100%): none
 
 ========================================================================
 CASE ATTACHMENT metadata (caseAttachments[].metadata)
-Entities: 7337
+Entities: 7341
 
   Field                                 With value        Empty   Fill %
   ----------------------------------- ------------ ------------ --------
-  attachmentDocumentDate                       613        6,724     8.4%
-  attachmentPublicationBusinessDate          7,332            5    99.9%
-  attachmentSentDate                         6,337        1,000    86.4%
+  attachmentDocumentDate                       618        6,723     8.4%
+  attachmentPublicationBusinessDate          7,336            5    99.9%
+  attachmentSentDate                         6,341        1,000    86.4%
 
   Always filled (100%): none
 
 ========================================================================
 DECISION metadata (decisions[].metadata)
-Entities: 20746
+Entities: 20749
 
   Field                                                 With value        Empty   Fill %
   --------------------------------------------------- ------------ ------------ --------
-  decisionAdoptionDate                                      11,355        9,391    54.7%
-  decisionOfficialJournalPublicationsPublishedDates         19,007        1,739    91.6%
-  decisionPressReleasesPublicationDates                        480       20,266     2.3%
+  decisionAdoptionDate                                      11,359        9,390    54.7%
+  decisionOfficialJournalPublicationsPublishedDates         19,009        1,740    91.6%
+  decisionPressReleasesPublicationDates                        483       20,266     2.3%
 
   Always filled (100%): none
 
 ========================================================================
 DECISION ATTACHMENT metadata (decisionAttachments[].metadata)
-Entities: 11109
+Entities: 11113
 
   Field                                 With value        Empty   Fill %
   ----------------------------------- ------------ ------------ --------
-  attachmentDocumentDate                       541       10,568     4.9%
-  attachmentPublicationBusinessDate          6,412        4,697    57.7%
-  attachmentSentDate                        11,109            0   100.0%
+  attachmentDocumentDate                       546       10,567     4.9%
+  attachmentPublicationBusinessDate          6,416        4,697    57.7%
+  attachmentSentDate                        11,113            0   100.0%
 
   Always filled (100%):
     - attachmentSentDate
 
 ========================================================================
 RELEVANT CASES (Art. 6(1)(b) or 8(2) in decisionTypes)
-Cases in scope: 9558
+Cases in scope: 9561
 
 ========================================================================
 CASE metadata (case.metadata)
-Entities: 9558
+Entities: 9561
 
   Field                                             With value        Empty   Fill %
   ----------------------------------------------- ------------ ------------ --------
-  caseDeadlineDate                                       9,025          533    94.4%
-  caseEventsDates                                          346        9,212     3.6%
-  caseInitiationDate                                     9,558            0   100.0%
-  caseLastDecisionDate                                   9,558            0   100.0%
-  caseNotificationDate                                   9,558            0   100.0%
-  caseOfficialJournalPublicationsPublishedDates            379        9,179     4.0%
-  casePressReleasesPublicationDates                          0        9,558     0.0%
-  caseRenotificationDate                                    12        9,546     0.1%
-  caseTimelineEventsDates                                   92        9,466     1.0%
+  caseDeadlineDate                                       9,028          533    94.4%
+  caseEventsDates                                          346        9,215     3.6%
+  caseInitiationDate                                     9,561            0   100.0%
+  caseLastDecisionDate                                   9,561            0   100.0%
+  caseNotificationDate                                   9,561            0   100.0%
+  caseOfficialJournalPublicationsPublishedDates            383        9,178     4.0%
+  casePressReleasesPublicationDates                          0        9,561     0.0%
+  caseRenotificationDate                                    12        9,549     0.1%
+  caseTimelineEventsDates                                   93        9,468     1.0%
 
   Always filled (100%):
     - caseInitiationDate
@@ -92,37 +92,37 @@ Entities: 9558
 
 ========================================================================
 CASE ATTACHMENT metadata (caseAttachments[].metadata)
-Entities: 6965
+Entities: 6968
 
   Field                                 With value        Empty   Fill %
   ----------------------------------- ------------ ------------ --------
-  attachmentDocumentDate                       564        6,401     8.1%
-  attachmentPublicationBusinessDate          6,964            1   100.0%
-  attachmentSentDate                         6,060          905    87.0%
+  attachmentDocumentDate                       568        6,400     8.2%
+  attachmentPublicationBusinessDate          6,967            1   100.0%
+  attachmentSentDate                         6,063          905    87.0%
 
   Always filled (100%): none
 
 ========================================================================
 DECISION metadata (decisions[].metadata)
-Entities: 19480
+Entities: 19483
 
   Field                                                 With value        Empty   Fill %
   --------------------------------------------------- ------------ ------------ --------
-  decisionAdoptionDate                                      10,440        9,040    53.6%
-  decisionOfficialJournalPublicationsPublishedDates         18,336        1,144    94.1%
-  decisionPressReleasesPublicationDates                        431       19,049     2.2%
+  decisionAdoptionDate                                      10,444        9,039    53.6%
+  decisionOfficialJournalPublicationsPublishedDates         18,338        1,145    94.1%
+  decisionPressReleasesPublicationDates                        434       19,049     2.2%
 
   Always filled (100%): none
 
 ========================================================================
 DECISION ATTACHMENT metadata (decisionAttachments[].metadata)
-Entities: 10381
+Entities: 10385
 
   Field                                 With value        Empty   Fill %
   ----------------------------------- ------------ ------------ --------
-  attachmentDocumentDate                       496        9,885     4.8%
-  attachmentPublicationBusinessDate          5,984        4,397    57.6%
-  attachmentSentDate                        10,381            0   100.0%
+  attachmentDocumentDate                       501        9,884     4.8%
+  attachmentPublicationBusinessDate          5,988        4,397    57.7%
+  attachmentSentDate                        10,385            0   100.0%
 
   Always filled (100%):
     - attachmentSentDate

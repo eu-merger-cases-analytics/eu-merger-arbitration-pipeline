@@ -6,8 +6,8 @@ Business rule for decision-level hit:
 
 ========================================================================
 COUNTS
-  Relevant attachments (denominator, attachment grain):   9,951
-  Relevant decisions   (denominator, decision grain):     9,481
+  Relevant attachments (denominator, attachment grain):   9,953
+  Relevant decisions   (denominator, decision grain):     9,483
   Hit attachments      (numerator, attachment grain):        277
   Hit decisions        (numerator, decision grain):          193
 
@@ -19,15 +19,15 @@ COUNTS
 
 ========================================================================
 DECISION KEY
-  Distinct decision_number values:              9,481
-  Distinct (case_number, decision_number):     9,481
+  Distinct decision_number values:              9,483
+  Distinct (case_number, decision_number):     9,483
   In this relevant subset, decision_number is unique (no cross-case collisions).
   Still use (case_number, decision_number) as the canonical key — safer globally.
   No decision_number shared across different cases in relevant data.
 
 ========================================================================
 ATTACHMENTS PER DECISION
-  1 attachment(s): 9,385 decisions
+  1 attachment(s): 9,387 decisions
   2 attachment(s): 19 decisions
   3 attachment(s): 37 decisions
   9 attachment(s): 1 decisions

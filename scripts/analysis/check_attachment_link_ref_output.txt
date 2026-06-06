@@ -1,7 +1,7 @@
 Source: /data/raw/case-data-M.json
-Total attachment rows (with attachmentLink): 11109
-Unique attachmentLink values:                11095
-Unique (link, metadataReference) pairs:      11108
+Total attachment rows (with attachmentLink): 11113
+Unique attachmentLink values:                11099
+Unique (link, metadataReference) pairs:      11112
 
 ============================================================
 Check 1: every attachmentLink has a metadataReference
@@ -17,12 +17,12 @@ INFO - 13 attachmentLink value(s) map to more than one metadataReference (shared
 
 ============================================================
 Summary
-  Rows with link and metadataReference: 11109
+  Rows with link and metadataReference: 11113
   Rows missing/empty metadataReference: 0
-  Unique (link, ref) pairs:             11108
+  Unique (link, ref) pairs:             11112
   Duplicate (link, ref) pairs:          1
   Rows involved in duplicate pairs:     2
-  Links with a single metadataReference: 11082
+  Links with a single metadataReference: 11086
   Links with multiple metadataReferences: 13
 
 ============================================================

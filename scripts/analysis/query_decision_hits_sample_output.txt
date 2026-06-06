@@ -1,4 +1,4 @@
-5 row(s) from raw.decision_hits (ordered by hit_id, limit=5):
+3 row(s) from raw.decision_hits (ordered by hit_id, limit=3):
 
 --- Row 1 (hit_id=1, case=M.1185) ---
 att_attachmentCategory: None
@@ -79,7 +79,7 @@ dec_metadataReference: M.1185-DEC39394
 dec_metadataType: METADATA_DECISION
 decision_id: 20
 hit_id: 1
-loadedAt: 2026-06-01 01:00:26.932008
+loadedAt: 2026-06-06 18:04:22.616417
 matchContext: de la clause compromissoire prévue par le Nouveau Code de Procédure Civile français, une instance d’arbitrage indépendante et compétente (“l’Arbitre”). L’Arbitre jugera en dernier ressort de tout liti
 matchedKeywords: arbitrag*
 matchedLanguage: FR
@@ -163,7 +163,7 @@ dec_metadataReference: M.1186-DEC39396
 dec_metadataType: METADATA_DECISION
 decision_id: 22
 hit_id: 2
-loadedAt: 2026-06-01 01:00:32.002486
+loadedAt: 2026-06-06 18:04:27.597416
 matchContext: assemblées générales et des conseils d’administration de GEAL. Il prévoit également un mécanisme d’arbitrage indépendant en cas de désaccord. 9. Par ailleurs, le projet de statuts de GEAL prévoit un
 matchedKeywords: arbitrag*
 matchedLanguage: FR
@@ -247,175 +247,7 @@ dec_metadataReference: M.2050-DEC40427
 dec_metadataType: METADATA_DECISION
 decision_id: 69
 hit_id: 3
-loadedAt: 2026-06-01 01:01:02.821161
+loadedAt: 2026-06-06 18:04:55.374875
 matchContext: increase substantially after the first two years. Finally, the undertaking did not provide for any arbitration mechanism in case of a dispute. 78. For these reasons, the Commission reached the conclu
 matchedKeywords: arbitrat*
 matchedLanguage: EN
-
---- Row 4 (hit_id=4, case=M.2097) ---
-att_attachmentCategory: None
-att_attachmentDocumentDate: None
-att_attachmentIdSequence: 17
-att_attachmentLanguage: EL
-att_attachmentLink: https://ec.europa.eu/competition/mergers/cases/decisions/m2097_20010131_610_el.pdf
-att_attachmentLocationType: DDOC
-att_attachmentName: Art. 8(3) -  - mtf-dec-m-02097-020-2-20010131-0610-pub-el
-att_attachmentPublicationBusinessDate: None
-att_attachmentPublicationDescription: None
-att_attachmentSentDate: 2004-12-07
-att_language: el
-att_metadataReference: M.2097-DEC40482-ATT17
-att_metadataType: METADATA_DECISION_ATTACHMENT
-caseAtt_attachmentCategory: None
-caseAtt_attachmentDocumentDate: None
-caseAtt_attachmentIdSequence: None
-caseAtt_attachmentLanguage: None
-caseAtt_attachmentLink: None
-caseAtt_attachmentLocationType: None
-caseAtt_attachmentName: None
-caseAtt_attachmentPublicationBusinessDate: None
-caseAtt_attachmentPublicationDescription: None
-caseAtt_attachmentSentDate: None
-caseAtt_language: None
-caseAtt_metadataReference: None
-caseAtt_metadataType: None
-case_caseAidInstruments: 
-case_caseCartel: Antitrust
-case_caseCompanies: SCA / METSÄ TISSUE
-case_caseCourtCases: 
-case_caseDeadlineDate: 2001-02-09
-case_caseDg: None
-case_caseEvents: None
-case_caseEventsDates: None
-case_caseExternalLinks: None
-case_caseInitiationDate: 2000-08-11
-case_caseInstrument: Merger
-case_caseInvestigationPhase: None
-case_caseLastDecisionDate: 2001-01-31
-case_caseLegalBasis: 
-case_caseLinks: 
-case_caseNotificationDate: 2000-08-11
-case_caseNumber: M.2097
-case_caseNumberPart: 2097
-case_caseOfficialJournalPublications: {}
-case_caseOfficialJournalPublicationsPublishedDates: 
-case_casePressReleases: {}
-case_casePressReleasesPublicationDates: None
-case_casePrimaryLaws: 
-case_caseRegions: 
-case_caseRegulation: Council Regulation 4064/89
-case_caseRenotificationDate: None
-case_caseSecondaryLaws: 
-case_caseSectors: {"code":"NaceSectorsC_17_2_2","label":"C.17.22 - Manufacture of household and sanitary goods and of toilet requisites"}
-case_caseSimplified: Normal procedure
-case_caseSimplifiedProcedure: None
-case_caseTimelineEvents: None
-case_caseTimelineEventsDates: None
-case_caseTitle: SCA / METSÄ TISSUE
-case_caseType: None
-case_language: en
-case_metadataReference: M.2097
-case_metadataType: METADATA_CASE
-dec_decisionAdoptionDate: 2001-01-31
-dec_decisionCelexReference: 32002DO156
-dec_decisionExternalLinks: None
-dec_decisionNumber: 40482
-dec_decisionOfficialJournalPublications: {"items":[{"reference":"L57","publishedDate":"2002-02-27","priorPublication":"false"}]}
-dec_decisionOfficialJournalPublicationsPublishedDates: 2002-02-27
-dec_decisionOjPriorPublication: false
-dec_decisionPressReleases: {"items":[{"reference":"IP/01/147"}]}
-dec_decisionPressReleasesPublicationDates: None
-dec_decisionTypes: {"code":"DecisionType610","label":"Art. 8(3)"}
-dec_language: en
-dec_metadataReference: M.2097-DEC40482
-dec_metadataType: METADATA_DECISION
-decision_id: 150
-hit_id: 4
-loadedAt: 2026-06-01 01:02:51.621556
-matchContext: προµηθευτές παραδίδουν τα προϊόντα στις κτιριακές εγκαταστάσεις των πελατών. Εάν δεν είναι δυνατή η διαιτησία τιµών µεταξύ των πελατών, οι προµηθευτές µπορούν να χρεώνουν διαφορετικές τιµές σε πελάτες
-matchedKeywords: διαιτη*
-matchedLanguage: EL
-
---- Row 5 (hit_id=5, case=M.2097) ---
-att_attachmentCategory: None
-att_attachmentDocumentDate: None
-att_attachmentIdSequence: 20
-att_attachmentLanguage: FR
-att_attachmentLink: https://ec.europa.eu/competition/mergers/cases/decisions/m2097_20010131_610_fr.pdf
-att_attachmentLocationType: DDOC
-att_attachmentName: Art. 8(3) -  - mtf-dec-m-02097-020-2-20010131-0610-pub-fr
-att_attachmentPublicationBusinessDate: None
-att_attachmentPublicationDescription: None
-att_attachmentSentDate: 2004-12-07
-att_language: fr
-att_metadataReference: M.2097-DEC40482-ATT20
-att_metadataType: METADATA_DECISION_ATTACHMENT
-caseAtt_attachmentCategory: None
-caseAtt_attachmentDocumentDate: None
-caseAtt_attachmentIdSequence: None
-caseAtt_attachmentLanguage: None
-caseAtt_attachmentLink: None
-caseAtt_attachmentLocationType: None
-caseAtt_attachmentName: None
-caseAtt_attachmentPublicationBusinessDate: None
-caseAtt_attachmentPublicationDescription: None
-caseAtt_attachmentSentDate: None
-caseAtt_language: None
-caseAtt_metadataReference: None
-caseAtt_metadataType: None
-case_caseAidInstruments: 
-case_caseCartel: Antitrust
-case_caseCompanies: SCA / METSÄ TISSUE
-case_caseCourtCases: 
-case_caseDeadlineDate: 2001-02-09
-case_caseDg: None
-case_caseEvents: None
-case_caseEventsDates: None
-case_caseExternalLinks: None
-case_caseInitiationDate: 2000-08-11
-case_caseInstrument: Merger
-case_caseInvestigationPhase: None
-case_caseLastDecisionDate: 2001-01-31
-case_caseLegalBasis: 
-case_caseLinks: 
-case_caseNotificationDate: 2000-08-11
-case_caseNumber: M.2097
-case_caseNumberPart: 2097
-case_caseOfficialJournalPublications: {}
-case_caseOfficialJournalPublicationsPublishedDates: 
-case_casePressReleases: {}
-case_casePressReleasesPublicationDates: None
-case_casePrimaryLaws: 
-case_caseRegions: 
-case_caseRegulation: Council Regulation 4064/89
-case_caseRenotificationDate: None
-case_caseSecondaryLaws: 
-case_caseSectors: {"code":"NaceSectorsC_17_2_2","label":"C.17.22 - Manufacture of household and sanitary goods and of toilet requisites"}
-case_caseSimplified: Normal procedure
-case_caseSimplifiedProcedure: None
-case_caseTimelineEvents: None
-case_caseTimelineEventsDates: None
-case_caseTitle: SCA / METSÄ TISSUE
-case_caseType: None
-case_language: en
-case_metadataReference: M.2097
-case_metadataType: METADATA_CASE
-dec_decisionAdoptionDate: 2001-01-31
-dec_decisionCelexReference: 32002DO156
-dec_decisionExternalLinks: None
-dec_decisionNumber: 40482
-dec_decisionOfficialJournalPublications: {"items":[{"reference":"L57","publishedDate":"2002-02-27","priorPublication":"false"}]}
-dec_decisionOfficialJournalPublicationsPublishedDates: 2002-02-27
-dec_decisionOjPriorPublication: false
-dec_decisionPressReleases: {"items":[{"reference":"IP/01/147"}]}
-dec_decisionPressReleasesPublicationDates: None
-dec_decisionTypes: {"code":"DecisionType610","label":"Art. 8(3)"}
-dec_language: en
-dec_metadataReference: M.2097-DEC40482
-dec_metadataType: METADATA_DECISION
-decision_id: 152
-hit_id: 5
-loadedAt: 2026-06-01 01:02:59.873049
-matchContext: as, par exemple, lorsque des fournisseurs livrent les produits directement chez le client. Si aucun arbitrage entre les clients n’est possible, les fournisseurs peuvent appliquer des prix différenciés
-matchedKeywords: arbitrag*
-matchedLanguage: FR

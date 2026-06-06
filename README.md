@@ -60,11 +60,11 @@ Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md) · [`docs/data
 
 | Komponent | Tööriist |
 |-----------|---------|
-| Sissevõtt | Python |
+| Sissevõtt | Python 3.13 |
 | Transformatsioon | dbt Core 1.10 |
 | Andmehoidla | PostgreSQL (pgDuckDB) |
-| Dashboard | Apache Superset 6.x |
-| Orkestreerimine | Apache Airflow 3.x  |
+| Dashboard | Apache Superset 6.0.0 |
+| Orkestreerimine | Apache Airflow 3.1.8  |
 
 
 ## Käivitamine
@@ -75,7 +75,7 @@ Pikem käskude nimekiri (käsitsi sammud, andmete analüüs, dbt, Superset, Airf
 # Keskkonnamuutujate kopeerimine
 cp .env.example .env
 
-# Kõik teenused (db, python, dbt, superset, airflow-init, Airflow UI + scheduler)
+# Kõik teenused (db, python, dbt, superset, airflow-init, Airflow API + scheduler + dag-processor)
 docker compose up -d --build
 docker compose ps   # oota "healthy" / "running" (esimene Airflow init võtab mõne minuti)
 
@@ -83,6 +83,10 @@ docker compose ps   # oota "healthy" / "running" (esimene Airflow init võtab m�
 # UI: http://localhost:8080  (login: .env → AIRFLOW_ADMIN_USER / AIRFLOW_ADMIN_PASSWORD)
 # Lülita sisse ja käivita DAG "eu_merger_arbitration" (esimesel korral pdf failide protsessimise aeg ca 3h)
 # Kiire test 100 PDF-i töötlemiseks: DAG "eu_merger_arbitration_test"
+
+### Analüüs (valikuline, kõik skriptid järjest)
+# Eeldab: JSON + raw tabelid + dbt mart (vt docs/run_commands.md §3)
+docker compose exec python python analysis/run_all.py
 
 ### Dashboardi ZIP import
 docker compose exec python python superset/import_dashboard.py
@@ -194,6 +198,7 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 ├── Dockerfile.python
 ├── Dockerfile.dbt
 ├── Dockerfile.airflow
+├── Dockerfile.superset
 └── .env.example
 ```
 

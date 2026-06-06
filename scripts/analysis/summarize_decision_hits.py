@@ -6,8 +6,8 @@ and prints a short human-readable summary to the console.
 
 Run:
     python analysis/summarize_decision_hits.py
-
-    docker compose exec python python analysis/summarize_decision_hits.py
+docker compose exec python python analysis/summarize_decision_hits.py
+    
 """
 
 import json

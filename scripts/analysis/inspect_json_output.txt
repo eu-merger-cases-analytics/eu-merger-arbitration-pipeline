@@ -2,16 +2,16 @@ Note: all statistics below are for cases containing '6(1)(b)' or '8(2)' in JSON 
 decisionTypes labels, unless stated otherwise.
 
 ============================================================
-Total cases in file:                        10232
-Cases with 6(1)(b) or 8(2) decision:        9558
+Total cases in file:                        10238
+Cases with 6(1)(b) or 8(2) decision:        9561
 
 ============================================================
-Cases with at least one attachment:          9466
-Total decision attachments:                  10381
+Cases with at least one attachment:          9469
+Total decision attachments:                  10385
 
 ============================================================
 Decisions per case:
-  1 decision(s): 414 cases
+  1 decision(s): 417 cases
   2 decision(s): 8652 cases
   3 decision(s): 334 cases
   4 decision(s): 93 cases
@@ -24,8 +24,8 @@ Decisions per case:
 
 ============================================================
 All label variants containing '6(1)(b)':
-    9026  Art. 6(1)(b)
-     366  Art. 6(1)(b) with conditions & obligations
+    9028  Art. 6(1)(b)
+     367  Art. 6(1)(b) with conditions & obligations
        2  Modification of Art. 6(1)(b) with conditions & obligations
 
 All label variants containing '8(2)':
@@ -35,21 +35,21 @@ All label variants containing '8(2)':
 
 ============================================================
 caseRegulation breakdown:
-  Council Regulation 139/2004                          7301
+  Council Regulation 139/2004                          7304
   Council Regulation 4064/89                           2257
 
 ============================================================
 caseSimplified breakdown:
   Simplified procedure                                 5279
   Normal procedure                                     3695
-  Super simplified procedure                            201
-  Normal                                                191
+  Super simplified procedure                            200
+  Normal                                                193
   Simplified                                            142
-  Super-simplified                                       50
+  Super-simplified                                       52
 
 ============================================================
 Attachment languages (all, sorted by count):
-  EN           8529
+  EN           8533
   DE            728
   FR            591
   IT            143
@@ -96,21 +96,21 @@ Sectors by NACE division:
   C.17  Manufacture of articles of paper and paperboard                                                     185
   C.18  Printing and reproduction of recorded media                                                          44
   C.19  Manufacture of refined petroleum products                                                           133
-  C.20  Manufacture of paints, varnishes and similar coatings, printing ink and mastics                     694
+  C.20  Manufacture of paints, varnishes and similar coatings, printing ink and mastics                     696
   C.21  Manufacture of pharmaceutical preparations                                                          229
   C.22  Manufacture of plastic products                                                                     175
   C.23  Manufacture of cement, lime and plaster                                                             218
   C.24  Manufacture of tubes, pipes, hollow profiles and related fittings, of steel                         294
   C.25  Manufacture of weapons and ammunition                                                               206
   C.26  Manufacture of electronic components                                                                262
-  C.27  Manufacture of other electrical equipment                                                           285
+  C.27  Manufacture of other electrical equipment                                                           286
   C.28  Manufacture of lifting and handling equipment                                                       395
-  C.29  Manufacture of other parts and accessories for motor vehicles                                       454
+  C.29  Manufacture of other parts and accessories for motor vehicles                                       455
   C.30  Manufacture of air and spacecraft and related machinery                                             210
   C.31  Manufacture of kitchen furniture                                                                     28
   C.32  Manufacturing n.e.c.                                                                                122
   C.33  Installation of industrial machinery and equipment                                                  334
-  D.35  Electric power generation, transmission and distribution                                           1009
+  D.35  Electric power generation, transmission and distribution                                           1012
   E - Water supply; sewerage; waste managment and remediation activities                                      1
   E.36  Water collection, treatment and supply                                                               71
   E.37  Sewerage                                                                                             20
@@ -237,8 +237,8 @@ Sample relevant case (first match):
 
 ============================================================
 metadataReference uniqueness check (decisionAttachments across all cases):
-  Total attachment metadataReferences:  11109
-  Unique metadataReferences:            11107
+  Total attachment metadataReferences:  11113
+  Unique metadataReferences:            11111
   Duplicates:                           2
   Duplicate values (first 10):
     M.9087-DEC50544-ATT82: 2 times
@@ -247,9 +247,9 @@ metadataReference uniqueness check (decisionAttachments across all cases):
 ============================================================
 Fields with more than one value (across all cases and decisions):
   Case metadata:
-    caseSectors                                                    3357 cases
+    caseSectors                                                    3359 cases
     caseCompanies                                                  1624 cases
-    caseLinks                                                       148 cases
+    caseLinks                                                       149 cases
     caseEventsDates                                                 139 cases
     caseTimelineEventsDates                                          49 cases
     caseOfficialJournalPublicationsPublishedDates                     3 cases
@@ -258,7 +258,7 @@ Fields with more than one value (across all cases and decisions):
 
 ============================================================
 attachmentLink uniqueness check (per decision):
-  Total (attachmentLink, decisionNumber) pairs: 11109
+  Total (attachmentLink, decisionNumber) pairs: 11113
   Duplicate pairs: 4
   Examples (first 10):
     https://ec.europa.eu/competition/mergers/cases/decisions/m5581_20090819_20310_en.pdf | decision 45197: 2 times

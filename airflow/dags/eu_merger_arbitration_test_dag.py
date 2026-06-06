@@ -7,7 +7,7 @@ Use for smoke tests. Production: eu_merger_arbitration (creates tables on first 
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 COMPOSE_EXEC = "python /opt/project/scripts/airflow/compose_exec.py"
 

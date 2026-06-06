@@ -1,9 +1,9 @@
 # Cron schedule for Airflow DAG "eu_merger_arbitration".
-# Uses the Airflow scheduler timezone. Edit the line below to change run time.
+# Cron times are in Europe/Tallinn (AIRFLOW__CORE__DEFAULT_TIMEZONE in compose.yml).
 #
 # Examples:
-#   0 19 * * 0   — every Sunday at 19:00 (default)
-#   0 6 * * 1    — every Monday at 06:00
+#   0 19 * * 0   — every Sunday at 19:00 Tallinn (default)
+#   0 6 * * 1    — every Monday at 06:00 Tallinn
 #   None         — no schedule (manual trigger only; use eu_merger_arbitration_test for smoke runs)
 #
 0 19 * * 0

@@ -1,6 +1,6 @@
 Date-like columns in raw.decisions (PostgreSQL)
 Table: raw.decisions
-Total rows: 11,108  |  Active rows: 11,108
+Total rows: 11,112  |  Active rows: 11,112
 
 Row grain: one row per decision PDF attachment (case + decision + attachment flattened).
 Column prefix shows origin: case_, caseAtt_, dec_, att_.
@@ -9,64 +9,64 @@ A column 'has value' when NOT NULL and btrim(column) <> ''.
 
 ========================================================================
 CASE columns (case_*)
-Rows in table: 11,108
+Rows in table: 11,112
 
   Column                                                 With value        Empty   Fill %
   ---------------------------------------------------- ------------ ------------ --------
-  case_caseDeadlineDate                                       9,539        1,569    85.9%
-  case_caseEventsDates                                          856       10,252     7.7%
-  case_caseInitiationDate                                    10,864          244    97.8%
-  case_caseLastDecisionDate                                  11,108            0   100.0%
-  case_caseNotificationDate                                  10,840          268    97.6%
-  case_caseOfficialJournalPublicationsPublishedDates            513       10,595     4.6%
-  case_casePressReleasesPublicationDates                          0       11,108     0.0%
-  case_caseRenotificationDate                                    28       11,080     0.3%
-  case_caseTimelineEventsDates                                  221       10,887     2.0%
+  case_caseDeadlineDate                                       9,542        1,570    85.9%
+  case_caseEventsDates                                          856       10,256     7.7%
+  case_caseInitiationDate                                    10,868          244    97.8%
+  case_caseLastDecisionDate                                  11,112            0   100.0%
+  case_caseNotificationDate                                  10,844          268    97.6%
+  case_caseOfficialJournalPublicationsPublishedDates            518       10,594     4.7%
+  case_casePressReleasesPublicationDates                          0       11,112     0.0%
+  case_caseRenotificationDate                                    28       11,084     0.3%
+  case_caseTimelineEventsDates                                  222       10,890     2.0%
 
   Always filled on every attachment row (100%):
     - case_caseLastDecisionDate
 
 ========================================================================
 CASE ATTACHMENT columns (caseAtt_*)
-Rows in table: 11,108
+Rows in table: 11,112
 
   Column                                        With value        Empty   Fill %
   ------------------------------------------- ------------ ------------ --------
-  caseAtt_attachmentDocumentDate                       480       10,628     4.3%
-  caseAtt_attachmentPublicationBusinessDate          6,982        4,126    62.9%
-  caseAtt_attachmentSentDate                         6,007        5,101    54.1%
+  caseAtt_attachmentDocumentDate                       485       10,627     4.4%
+  caseAtt_attachmentPublicationBusinessDate          6,986        4,126    62.9%
+  caseAtt_attachmentSentDate                         6,011        5,101    54.1%
 
   Always filled on every attachment row (100%): none
 
 ========================================================================
 DECISION columns (dec_*)
-Rows in table: 11,108
+Rows in table: 11,112
 
   Column                                                    With value        Empty   Fill %
   ------------------------------------------------------- ------------ ------------ --------
-  dec_decisionAdoptionDate                                      11,108            0   100.0%
-  dec_decisionOfficialJournalPublicationsPublishedDates          9,860        1,248    88.8%
-  dec_decisionPressReleasesPublicationDates                        406       10,702     3.7%
+  dec_decisionAdoptionDate                                      11,112            0   100.0%
+  dec_decisionOfficialJournalPublicationsPublishedDates          9,863        1,249    88.8%
+  dec_decisionPressReleasesPublicationDates                        410       10,702     3.7%
 
   Always filled on every attachment row (100%):
     - dec_decisionAdoptionDate
 
 ========================================================================
 DECISION ATTACHMENT columns (att_*)
-Rows in table: 11,108
+Rows in table: 11,112
 
   Column                                    With value        Empty   Fill %
   --------------------------------------- ------------ ------------ --------
-  att_attachmentDocumentDate                       541       10,567     4.9%
-  att_attachmentPublicationBusinessDate          6,411        4,697    57.7%
-  att_attachmentSentDate                        11,108            0   100.0%
+  att_attachmentDocumentDate                       546       10,566     4.9%
+  att_attachmentPublicationBusinessDate          6,415        4,697    57.7%
+  att_attachmentSentDate                        11,112            0   100.0%
 
   Always filled on every attachment row (100%):
     - att_attachmentSentDate
 
 ========================================================================
 ACTIVE ROWS ONLY (isActive = TRUE)
-Rows: 11,108
+Rows: 11,112
 
 Business date columns filled on every active attachment row:
   - att_attachmentSentDate
