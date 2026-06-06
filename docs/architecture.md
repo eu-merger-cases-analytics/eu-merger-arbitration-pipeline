@@ -29,7 +29,7 @@ Euroopa Komisjoni avaandmed: igal (töö?)päeval uuenev JSON-fail koondumisotsu
 Skeem: ELT — avaandmetes sisalduvad Komisjoni otsused on avalikud (ei sisalda ärisaladust ega isikuandmeid).
 
 ```mermaid
-%%{init: {"themeVariables": {"fontSize": "17px"}}}%%
+%%{init: {"themeVariables": {"fontSize": "15px"}}}%%
 flowchart TB
     subgraph ing [Sissevõtt]
         direction TB
@@ -49,7 +49,7 @@ flowchart TB
         dbtRun[dbt_run]
         stg[("staging<br/>raw andmed")]
         inte[("intermediate<br/>transformeerib andmed, selekteerib artiklite 6-1-b 8-2 otsused, info märksõna sisaldumise kohta")]
-        mart[("mart<br/>granulaarsus üks kaasus/otsus, valitud metaandmed")]
+        mart[("mart<br/>granulaarsus üks kaasus/otsus, selektsioon metaandmetest")]
         stg --> inte --> mart
     end
 
@@ -74,7 +74,7 @@ flowchart TB
 
 Detailne kirjeldus: [`data_pipeline.md`](data_pipeline.md)
 
-Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: Airflow.
+Tööriistad: Python, PostgreSQL, dbt Core, Superset. Orkestreerimine: Airflow.
 
 
 ## Andmebaasi kihid
@@ -101,8 +101,8 @@ Tööriistad: Python, PostgreSQL, dbt Core, Superset (test). Orkestreerimine: Ai
 
 | Risk | Mõju | Maandus |
 |------|------|---------|
-| Euroopa Komisjoni lehekülg, kust andmed laetakse, ei ole ligipääsetav | Andmeid ei saa uuendada | Uuendamist korratakse, backfill
-| Andmefaili struktuur on muutunud | Ei leia vajalikke väärtusi üles | Dünaamiline schema, faili struktuuri kontroll, muutustest teavitamine |
+| Euroopa Komisjoni lehekülg, kust andmed laetakse, ei ole ligipääsetav | Andmeid ei saa uuendada | Uuendamist korratakse
+| Andmefaili struktuur on muutunud | Ei leia vajalikke väärtusi üles | Dünaamiline skeema, faili struktuuri kontroll, muutustest teavitamine |
 | Scheduler ei käivitu, andmed ei värskendu automaatselt | Saame päringust vananenud väärtused | Logide kontrollimine |
 | Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |
 

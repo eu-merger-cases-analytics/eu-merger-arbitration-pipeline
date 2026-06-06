@@ -7,15 +7,13 @@ Andmete laadimine (Python):
   → download_json.py → data/raw/case-data-M.json
   → inspect_json.py → inspect_json_output.txt [valikuline, ei ole automatiseeritud andmevoo osa]
 
-Toorandmete töötlemine (Python, SQL):
-  → create_raw_schema.sql
-  → tabel raw.decisions
+Tabelite loomine, toorandmete töötlemine (Python, SQL):
+  → create_raw_schema.sql → tabel raw.decisions
   → load_decisions.py
       (laeb JSON-ist andmebaasi kõigi juhtumite kõigi otsuste kõik metaandmed;
       1 rida = 1 unikaalne attachmentLink + att_metadataReference; case/decision väljad korduvad.
       Võib olla üksikuid juhtumeid, kus sama metadatareference'iga sama pdf faili on topelt — neid käsitleme veana, andmebaasi salvestatakse viimane pdf.)
-  → create_raw_decision_hits.sql
-  → tabel raw.decision_hits
+  → create_raw_decision_hits.sql → tabel raw.decision_hits
   → load_decision_hits.py
       (töötleb raw.decisions tabelist otsuste PDF-id;
       kirjutab raw.decision_hits tabelisse ainult märksõnaga vastete kõik metaandmed)
@@ -26,8 +24,8 @@ Analüütika (dbt):
   → dbt intermediate (view) — transformatsioon, äriloogika (kuupäevad, NACE, joinid, kvaliteet, selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused)
   → dbt marts (tabel) — dashboardi mõõdikud
   → dashboard (Superset)
-  → export_decision_hits_csv.py → data\processed\decision_hits.csv (raw.decision_hits — märksõnaga PDF-id)
-  → export_mart_arbitration_decisions_csv.py → data\processed\mart_arbitration_decisions.csv (Tableau vm jaoks)
+  → export_decision_hits_csv.py → data\processed\decision_hits.csv (tabamusega PDF-id kõigi metaandmetega)
+  → export_mart_arbitration_decisions_csv.py → data\processed\mart_arbitration_decisions.csv (granulaarus tabamusega kaasus/otsus)
 ```
 
 ---
@@ -161,33 +159,17 @@ Viga ei tähenda, et rida puudub — metaandmed jäävad `raw.decisions` tabelis
 | `download:` | PDF-i allalaadimine ebaõnnestus (võrgu katkestus, aegumine, serveri throttling) | Tuleb uuesti laadida |
 | `processing:` | Fail laeti alla, aga pole kehtiv PDF (nt HTML vastus) | Ei — URL/probleem on püsiv |
 
-### Jooksva käivituse kokkuvõte
+---
 
-**Konsoolis:**
+### [`summarize_decision_hits.py`](../scripts/analysis/summarize_decision_hits.py) (käivitatakse käsitsi)
+Genereerib kokkuvõtte decision_hits tabelisse salvestatud andmetest [`summarize_decision_hits_output.json`](../scripts/analysis/summarize_decision_hits_output.json) faili (iga käivitus kirjutab faili üle).
 
-```text
-Done. Processed: 150  |  Hits saved: 3  |  Errors: 2
-Processing time: 12m 34s wall clock | 5.02s avg per row (excl. REQUEST_DELAY_SECONDS) | 0.0s delay between rows
-```
-
-**JSON (`summarize_decision_hits.py`):** — plokk `errors` failis `summarize_decision_hits_output.json`:
+Plokk `errors` failis `summarize_decision_hits_output.json`:
 - `totalErrorAttachments` — vigadega manuste arv kokku
 - `downloadErrors` / `processingErrors` — jaotus prefiksi järgi
 - `successfulAttachments` — edukalt töödeldud (viga puudub)
 - `topErrorMessages` — levinumad veateated (lühendatud)
 - `rates.errorRateAllProcessedAttachmentsPct` — vigade osakaal
-
-
-### Millal võiks uuesti käivitada (kavandamisel)
-
-- Pärast esimest täisjooksu: kui `downloadErrors > 0`, käivita `RETRY_DOWNLOAD_ERRORS=1` stabiilse võrguga.
-- Tavapärane `load_decision_hits.py` jätab vahele read, kus `pdfProcessedAt` on juba seatud — seega allalaadimisvigu automaatselt ei proovi uuesti.
-- Enne dbt-d: veendu, et töötlemata (`pdfProcessedAt IS NULL`) ja lahendamata `download:` vead on minimaalsed.
-
----
-
-### [`summarize_decision_hits.py`](../scripts/analysis/summarize_decision_hits.py)
-Genereerib kokkuvõtte decision_hits tabelisse salvestatud andmetest [`summarize_decision_hits_output.json`](../scripts/analysis/summarize_decision_hits_output.json) faili (iga käivitus kirjutab faili üle).
 
 ---
 
@@ -263,7 +245,7 @@ Seadistus `compose.yml` failis (konteiner `superset`, port **8088**).
 
 - **Allikas:** `marts.mart_arbitration_decisions`
 - **Perioodifilter:** `decision_adoption_date`
-- **Mõõdikud:** relevantsed otsused, märksõnu sisaldavad otsused, osakaal (vt marts jaotis ülal)
+- **Mõõdikud:** relevantsed otsused, märksõnu sisaldavad otsused, osakaal
 
 Käivitus ja andmebaasi ühendus: [`run_commands.md`](run_commands.md) jaotis 6.
 

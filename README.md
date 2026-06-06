@@ -40,13 +40,10 @@ flowchart TB
     af[Airflow]
 
     ec --> py --> raw --> dbt
-    dbt --> ss
+    dbt -.-> ss
     raw -->|export_decision_hits_csv| csvHits
     dbt -->|export_mart_csv| csvMart
-    af -.-> py
-    af -.-> dbt
-    af -.-> csvHits
-    af -.-> csvMart
+    af --> py
 ```
 
 Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md) · [`docs/data_pipeline.md`](docs/data_pipeline.md)
@@ -119,14 +116,14 @@ Vajalikud muutujad:
 
 ## Andmevoog lühidalt
 
-Airflow DAG `eu_merger_arbitration` orkestreerib sammud järjest (pühapäeviti 12:00 või käsitsi).
+Airflow DAG `eu_merger_arbitration` orkestreerib andmevoo (automaatse uuendamise aeg määratud `config\airflow_schedule.txt`).
 
-1. **Sissevõtt** — `download_json.py` laeb Euroopa Komisjoni koondumisotsuste JSON-i (`case-data-M.json`); `load_decision_hits.py` laeb ja töötleb PDF-manuseid, otsides tekstist vahekohtu märksõnu (`config/keywords.txt`).
-2. **Laadimine** — `load_decisions.py` kirjutab kõik manuste metaandmed Postgresi `raw.decisions` tabelisse; tabamused lähevad `raw.decision_hits` tabelisse (1 rida = 1 PDF-manus).
-3. **Transformatsioon** — dbt: `staging` (pass-through vaated) → `intermediate` (filtreeritakse Art. `6(1)(b)` / `8(2)`, parsitakse kuupäevad ja NACE sektori kood, liidetakse märksõnatulemused) → `marts.mart_arbitration_decisions` (üks rida = kaasus/otsus).
+1. **Sissevõtt** — `download_json.py` laeb Euroopa Komisjoni koondumisotsuste JSON-i kettale (`data/raw/case-data-M.json`).
+2. **Laadimine** — `load_decisions.py` kirjutab manuste metaandmed `raw.decisions` tabelisse (1 rida = 1 PDF-manus); `load_decision_hits.py` laeb PDF-id, otsib vahekohtu märksõnu (`config/keywords.txt`) ja salvestab tabamused `raw.decision_hits` tabelisse.
+3. **Transformatsioon** — dbt: `staging` (`stg_decisions`, `stg_decision_hits` — pass-through `raw`-st) → `intermediate` (`int_relevant_decisions` — Art. `6(1)(b)` / `8(2)`, kuupäevad, NACE; `int_decisions_with_hits` — liidetakse märksõnatulemused, `has_keyword_hit`) → `marts.mart_arbitration_decisions` (üks rida = kaasus/otsus).
 4. **Testimine** — `dbt test` käivitab andmekvaliteedi testid (võtmete unikaalsus, viited, marti agregatsiooni loogika).
 5. **Dashboard** — Apache Superset loeb `marts.mart_arbitration_decisions` tabelit.
-6. **CSV failid** — Andmed `raw.decision_hits` ja `marts.mart_arbitration_decisions` tabelitest
+6. **CSV failid** — `export_decision_hits_csv.py` → `decision_hits.csv`; `export_mart_arbitration_decisions_csv.py` → `mart_arbitration_decisions.csv` (`data/processed/`)
 
 
 ## Andmekvaliteedi testid
@@ -158,11 +155,11 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 │       ├── eu_merger_arbitration_dag.py       ← põhipipeline
 │       └── eu_merger_arbitration_test_dag.py  ← kiire test (100 PDF-i töötlemine)
 ├── config/
-│   ├── airflow_schedule.txt                   ← Airflow DAG ajakava (cron)
+│   ├── airflow_schedule.txt                   ← Airflow DAG käivitamise aeg (cron)
 │   └── keywords.txt                           ← vahekohtu märksõnad PDF otsinguks
 ├── data/
 │   ├── raw/
-│   │   └── case-data-M.json                   ← EC JSON (download_json.py)
+│   │   └── case-data-M.json                   ← EK JSON (download_json.py)
 │   └── processed/
 │       ├── decision_hits.csv                  ← raw.decision_hits (märksõnaga PDF-id)
 │       └── mart_arbitration_decisions.csv     ← eksporditakse DAG lõpus (otsuse tase)
@@ -187,7 +184,9 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 ├── scripts/
 │   ├── ingestion/                             ← JSON allalaadimine, raw laadimine, PDF töötlus
 │   ├── analysis/                              ← andmekvaliteedi kontrollid, kokkuvõtted, csv failide genereerimine
-│   └── airflow/                               ← compose_exec.py (DAG → docker exec)
+│   └── airflow/
+│       ├── compose_exec.py                    ← DAG käivitab skripte python/dbt konteinerites
+│       └── ensure_raw_table.py                ← loob raw tabelid, kui puuduvad
 ├── superset/
 │   ├── bootstrap.sh
 │   └── superset_config.py                     
@@ -201,7 +200,7 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 ## Kokkuvõte, puudused ja võimalikud edasiarendused
 
 **Kokkuvõte:**
-- Täielik andmevoog avalikust JSON-ist kuni Superset dashboardini: Python sissevõtt (`raw`), dbt transformatsioon (`staging` → `intermediate` → `marts`), testid.
+- Loodud andmevoog avalikust JSON-ist kuni Superset dashboardini.
 - PDF-põhine märksõnaotsing mitmes keeles tuvastab vahekohtumehhanismi mainimised Art. `6(1)(b)` / `8(2)` tingimuslikes koondumisotsustes.
 - Orkestreerimine Airflow DAG; test-DAG 100 PDF-iga kiireks kontrolliks.
 - Ehitatud dashboard.

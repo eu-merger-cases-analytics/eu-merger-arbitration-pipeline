@@ -32,7 +32,7 @@ Kõik käsud eeldavad, et oled projekti juurkaustas ja Docker Compose konteineri
 ```bash
 cp .env.example .env
 
-# Kõik teenused (sh Airflow). Ilma Airflowita: docker compose up -d --build db python dbt superset
+# Kõik teenused (sh Airflow). Ilma Airflow'ta: docker compose up -d --build db python dbt superset
 docker compose up -d --build
 
 docker compose ps
@@ -113,8 +113,11 @@ docker compose exec python python analysis/summarize_decision_hits.py
 # Tabamustega ridade JSON fail data\processed\decision_hits.json
 docker compose exec python python analysis/export_decision_hits_json.py
 
+# raw.decision_hits CSV-na data\processed\decision_hits.csv (eelda load_decision_hits)
+docker compose exec python python analysis/export_decision_hits_csv.py
+
 # Mart tabel CSV-na data\processed\mart_arbitration_decisions.csv (eelda dbt run)
-docker compose exec python python analysis/export_mart_arbitration_decisions_csv.py 
+docker compose exec python python analysis/export_mart_arbitration_decisions_csv.py
 
 # Kuupäevade väärtuste olemasolu kontroll JSON-is ja raw.decisions tabelis
 docker compose exec python python analysis/summarize_date_fields.py
@@ -272,7 +275,7 @@ Käsitsi (ilma skriptita): **Settings → Import dashboards** → `docs/dashboar
 
 ## 7. Airflow
 
-Airflow on sama `compose.yml` failis (`airflow-postgres`, `airflow-init`, `airflow-webserver`, `airflow-scheduler`). DAG-id on repost kaustas `airflow/dags/`. Airflow'i **metadata** on eraldi Postgresis (`airflow-postgres`); pipeline'i andmed on endiselt teenuses `db` (port **5434**).
+Airflow on `compose.yml` failis (`airflow-postgres`, `airflow-init`, `airflow-webserver`, `airflow-scheduler`). DAG-id on repost kaustas `airflow/dags/`. Airflow'i **metadata** on eraldi Postgresis (`airflow-postgres`); pipeline'i andmed on endiselt teenuses `db` (port **5434**).
 
 **Eeldab:** `.env` sisaldab `AIRFLOW_*` väärtusi (vaata `.env.example`).
 
@@ -289,7 +292,7 @@ docker compose up -d airflow-webserver airflow-scheduler
 docker compose logs -f airflow-webserver
 ```
 
-Või koos ülejäänud stackiga:
+Või käivita ühe käsuga koos ülejäänud stackiga:
 
 ```bash
 docker compose up -d --build
@@ -304,16 +307,8 @@ docker compose up -d --build
 
 | DAG | Kasutus |
 |-----|--------|
-| **`eu_merger_arbitration`** | **Põhi-DAG** — esimesel käivitusel loob `raw` tabelid kui puuduvad; hiljem uuendab andmeid ja töötleb uued PDF-id. Ajakava **igal pühapäeval 12:00** (`0 12 * * 0`, scheduleri ajavöönd) |
+| **`eu_merger_arbitration`** | **Põhi-DAG** — esimesel käivitusel loob `raw` tabelid kui puuduvad; hiljem uuendab andmeid ja töötleb uued PDF-id. Käivitamise aeg määratud `config\airflow_schedule.txt` |
 | **`eu_merger_arbitration_test`** | Test — `TEST_LIMIT=100` PDF-id + init (valikuline enne põhi-DAG-i) |
-
-Lõpetab: `dbt_run` → **`export_mart_csv`** → `data/processed/mart_arbitration_decisions.csv`.
-
-**Esimene kord:** käivita **`eu_merger_arbitration`** (või test DAG) — init SQL käivitatakse automaatselt, kui `raw.decisions` / `raw.decision_hits` puuduvad. Käsitsi init pole kohustuslik.
-
-Airflow käivitab teenuseid läbi `scripts/airflow/compose_exec.py` (`docker exec` konteineritele `eu-merger-arbitration-python` jne).
-
-Rohkem: [`airflow_getting_started.md`](airflow_getting_started.md).
 
 ### Airflow peatamine (ülejäänud stack jääb käima)
 
