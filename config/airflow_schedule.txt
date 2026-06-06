@@ -1,0 +1,9 @@
+# Cron schedule for Airflow DAG "eu_merger_arbitration".
+# Uses the Airflow scheduler timezone. Edit the line below to change run time.
+#
+# Examples:
+#   0 19 * * 0   — every Sunday at 19:00 (default)
+#   0 6 * * 1    — every Monday at 06:00
+#   None         — no schedule (manual trigger only; use eu_merger_arbitration_test for smoke runs)
+#
+0 19 * * 0

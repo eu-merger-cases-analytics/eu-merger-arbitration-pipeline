@@ -54,19 +54,22 @@ flowchart TB
     end
 
     ss[Superset]
-    exp["export_mart_csv<br/>mart andmetabelist CSV fail"]
+    expH["export_decision_hits_csv<br/>raw.decision_hits → decision_hits.csv"]
+    expM["export_mart_csv<br/>mart → mart_arbitration_decisions.csv"]
     af["Airflow<br/>DAG eu_merger_arbitration"]
 
     rawH --> stg
     mart --> ss
-    mart --> exp
+    rawH --> expH
+    mart --> expM
     af -.-> dl
     af -.-> erD
     af -.-> ld
     af -.-> erH
     af -.-> lh
     af -.-> dbtRun
-    af -.-> exp
+    af -.-> expH
+    af -.-> expM
 ```
 
 Detailne kirjeldus: [`data_pipeline.md`](data_pipeline.md)

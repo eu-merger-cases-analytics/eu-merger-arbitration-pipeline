@@ -7,7 +7,9 @@ Main pipeline DAG (non-test).
 Test DAG with TEST_LIMIT=100: eu_merger_arbitration_test.
 """
 
+import os
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -16,7 +18,26 @@ COMPOSE_EXEC = "python /opt/project/scripts/airflow/compose_exec.py"
 # Runs on Airflow container (has docker.sock + /opt/project mount), not via python service
 ENSURE_RAW = "/opt/project/scripts/airflow/ensure_raw_table.py"
 
-SCHEDULE = "0 12 * * 0"  # Sundays 12:00 (scheduler timezone)
+SCHEDULE_FILE = (
+    Path(os.environ.get("COMPOSE_PROJECT_DIR", "/opt/project"))
+    / "config"
+    / "airflow_schedule.txt"
+)
+
+
+def load_schedule(path: Path) -> str | None:
+    """Reads cron from config/airflow_schedule.txt (first non-comment, non-empty line)."""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped.lower() == "none":
+            return None
+        return stripped
+    raise ValueError(f"No schedule found in {path}")
+
+
+SCHEDULE = load_schedule(SCHEDULE_FILE)
 
 with DAG(
     dag_id="eu_merger_arbitration",
@@ -36,7 +57,7 @@ with DAG(
     | ensure raw.decision_hits | runs `create_raw_decision_hits.sql` | skipped |
     | load_decision_hits | processes PDFs (`pdfProcessedAt` null) | only new PDFs |
 
-    Schedule: Sundays 12:00 (`0 12 * * 0`). Keep DAG **unpaused**.
+    Schedule: from `config/airflow_schedule.txt` (default Sundays 12:00). Keep DAG **unpaused**.
 
     To wipe raw and rebuild from scratch you must drop dbt views / raw tables first
     (see docs/run_commands.md) — this DAG does not force-drop existing tables.
@@ -82,6 +103,13 @@ with DAG(
         ),
     )
 
+    export_decision_hits_csv = BashOperator(
+        task_id="export_decision_hits_csv",
+        bash_command=(
+            f"{COMPOSE_EXEC} python python analysis/export_decision_hits_csv.py"
+        ),
+    )
+
     export_mart_csv = BashOperator(
         task_id="export_mart_csv",
         bash_command=(
@@ -97,5 +125,6 @@ with DAG(
         >> load_decision_hits
         >> dbt_run
         >> dbt_test
+        >> export_decision_hits_csv
         >> export_mart_csv
     )

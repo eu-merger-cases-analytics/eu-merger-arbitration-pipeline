@@ -33,16 +33,20 @@ flowchart TB
     ec[JSON]
     py[Python sissevõtt]
     raw[Postgres raw]
-    dbt[dbt]
+    dbt[dbt<br/>staging → intermediate → marts]
     ss[Superset]
-    csv[CSV fail]
+    csvHits[decision_hits.csv]
+    csvMart[mart_arbitration_decisions.csv]
     af[Airflow]
 
-    ec --> py --> raw --> dbt --> ss
-    dbt --> csv
+    ec --> py --> raw --> dbt
+    dbt --> ss
+    raw -->|export_decision_hits_csv| csvHits
+    dbt -->|export_mart_csv| csvMart
     af -.-> py
-    af -.-> raw
     af -.-> dbt
+    af -.-> csvHits
+    af -.-> csvMart
 ```
 
 Täpsem kirjeldus: [`docs/architecture.md`](docs/architecture.md) · [`docs/data_pipeline.md`](docs/data_pipeline.md)
@@ -85,9 +89,8 @@ docker compose ps   # oota "healthy" / "running" (esimene Airflow init võtab m�
 
 ### Dashboardi ZIP import
 docker compose exec python python superset/import_dashboard.py
+# Ava http://localhost:8088 → Dashboards.
 ```
-Ava **http://localhost:8088** → **Dashboards**.
-
 
 # Peatamine
 ```bash
@@ -123,7 +126,7 @@ Airflow DAG `eu_merger_arbitration` orkestreerib sammud järjest (pühapäeviti 
 3. **Transformatsioon** — dbt: `staging` (pass-through vaated) → `intermediate` (filtreeritakse Art. `6(1)(b)` / `8(2)`, parsitakse kuupäevad ja NACE sektori kood, liidetakse märksõnatulemused) → `marts.mart_arbitration_decisions` (üks rida = kaasus/otsus).
 4. **Testimine** — `dbt test` käivitab andmekvaliteedi testid (võtmete unikaalsus, viited, marti agregatsiooni loogika).
 5. **Dashboard** — Apache Superset loeb `marts.mart_arbitration_decisions` tabelit.
-6. **CSV** — Andmed `marts.mart_arbitration_decisions` tabelist
+6. **CSV failid** — Andmed `raw.decision_hits` ja `marts.mart_arbitration_decisions` tabelitest
 
 
 ## Andmekvaliteedi testid
@@ -153,14 +156,16 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 ├── airflow/
 │   └── dags/
 │       ├── eu_merger_arbitration_dag.py       ← põhipipeline
-│       └── eu_merger_arbitration_test_dag.py  ← kiire test (100 PDF-i)
+│       └── eu_merger_arbitration_test_dag.py  ← kiire test (100 PDF-i töötlemine)
 ├── config/
+│   ├── airflow_schedule.txt                   ← Airflow DAG ajakava (cron)
 │   └── keywords.txt                           ← vahekohtu märksõnad PDF otsinguks
 ├── data/
 │   ├── raw/
 │   │   └── case-data-M.json                   ← EC JSON (download_json.py)
 │   └── processed/
-│       └── mart_arbitration_decisions.csv     ← eksporditakse DAG lõpus
+│       ├── decision_hits.csv                  ← raw.decision_hits (märksõnaga PDF-id)
+│       └── mart_arbitration_decisions.csv     ← eksporditakse DAG lõpus (otsuse tase)
 ├── dbt/eu_merger_arbitration/
 │   ├── models/
 │   │   ├── staging/                           ← 2 mudelit + testid
@@ -181,7 +186,7 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 │   └── create_raw_decision_hits.sql           ← raw.decision_hits
 ├── scripts/
 │   ├── ingestion/                             ← JSON allalaadimine, raw laadimine, PDF töötlus
-│   ├── analysis/                              ← andmekvaliteedi kontrollid ja kokkuvõtted
+│   ├── analysis/                              ← andmekvaliteedi kontrollid, kokkuvõtted, csv failide genereerimine
 │   └── airflow/                               ← compose_exec.py (DAG → docker exec)
 ├── superset/
 │   ├── bootstrap.sh

@@ -71,6 +71,13 @@ with DAG(
         ),
     )
 
+    export_decision_hits_csv = BashOperator(
+        task_id="export_decision_hits_csv",
+        bash_command=(
+            f"{COMPOSE_EXEC} python python analysis/export_decision_hits_csv.py"
+        ),
+    )
+
     export_mart_csv = BashOperator(
         task_id="export_mart_csv",
         bash_command=(
@@ -86,5 +93,6 @@ with DAG(
         >> load_decision_hits
         >> dbt_run
         >> dbt_test
+        >> export_decision_hits_csv
         >> export_mart_csv
     )

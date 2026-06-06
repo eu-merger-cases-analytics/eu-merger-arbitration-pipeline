@@ -26,7 +26,8 @@ Analüütika (dbt):
   → dbt intermediate (view) — transformatsioon, äriloogika (kuupäevad, NACE, joinid, kvaliteet, selekteeritakse välja Art. `6(1)(b)` / `8(2)` otsused)
   → dbt marts (tabel) — dashboardi mõõdikud
   → dashboard (Superset)
-  → export_mart_arbitration_decisions_csv.py  → data\processed\mart_arbitration_decisions.csv (Tableau vm jaoks)
+  → export_decision_hits_csv.py → data\processed\decision_hits.csv (raw.decision_hits — märksõnaga PDF-id)
+  → export_mart_arbitration_decisions_csv.py → data\processed\mart_arbitration_decisions.csv (Tableau vm jaoks)
 ```
 
 ---

@@ -27,6 +27,7 @@
   - otsib märksõnu `config/keywords.txt` järgi vastavalt `att_attachmentLanguage` väärtusele;
   - salvestab tabamused `raw.decision_hits` (metaandmed kopeeritakse `raw.decisions` tabelist);
   - uuendab `raw.decisions` veeru `pdfProcessedAt` igal PDF-il (ka ilma tabamuseta).
+  
 ### dbt
   - `sources` (`raw.decisions`, `raw.decision_hits`);
   - `models/staging/` — `stg_decision_hits`, `stg_relevant_decisions`;
@@ -37,25 +38,8 @@
   - seadistatud testimiseks.
   - loodud dashboard, docs\dashboard\dashboard_export_20260602.zip.
 
-### **Airflow** — ajastamine (download → load_decisions → load_decision_hits → dbt → export_mart_arbitration_decisions_csv.py).
-
-
-
----
-
-## Järgmised sammud
-
-**Airflow täiendamine** — käitumine vigade korral.  
-
-**Täpsustada dokumentatsioon** — kontrollida doc failid.  
+### Airflow
+  - ajastamine (download → load_decisions → load_decision_hits → dbt → csv failid).
 
 ---
 
-## Takistused ja riskid
-
-| Takistus / risk | Mõju | Võimalik maandus |
-|-----------------|------|------------------|
-| PDF faile päritakse liiga kiirelt, EU server blokeerib päringuid | enamus pdf-e ei töödelda | lisada iga pdf laadimise ajaintervall (võib olla ei ole siiski vajalik, sest mingit blokeerimist ei toimu) |
-| PDF töötlemine on aeglane (3+ h) | Pipeline viibib; arendus/testimine aeglane | Airflow andmevoog hoolikalt läbi mõelda |
-| JSON faili struktuuri muutused | `load_decisions` võib jätta veerud/väärtused puudu | Dünaamiline schema + hoiatused; `inspect_json.py` perioodiline kontroll |
-| Märksõnade täpsus | Valepositiivsed / valenegatiivsed | `keywords.txt` kontroll |
