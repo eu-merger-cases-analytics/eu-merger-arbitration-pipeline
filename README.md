@@ -231,3 +231,7 @@ Airflow DAG-is käivitatakse testid automaatselt ülesandes `dbt_test` (pärast 
 | Katrin | arhitektuur, arendus |
 | Vahur | docker, testimine |
 | Toivo | testimine |
+
+## Use and suggested citation
+Free to use under Creative Commons CC-BY-NC terms (read them, but generally: attribute and don't paywall, and you are likely to be fine).
+Suggested citation: R Luha, K Valge, V Täht and T  Ellakvere, Mergetube, (2026), GitHub repository, https://github.com/eu-merger-cases-analytics/eu-merger-arbitration-pipeline
